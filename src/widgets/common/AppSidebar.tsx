@@ -1,3 +1,5 @@
+"use client"
+
 import {ChartLine, Gamepad2, Upload} from "lucide-react"
 
 import {
@@ -10,6 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/widgets/common/Sidebar"
+import {useUserStore} from "@/shared/hooks/use-user-store";
+import {Separator} from "@/widgets/common/Separator";
 
 const items = [
   {
@@ -30,11 +34,18 @@ const items = [
 ]
 
 export function AppSidebar() {
+  const { user } = useUserStore()
   return (
     <Sidebar>
       <SidebarHeader>
-        <p>Name</p>
+        {user && (
+          <p className="font-bold text-xl">{user.name}</p>
+        )}
+        {!user && (
+          <p className="font-bold text-base">Login is required.</p>
+        )}
       </SidebarHeader>
+      <Separator/>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
