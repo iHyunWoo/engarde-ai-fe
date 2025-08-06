@@ -1,7 +1,7 @@
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import {storage} from "@/shared/lib/firebase";
 
-export async function uploadVideo(file: File): Promise<string | null> {
+export async function uploadFileToFBStorage(file: File, type: 'images' | 'videos'): Promise<string | null> {
   // Firebase 유저 정보 가져오기
   // const user = auth.currentUser;
   // if (!user) {
@@ -11,8 +11,8 @@ export async function uploadVideo(file: File): Promise<string | null> {
 
   // const userId = user.uid;
   const filename = `${Date.now()}_${file.name}`;
-  // const path = `videos/${userId}/${filename}`;
-  const path = `videos/${filename}`;
+  // const path = `${type}/${userId}/${filename}`;
+  const path = `${type}/${filename}`;
   const storageRef = ref(storage, path);
 
   const snapshot = await uploadBytes(storageRef, file);
