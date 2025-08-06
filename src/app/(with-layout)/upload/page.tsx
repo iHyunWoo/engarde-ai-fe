@@ -3,7 +3,7 @@
 import { useMatchUpload } from '@/app/features/match/hooks/use-match-upload';
 import React from 'react';
 import VideoUploadSection from "@/widgets/Match/VideoUploadSection";
-import MatchInfoSection from "@/widgets/Match/MatchInfoSection";
+import MatchInfoForm from "@/widgets/Match/MatchInfoForm";
 
 export default function MatchUploadPage() {
   const {
@@ -29,7 +29,7 @@ export default function MatchUploadPage() {
           onMove={handleMove}
         />
 
-        <MatchInfoSection
+        <MatchInfoForm
           matchData={matchData}
           uploading={uploading}
           filesCount={files.length}
