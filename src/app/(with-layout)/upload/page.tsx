@@ -1,6 +1,6 @@
 'use client';
 
-import { useMatchUpload } from '@/app/features/video/hooks/use-match-upload';
+import { useMatchUpload } from '@/app/features/match/hooks/use-match-upload';
 import React from 'react';
 import VideoUploadSection from "@/widgets/Match/VideoUploadSection";
 import MatchInfoSection from "@/widgets/Match/MatchInfoSection";

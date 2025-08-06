@@ -1,4 +1,8 @@
 import { useState, useRef } from 'react';
+import {mergeVideos} from "@/app/features/match/lib/merge-videos";
+import {uploadVideo} from "@/app/features/match/lib/upload-video";
+import {toast} from "sonner";
+import {createMatch} from "@/app/features/match/api/create-match";
 
 interface MatchData {
   tournamentName: string;
@@ -47,8 +51,28 @@ export function useMatchUpload() {
 
   const handleUpload = async () => {
     if (files.length === 0) return;
+
     setUploading(true);
-    setUploading(false);
+    try {
+      const mergedVideo = await mergeVideos(files);
+      const videoLink = await uploadVideo(mergedVideo);
+
+      if (!videoLink) {
+        throw new Error('Failed to upload video');
+      }
+
+      const response = await createMatch({ videoLink, ...matchData });
+
+      if (!response) {
+        throw new Error('Failed to upload match');
+      }
+
+      toast('Successfully uploaded');
+    } catch (error) {
+      toast(error instanceof Error ? error.message : 'Unexpected error');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return {

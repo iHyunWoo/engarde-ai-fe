@@ -1,9 +1,12 @@
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
-
-const ffmpeg = new FFmpeg();
+"use client"
 
 export async function mergeVideos(files: File[]): Promise<File> {
+  // 런타입 중 실행하기 위해 지연 로딩
+  const { FFmpeg } = await import('@ffmpeg/ffmpeg');
+  const { fetchFile } = await import('@ffmpeg/util');
+
+  const ffmpeg = new FFmpeg();
+
   if (!ffmpeg.loaded) {
     await ffmpeg.load();
   }
@@ -22,7 +25,11 @@ export async function mergeVideos(files: File[]): Promise<File> {
     '-f', 'concat',
     '-safe', '0',
     '-i', 'input.txt',
-    '-c', 'copy',
+    '-movflags', 'frag_keyframe+empty_moov',
+    '-c:v', 'libx264',
+    '-preset', 'ultrafast',
+    '-crf', '28',
+    '-c:a', 'aac',
     'output.mp4',
   ]);
 
@@ -33,9 +40,9 @@ export async function mergeVideos(files: File[]): Promise<File> {
   }
 
   const arrayBuffer = output.slice().buffer;
-  const blob = new Blob([arrayBuffer], { type: 'video/mp4' });
+  const blob = new Blob([arrayBuffer], { type: 'match/mp4' });
 
   // 5. Blob → File 변환 (File 생성자 사용)
-  const file = new File([blob], 'merged-video.mp4', { type: 'video/mp4' });
+  const file = new File([blob], 'merged-match.mp4', { type: 'match/mp4' });
   return file;
 }
