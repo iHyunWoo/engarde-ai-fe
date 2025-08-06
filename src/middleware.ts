@@ -30,16 +30,6 @@ export async function middleware(req: NextRequest) {
   return res;
 }
 
-// JWT 만료 여부 확인 (만료된 경우 true)
-function isExpired(token: string): boolean {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.exp * 1000 < Date.now();
-  } catch {
-    return true;
-  }
-}
-
 export function applySetCookie(req: NextRequest, res: NextResponse): void {
   const setCookies = new ResponseCookies(res.headers);
   const newReqHeaders = new Headers(req.headers);
@@ -66,5 +56,7 @@ export function applySetCookie(req: NextRequest, res: NextResponse): void {
 }
 
 export const config = {
-  matcher: ['/((?!_next|favicon.ico|images|fonts|api).*)'], // 필요한 경로에만 설정
+  matcher: [
+    '/matches/:id',
+  ],
 };

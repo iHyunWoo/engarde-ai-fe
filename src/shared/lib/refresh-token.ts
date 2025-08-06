@@ -1,14 +1,15 @@
-export const refreshToken = async (headers?: HeadersInit): Promise<boolean> => {
+export async function refreshToken(req?: Request): Promise<boolean> {
+  const isServer = typeof window === 'undefined';
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-  const response = await fetch(`${baseUrl}/internal-api/auth/refresh`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      ...headers,
+      ...(isServer && req
+        ? { cookie: req.headers.get('cookie') || '' }
+        : {}),
     },
     credentials: 'include',
   });
 
-  return response.ok;
-};
+  return res.ok;
+}

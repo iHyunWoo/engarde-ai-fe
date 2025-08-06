@@ -13,7 +13,6 @@ export async function MatchInfoSection({id}: MatchInfoSectionProps) {
   const header = await headers()
   const cookie = header.get('cookie')
   const response = await getMatch(id, cookie ?? "");
-  console.log(response);
 
   if (!response || response.code !== 200 || !response.data) {
     return null;
