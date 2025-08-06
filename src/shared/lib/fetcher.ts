@@ -1,5 +1,6 @@
 import {refreshToken} from "@/shared/lib/refresh-token";
 import {BaseResponse} from "@/shared/dto/base-response";
+import {useUserStore} from "@/shared/hooks/use-user-store";
 
 interface FetcherOptions {
   req?: Request; // SSR only
@@ -46,6 +47,10 @@ export async function fetcher<T>(
             retry: true,
           });
         } else {
+          // 로그아웃 처리
+          const userStore = useUserStore.getState();
+          userStore.cleanUser();
+          window.location.href = '/login';
           return null;
         }
       }
