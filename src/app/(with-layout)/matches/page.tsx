@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import Image from "next/image";
 import {MatchSummary} from "@/entities/match-summary";
 import {getMatchList} from "@/app/features/match/api/get-match-list";
-import {formatDate} from "@/shared/lib/format-date";
+import {MatchListItem} from "@/widgets/Match/MatchListItem";
 
 export default function MatchListPage() {
   const [matches, setMatches] = useState<MatchSummary[]>([]);
@@ -23,8 +22,11 @@ export default function MatchListPage() {
 
     const { items, nextCursor } = res.data;
 
-    setMatches(prev => [...prev, ...items]);
-    console.log(matches)
+    setMatches(prev => {
+      const existingIds = new Set(prev.map((m) => m.id));
+      const newItems = items.filter((item) => !existingIds.has(item.id));
+      return [...prev, ...newItems];
+    });
     setCursor(nextCursor);
     setLoading(false);
   };
@@ -53,31 +55,8 @@ export default function MatchListPage() {
 
       <div className="space-y-4">
         {matches.map((match) => (
-          <div
-            key={match.id}
-            className="flex items-center gap-4 p-4 border rounded-md shadow-sm hover:shadow-md transition"
-          >
-            {match.thumbnailUrl && (
-              <Image
-                src={match.thumbnailUrl}
-                alt={match.tournamentName}
-                className="w-28 h-16 object-cover rounded"
-                width={200}
-                height={100}
-              />
-            )}
-
-            <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-xl">{match.tournamentName}</h3>
-              <p className="font-medium truncate text-gray-800">
-                vs {match.opponentName}
-              </p>
-              <p className="text-sm text-gray-500">
-                Score: {match.myScore} - {match.opponentScore}
-              </p>
-            </div>
-
-            <p>{formatDate(match.tournamentDate)}</p>
+          <div key={match.id}>
+            <MatchListItem match={match} />
           </div>
         ))}
       </div>
