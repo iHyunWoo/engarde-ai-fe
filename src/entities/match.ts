@@ -1,5 +1,3 @@
-import {Marking} from "@/entities/marking";
-
 export interface Match {
   id: number;
   video_url: string;
