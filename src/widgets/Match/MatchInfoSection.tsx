@@ -4,6 +4,7 @@ import {Activity, Calendar, Edit2, Shield, Trophy, User, Users, Zap} from "lucid
 import {getMatch} from "@/app/features/match/api/get-match";
 import {formatDate} from "@/shared/lib/format-date";
 import {headers} from "next/headers";
+import Link from "next/link";
 
 interface MatchInfoSectionProps {
   id: number;
@@ -39,9 +40,12 @@ export async function MatchInfoSection({id}: MatchInfoSectionProps) {
             <Edit2 className="w-4 h-4 mr-2" />
             편집
           </Button>
-          <Button size="sm">
-            마킹하러 가기
-          </Button>
+          <Link href={`/marking/${id}`}>
+            <Button size="sm">
+              마킹하러 가기
+            </Button>
+          </Link>
+
         </div>
 
         <div className="space-y-2">
