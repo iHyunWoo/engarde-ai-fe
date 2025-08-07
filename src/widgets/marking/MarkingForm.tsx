@@ -1,12 +1,12 @@
 import { Button } from '@/widgets/common/Button';
-import { AttackType, DefenseType, MarkingResult } from '@/entities/marking';
+import {AttackType, AttemptType, DefenseType, MarkingResult} from '@/entities/marking';
 import {useEffect, useRef, useState} from "react";
 
 const markingResults: MarkingResult[] = ['win', 'lose', 'attempt'];
 const attackTypes: AttackType[] = ['lunge', 'advanced lunge', 'fleche', 'push'];
 const defenseTypes: DefenseType[] = ['parry', 'counter attack'];
 
-type AttemptType = AttackType | DefenseType;
+
 
 const mockNotes = [
   'Nice push',
@@ -44,7 +44,7 @@ export function MarkingForm({
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const [focused, setFocused] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSelectSuggestion = (text: string) => {
     setNote(text);
@@ -122,9 +122,8 @@ export function MarkingForm({
         <label className="block text-sm font-medium">Note</label>
 
         <div className="relative">
-          <input
+          <textarea
             ref={inputRef}
-            type="text"
             value={note}
             onChange={(e) => {
               if (e.target.value.length <= 100) setNote(e.target.value);

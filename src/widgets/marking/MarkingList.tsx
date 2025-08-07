@@ -12,7 +12,7 @@ export function MarkingList({ markings, onRemove, onSeek }: {
       {markings.map((mark, i) => (
         <li key={i} className="flex items-center justify-between">
           <Button variant={"ghost"} className="text-left flex-1" onClick={() => onSeek(mark.time)}>
-            {String(mark.time).padStart(2, '0')}s - {mark.result} - {mark.attackType ?? mark.defenseType}
+            {String(mark.time).padStart(2, '0')}s - {mark.result} - {mark.myType}
           </Button>
           <X onClick={() => onRemove(i)} className="cursor-pointer text-red-600 w-4 h-4 ml-2" />
         </li>

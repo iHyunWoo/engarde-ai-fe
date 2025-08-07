@@ -54,7 +54,8 @@ export default function Page() {
   const addMarking = () => {
     if (!videoRef) return;
     const time = Math.floor(videoRef.currentTime);
-    setMarkings((prev) => [...prev, {time, result: resultType, myType, opponentType}]);
+    setMarkings((prev) => [...prev, {time, result: resultType, myType, opponentType, note}]);
+    console.log(markings)
   };
 
   const removeMarking = (index: number) => {

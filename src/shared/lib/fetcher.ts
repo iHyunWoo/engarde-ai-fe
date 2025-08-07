@@ -40,7 +40,7 @@ export async function fetcher<T>(
       const body: BaseResponse = await response.clone().json();
 
       if (body.message === 'TOKEN_EXPIRED') {
-        const refreshSuccess = await refreshToken(headers);
+        const refreshSuccess = await refreshToken(req);
         if (refreshSuccess) {
           return fetcher<T>(input, init, {
             ...options,

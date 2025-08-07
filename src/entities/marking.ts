@@ -7,10 +7,13 @@ export type AttackType = 'none' | 'lunge' | 'advanced lunge' | 'fleche' | 'push'
 // 수비 유형 타입 (빠라드, 꽁트라 어택)
 export type DefenseType = 'none' | 'parry' | 'counter attack';
 
+export type AttemptType = AttackType | DefenseType;
+
 // 마킹 인터페이스
 export interface Marking {
   time: number;
   result: MarkingResult;
-  attackType?: AttackType;
-  defenseType?: DefenseType;
+  myType?: AttemptType;
+  opponentType?: AttemptType;
+  note: string;
 }
