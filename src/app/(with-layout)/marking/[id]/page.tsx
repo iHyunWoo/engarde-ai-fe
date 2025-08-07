@@ -23,8 +23,8 @@ export default function Page() {
 
   const [markings, setMarkings] = useState<Marking[]>([]);
   const [resultType, setResultType] = useState<MarkingResult>('win');
-  const [attackType, setAttackType] = useState<AttackType>('none');
-  const [defenseType, setDefenseType] = useState<DefenseType>('none');
+  const [myType, setMyType] = useState<AttackType | DefenseType>('none');
+  const [opponentType, setOpponentType] = useState<AttackType | DefenseType>('none');
   const [note, setNote] = useState('');
 
   const [attackAttemptCount, setAttackAttemptCount] = useState(0);
@@ -54,7 +54,7 @@ export default function Page() {
   const addMarking = () => {
     if (!videoRef) return;
     const time = Math.floor(videoRef.currentTime);
-    setMarkings((prev) => [...prev, {time, result: resultType, attackType, defenseType}]);
+    setMarkings((prev) => [...prev, {time, result: resultType, myType, opponentType}]);
   };
 
   const removeMarking = (index: number) => {
@@ -103,10 +103,10 @@ export default function Page() {
         <MarkingForm
           resultType={resultType}
           setResultType={setResultType}
-          attackType={attackType}
-          setAttackType={setAttackType}
-          defenseType={defenseType}
-          setDefenseType={setDefenseType}
+          myType={myType}
+          setMyType={setMyType}
+          opponentType={opponentType}
+          setOpponentType={setOpponentType}
           note={note}
           setNote={setNote}
           onAdd={addMarking}

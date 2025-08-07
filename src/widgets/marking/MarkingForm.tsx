@@ -3,8 +3,10 @@ import { AttackType, DefenseType, MarkingResult } from '@/entities/marking';
 import {useEffect, useRef, useState} from "react";
 
 const markingResults: MarkingResult[] = ['win', 'lose', 'attempt'];
-const attackTypes: AttackType[] = ['none', 'lunge', 'advanced lunge', 'fleche', 'push'];
-const defenseTypes: DefenseType[] = ['none', 'parry', 'counter attack'];
+const attackTypes: AttackType[] = ['lunge', 'advanced lunge', 'fleche', 'push'];
+const defenseTypes: DefenseType[] = ['parry', 'counter attack'];
+
+type AttemptType = AttackType | DefenseType;
 
 const mockNotes = [
   'Nice push',
@@ -21,20 +23,20 @@ const mockNotes = [
 export function MarkingForm({
                               resultType,
                               setResultType,
-                              attackType,
-                              setAttackType,
-                              defenseType,
-                              setDefenseType,
+                              myType,
+                              setMyType,
+                              opponentType,
+                              setOpponentType,
                               note,
                               setNote,
                               onAdd,
                             }: {
   resultType: MarkingResult;
   setResultType: (v: MarkingResult) => void;
-  attackType: AttackType;
-  setAttackType: (v: AttackType) => void;
-  defenseType: DefenseType;
-  setDefenseType: (v: DefenseType) => void;
+  myType: AttemptType;
+  setMyType: (v: AttemptType) => void;
+  opponentType: AttemptType;
+  setOpponentType: (v: AttemptType) => void;
   note: string;
   setNote: (v: string) => void;
   onAdd: () => void;
@@ -65,6 +67,7 @@ export function MarkingForm({
       onChange={(e) => onChange(e.target.value)}
       className="w-full border px-2 py-1 rounded text-sm"
     >
+      <option value="none">None</option>
       <optgroup label="Attack">
         {attackTypes.map((type) => (
           <option key={type} value={type}>
@@ -102,16 +105,14 @@ export function MarkingForm({
       <div className="flex justify-between gap-4">
         <div className="w-1/2 space-y-2">
           <label className="block text-sm font-medium">Me</label>
-          {renderGroupedOptions(attackType, (val) => {
-            if (attackTypes.includes(val as AttackType)) setAttackType(val as AttackType);
-            else setDefenseType(val as DefenseType);
+          {renderGroupedOptions(myType, (val) => {
+            setMyType(val as AttemptType);
           })}
         </div>
         <div className="w-1/2 space-y-2">
           <label className="block text-sm font-medium">Opponent</label>
-          {renderGroupedOptions(defenseType, (val) => {
-            if (attackTypes.includes(val as AttackType)) setAttackType(val as AttackType);
-            else setDefenseType(val as DefenseType);
+          {renderGroupedOptions(opponentType, (val) => {
+            setOpponentType(val as AttemptType);
           })}
         </div>
       </div>
