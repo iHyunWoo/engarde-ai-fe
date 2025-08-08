@@ -1,11 +1,11 @@
-import { Button } from '@/widgets/common/Button';
-import {AttackType, AttemptType, DefenseType, MarkingResult} from '@/entities/marking';
+import {Button} from '@/widgets/common/Button';
+import {AttackType, AttemptType, DefenseType, MarkingQuality, MarkingResult} from '@/entities/marking';
 import {useEffect, useRef, useState} from "react";
 
 const markingResults: MarkingResult[] = ['win', 'lose', 'attempt'];
 const attackTypes: AttackType[] = ['lunge', 'advanced lunge', 'fleche', 'push'];
 const defenseTypes: DefenseType[] = ['parry', 'counter attack'];
-
+const qualities: MarkingQuality[] = ['good', 'bad', 'lucky']
 
 
 const mockNotes = [
@@ -27,6 +27,8 @@ export function MarkingForm({
                               setMyType,
                               opponentType,
                               setOpponentType,
+                              quality,
+                              setQuality,
                               note,
                               setNote,
                               onAdd,
@@ -37,6 +39,8 @@ export function MarkingForm({
   setMyType: (v: AttemptType) => void;
   opponentType: AttemptType;
   setOpponentType: (v: AttemptType) => void;
+  quality: MarkingQuality
+  setQuality: (v: MarkingQuality) => void;
   note: string;
   setNote: (v: string) => void;
   onAdd: () => void;
@@ -117,6 +121,22 @@ export function MarkingForm({
         </div>
       </div>
 
+      {/* Quality */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Quality</label>
+        <select
+          value={quality}
+          onChange={(e) => setQuality(e.target.value as MarkingQuality)}
+          className="w-full border px-2 py-1 rounded text-sm"
+        >
+          {qualities.map((type) => (
+            <option key={type} value={type}>
+              {type[0].toUpperCase() + type.slice(1)}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Note Field */}
       <div className="space-y-1 relative">
         <label className="block text-sm font-medium">Note</label>
@@ -135,7 +155,8 @@ export function MarkingForm({
           />
 
           {focused && suggestions.length > 0 && (
-            <ul className="absolute z-10 w-full border border-gray-300 rounded mt-1 max-h-32 overflow-auto text-xs bg-white shadow-lg">
+            <ul
+              className="absolute z-10 w-full border border-gray-300 rounded mt-1 max-h-32 overflow-auto text-xs bg-white shadow-lg">
               {suggestions.map((s, i) => (
                 <li
                   key={i}

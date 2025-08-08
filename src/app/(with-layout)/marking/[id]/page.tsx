@@ -7,7 +7,7 @@ import {getMatch} from "@/app/features/match/api/get-match";
 import {useParams} from "next/navigation";
 import VideoPlayer from "@/widgets/common/VideoPlayer";
 import {Match} from "@/entities/match";
-import {AttackType, DefenseType, Marking, MarkingResult} from "@/entities/marking";
+import {AttackType, DefenseType, Marking, MarkingQuality, MarkingResult} from "@/entities/marking";
 import {MarkingForm} from "@/widgets/marking/MarkingForm";
 import {CounterList} from "@/widgets/Match/MatchCouterSection";
 import {MarkingList} from "@/widgets/marking/MarkingList";
@@ -25,6 +25,7 @@ export default function Page() {
   const [resultType, setResultType] = useState<MarkingResult>('win');
   const [myType, setMyType] = useState<AttackType | DefenseType>('none');
   const [opponentType, setOpponentType] = useState<AttackType | DefenseType>('none');
+  const [quality, setQuality] = useState<MarkingQuality>('good')
   const [note, setNote] = useState('');
 
   const [attackAttemptCount, setAttackAttemptCount] = useState(0);
@@ -54,7 +55,7 @@ export default function Page() {
   const addMarking = () => {
     if (!videoRef) return;
     const time = Math.floor(videoRef.currentTime);
-    setMarkings((prev) => [...prev, {time, result: resultType, myType, opponentType, note}]);
+    setMarkings((prev) => [...prev, {time, result: resultType, myType, opponentType, note, quality}]);
     console.log(markings)
   };
 
@@ -108,6 +109,8 @@ export default function Page() {
           setMyType={setMyType}
           opponentType={opponentType}
           setOpponentType={setOpponentType}
+          quality={quality}
+          setQuality={setQuality}
           note={note}
           setNote={setNote}
           onAdd={addMarking}

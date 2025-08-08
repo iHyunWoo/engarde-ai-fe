@@ -9,11 +9,14 @@ export type DefenseType = 'none' | 'parry' | 'counter attack';
 
 export type AttemptType = AttackType | DefenseType;
 
+export type MarkingQuality = 'good' | 'bad' | 'lucky'
+
 // 마킹 인터페이스
 export interface Marking {
   time: number;
   result: MarkingResult;
   myType?: AttemptType;
   opponentType?: AttemptType;
+  quality: MarkingQuality
   note: string;
 }
