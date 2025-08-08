@@ -1,6 +1,7 @@
 import {Button} from '@/widgets/common/Button';
 import {AttackType, AttemptType, DefenseType, MarkingQuality, MarkingResult} from '@/entities/marking';
 import {useEffect, useRef, useState} from "react";
+import {formatTime} from "@/shared/lib/format-time";
 
 const markingResults: MarkingResult[] = ['win', 'lose', 'attempt'];
 const attackTypes: AttackType[] = ['lunge', 'advanced lunge', 'fleche', 'push'];
@@ -29,6 +30,8 @@ export function MarkingForm({
                               setOpponentType,
                               quality,
                               setQuality,
+                              remainTime,
+                              setRemainTime,
                               note,
                               setNote,
                               onAdd,
@@ -41,6 +44,8 @@ export function MarkingForm({
   setOpponentType: (v: AttemptType) => void;
   quality: MarkingQuality
   setQuality: (v: MarkingQuality) => void;
+  remainTime: number;
+  setRemainTime: (v: number) => void;
   note: string;
   setNote: (v: string) => void;
   onAdd: () => void;
@@ -136,6 +141,23 @@ export function MarkingForm({
           ))}
         </select>
       </div>
+
+      {/* Remain Time */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Remain Time</label>
+        <input
+          type="number"
+          min={0}
+          value={remainTime}
+          onChange={(e) => setRemainTime(Number(e.target.value))}
+          className="w-full border px-2 py-1 rounded text-sm"
+          placeholder="Enter remaining time in seconds"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          {formatTime(remainTime)}
+        </p>
+      </div>
+
 
       {/* Note Field */}
       <div className="space-y-1 relative">

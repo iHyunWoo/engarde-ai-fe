@@ -27,6 +27,7 @@ export default function Page() {
   const [opponentType, setOpponentType] = useState<AttackType | DefenseType>('none');
   const [quality, setQuality] = useState<MarkingQuality>('good')
   const [note, setNote] = useState('');
+  const [remainTime, setRemainTime] = useState(0);
 
   const [attackAttemptCount, setAttackAttemptCount] = useState(0);
   const [parryAttemptCount, setParryAttemptCount] = useState(0);
@@ -55,7 +56,7 @@ export default function Page() {
   const addMarking = () => {
     if (!videoRef) return;
     const time = Math.floor(videoRef.currentTime);
-    setMarkings((prev) => [...prev, {time, result: resultType, myType, opponentType, note, quality}]);
+    setMarkings((prev) => [...prev, {time, result: resultType, myType, opponentType, note, quality, remainTime}]);
     console.log(markings)
   };
 
@@ -111,6 +112,8 @@ export default function Page() {
           setOpponentType={setOpponentType}
           quality={quality}
           setQuality={setQuality}
+          remainTime={remainTime}
+          setRemainTime={setRemainTime}
           note={note}
           setNote={setNote}
           onAdd={addMarking}

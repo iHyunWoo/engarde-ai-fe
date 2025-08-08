@@ -17,6 +17,7 @@ export interface Marking {
   result: MarkingResult;
   myType?: AttemptType;
   opponentType?: AttemptType;
-  quality: MarkingQuality
+  quality: MarkingQuality;
+  remainTime: number;
   note: string;
 }
