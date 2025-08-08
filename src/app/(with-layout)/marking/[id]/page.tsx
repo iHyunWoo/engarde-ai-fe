@@ -77,7 +77,11 @@ export default function Page() {
       {/* 영상 */}
       {match.videoUrl && (
         <div className="w-full">
-          <VideoPlayer videoUrl={match.videoUrl} getRef={setVideoRef}/>
+          <VideoPlayer
+            videoUrl={match.videoUrl}
+            markings={markings}
+            getRef={setVideoRef}
+          />
         </div>
       )}
 
