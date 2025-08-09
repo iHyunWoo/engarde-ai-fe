@@ -1,5 +1,5 @@
 import {Button} from '@/widgets/common/Button';
-import {AttackType, AttemptType, DefenseType, MarkingQuality, MarkingResult} from '@/entities/marking';
+import {AttackType, MarkingType, DefenseType, MarkingQuality, MarkingResult} from '@/entities/marking';
 import {useEffect, useRef, useState} from "react";
 import {formatTime} from "@/shared/lib/format-time";
 
@@ -38,10 +38,10 @@ export function MarkingForm({
                             }: {
   resultType: MarkingResult;
   setResultType: (v: MarkingResult) => void;
-  myType: AttemptType;
-  setMyType: (v: AttemptType) => void;
-  opponentType: AttemptType;
-  setOpponentType: (v: AttemptType) => void;
+  myType: MarkingType;
+  setMyType: (v: MarkingType) => void;
+  opponentType: MarkingType;
+  setOpponentType: (v: MarkingType) => void;
   quality: MarkingQuality
   setQuality: (v: MarkingQuality) => void;
   remainTime: number;
@@ -115,13 +115,13 @@ export function MarkingForm({
         <div className="w-1/2 space-y-2">
           <label className="block text-sm font-medium">Me</label>
           {renderGroupedOptions(myType, (val) => {
-            setMyType(val as AttemptType);
+            setMyType(val as MarkingType);
           })}
         </div>
         <div className="w-1/2 space-y-2">
           <label className="block text-sm font-medium">Opponent</label>
           {renderGroupedOptions(opponentType, (val) => {
-            setOpponentType(val as AttemptType);
+            setOpponentType(val as MarkingType);
           })}
         </div>
       </div>
