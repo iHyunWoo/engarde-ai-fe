@@ -39,11 +39,11 @@ export async function MatchInfoSection({id}: MatchInfoSectionProps) {
         <div className="absolute top-6 right-6 flex gap-2">
           <Button variant="outline" size="sm">
             <Edit2 className="w-4 h-4 mr-2"/>
-            편집
+            Edit
           </Button>
           <Link href={`/marking/${id}`}>
             <Button size="sm">
-              마킹하러 가기
+              Go to Marking
             </Button>
           </Link>
 
