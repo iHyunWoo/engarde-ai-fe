@@ -86,7 +86,14 @@ export default function Page() {
     const newMarking = res?.data;
     if (!newMarking) return;
 
-    setMarkings((prev) => [...prev, newMarking]);
+    setMarkings((prev) =>
+      [...prev, newMarking].sort((a, b) => {
+        if (a.timestamp === b.timestamp) {
+          return a.id - b.id; // id 오름차순
+        }
+        return a.timestamp - b.timestamp; // timestamp 오름차순
+      })
+    );
   };
 
   const removeMarking = async (index: number) => {
