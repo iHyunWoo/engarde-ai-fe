@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {formatDate} from "@/shared/lib/format-date";
 import Link from "next/link";
 import {MatchSummary} from "@/entities/match-summary";
@@ -13,15 +12,15 @@ export function MatchListItem({match}: MatchListItemProps) {
       href={`/matches/${match.id}`}
       className="flex items-center gap-4 p-4 border rounded-md shadow-sm hover:shadow-md transition"
     >
-      {match.thumbnailUrl && (
-        <Image
-          src={match.thumbnailUrl}
-          alt={match.tournamentName}
-          className="w-28 h-16 object-cover rounded"
-          width={200}
-          height={100}
-        />
-      )}
+      {/*{match.thumbnailUrl && (*/}
+      {/*  <Image*/}
+      {/*    src={match.thumbnailUrl}*/}
+      {/*    alt={match.tournamentName}*/}
+      {/*    className="w-28 h-16 object-cover rounded"*/}
+      {/*    width={200}*/}
+      {/*    height={100}*/}
+      {/*  />*/}
+      {/*)}*/}
 
       <div className="flex-1 min-w-0">
         <h3 className="font-bold text-xl">{match.tournamentName}</h3>

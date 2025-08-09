@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react';
-import {mergeVideos} from "@/app/features/match/lib/merge-videos";
-import {uploadFileToFBStorage} from "@/app/features/match/lib/upload-video";
+import {mergeVideos} from "@/shared/lib/merge-videos";
+import {uploadFileToFBStorage, uploadToGCS} from "@/shared/lib/upload-file";
 import {toast} from "sonner";
 import {createMatch} from "@/app/features/match/api/create-match";
-import {extractThumbnail} from "@/app/features/match/lib/extract-thumbnail";
+import {extractThumbnail} from "@/shared/lib/extract-thumbnail";
 
 interface MatchData {
   tournamentName: string;
@@ -56,16 +56,16 @@ export function useMatchUpload() {
     setUploading(true);
     try {
       const mergedVideo = await mergeVideos(files);
-      const videoLink = await uploadFileToFBStorage(mergedVideo, 'videos');
+      const objectName = await uploadToGCS(mergedVideo);
 
-      const thumbnail = await extractThumbnail(files[0])
-      const thumbnailLink = await uploadFileToFBStorage(thumbnail, 'images');
+      // const thumbnail = await extractThumbnail(files[0])
+      // const thumbnailLink = await uploadFileToFBStorage(thumbnail, 'images');
 
-      if (!videoLink || !thumbnailLink ) {
+      if (!objectName) {
         throw new Error('Failed to upload video');
       }
 
-      const response = await createMatch({ videoLink, thumbnailLink, ...matchData });
+      const response = await createMatch({ objectName, ...matchData });
 
       if (!response) {
         throw new Error('Failed to upload match');

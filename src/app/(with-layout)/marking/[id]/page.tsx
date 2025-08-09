@@ -11,6 +11,7 @@ import {AttackType, DefenseType, Marking, MarkingQuality, MarkingResult} from "@
 import {MarkingForm} from "@/widgets/marking/MarkingForm";
 import {CounterList} from "@/widgets/Match/MatchCouterSection";
 import {MarkingList} from "@/widgets/marking/MarkingList";
+import {getVideoReadUrl} from "@/shared/api/get-video-read-url";
 
 export default function Page() {
   const params = useParams();
@@ -19,6 +20,7 @@ export default function Page() {
   const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
 
   const [match, setMatch] = useState<Match | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [showMarkings, setShowMarkings] = useState(true);
 
   const [markings, setMarkings] = useState<Marking[]>([]);
@@ -45,6 +47,11 @@ export default function Page() {
         setAttackAttemptCount(match.attackAttemptCount ?? 0);
         setParryAttemptCount(match.parryAttemptCount ?? 0);
         setCounterAttackAttemptCount(match.counterAttackAttemptCount ?? 0);
+
+        const videoUrlResponse = await getVideoReadUrl(response.data.objectName)
+        if (videoUrlResponse?.data) {
+          setVideoUrl(videoUrlResponse?.data?.url)
+        }
       }
     };
 
@@ -75,10 +82,10 @@ export default function Page() {
   return (
     <main className="flex flex-col px-8 py-6 gap-6">
       {/* 영상 */}
-      {match.videoUrl && (
+      {videoUrl && (
         <div className="w-full">
           <VideoPlayer
-            videoUrl={match.videoUrl}
+            videoUrl={videoUrl}
             markings={markings}
             getRef={setVideoRef}
           />

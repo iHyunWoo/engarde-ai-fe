@@ -1,6 +1,6 @@
 export interface Match {
   id: number;
-  videoUrl: string;
+  objectName: string;
   tournamentName: string;
   tournamentDate: string;
   opponentName: string;

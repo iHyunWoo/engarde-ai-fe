@@ -5,6 +5,5 @@ export interface MatchSummary {
   opponentTeam: string;
   myScore: number;
   opponentScore: number;
-  thumbnailUrl: string;
   tournamentDate: string;
 }
