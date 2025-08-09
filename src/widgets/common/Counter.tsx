@@ -1,17 +1,17 @@
 import {Button} from "@/widgets/common/Button";
 
-export function Counter({ label, count, setCount }: {
+export function Counter({ label, count, changeCount }: {
   label: string;
   count: number;
-  setCount: (value: number) => void;
+  changeCount: (delta: number) => void;
 }) {
   return (
     <div className="space-y-1">
       <p className="text-gray-500 text-sm">{label}</p>
       <div className="flex items-center gap-2 justify-center">
-        <Button variant="outline" size="icon" onClick={() => setCount(Math.max(0, count - 1))}>−</Button>
+        <Button variant="outline" size="icon" onClick={() => changeCount(-1)}>−</Button>
         <p className="text-xl font-semibold w-6">{count}</p>
-        <Button variant="outline" size="icon" onClick={() => setCount(count + 1)}>＋</Button>
+        <Button variant="outline" size="icon" onClick={() => changeCount(1)}>＋</Button>
       </div>
     </div>
   );

@@ -24,10 +24,10 @@ export function MarkingList({
           {/* 시간 표시 */}
           <Button
             variant="ghost"
-            onClick={() => onSeek(mark.time)}
+            onClick={() => onSeek(mark.timestamp)}
             className="min-w-[70px] font-mono text-blue-600 hover:text-blue-800 hover:underline text-left"
           >
-            {formatTime(mark.time)}
+            {formatTime(mark.timestamp)}
           </Button>
 
           {/* 내용 표시 */}

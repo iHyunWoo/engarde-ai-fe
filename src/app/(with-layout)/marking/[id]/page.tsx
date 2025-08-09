@@ -7,11 +7,17 @@ import {getMatch} from "@/app/features/match/api/get-match";
 import {useParams} from "next/navigation";
 import VideoPlayer from "@/widgets/common/VideoPlayer";
 import {Match} from "@/entities/match";
-import {AttackType, DefenseType, Marking, MarkingQuality, MarkingResult} from "@/entities/marking";
+import {AttackType, DefenseType, Marking, MarkingQuality, MarkingResult, MarkingType} from "@/entities/marking";
 import {MarkingForm} from "@/widgets/marking/MarkingForm";
 import {CounterList} from "@/widgets/Match/MatchCouterSection";
 import {MarkingList} from "@/widgets/marking/MarkingList";
 import {getVideoReadUrl} from "@/shared/api/get-video-read-url";
+import {CreateMarkingRequest} from "@/app/features/marking/dto/create-marking-request";
+import {createMarking} from "@/app/features/marking/api/create-marking";
+import {getMarkingList} from "@/app/features/marking/api/get-marking-list";
+import {deleteMarking} from "@/app/features/marking/api/delete-marking";
+import {toast} from "sonner";
+import {CounterType, updateCounter} from "@/app/features/match/api/update-counter";
 
 export default function Page() {
   const params = useParams();
@@ -38,42 +44,131 @@ export default function Page() {
 
   useEffect(() => {
     if (!id) return;
-
-    const fetchData = async () => {
-      const response = await getMatch(Number(id));
-      if (response?.data) {
-        const match = response.data
-        setMatch(response?.data ?? null);
-        setAttackAttemptCount(match.attackAttemptCount ?? 0);
-        setParryAttemptCount(match.parryAttemptCount ?? 0);
-        setCounterAttackAttemptCount(match.counterAttackAttemptCount ?? 0);
-
-        const videoUrlResponse = await getVideoReadUrl(response.data.objectName)
-        if (videoUrlResponse?.data) {
-          setVideoUrl(videoUrlResponse?.data?.url)
-        }
-      }
-    };
-
-    fetchData()
-
+    fetMatchAndMarking()
   }, [id]);
 
+  const fetMatchAndMarking = async () => {
+    // 1) 매치 상세
+    const matchRes = await getMatch(Number(id));
+    const match = matchRes?.data;
+    if (!match) return;
 
-  const addMarking = () => {
+    setMatch(match);
+    setAttackAttemptCount(match.attackAttemptCount ?? 0);
+    setParryAttemptCount(match.parryAttemptCount ?? 0);
+    setCounterAttackAttemptCount(match.counterAttackAttemptCount ?? 0);
+
+    // 2) 비디오 read URL
+    const videoUrlRes = await getVideoReadUrl(match.objectName);
+    const url = videoUrlRes?.data?.url;
+    if (url) setVideoUrl(url);
+
+    // 3) 마킹 리스트
+    const ml = await getMarkingList(Number(id));
+    const list = ml?.data ?? [];
+    setMarkings(list);
+  }
+
+
+  const addMarking = async () => {
     if (!videoRef) return;
     const time = Math.floor(videoRef.currentTime);
-    setMarkings((prev) => [...prev, {time, result: resultType, myType, opponentType, note, quality, remainTime}]);
-    console.log(markings)
+    const body: CreateMarkingRequest = {
+      matchId: Number(id),
+      timestamp: time,
+      result: resultType,
+      myType,
+      opponentType,
+      quality,
+      note,
+      remainTime,
+    }
+    const res = await createMarking(body);
+    const newMarking = res?.data;
+    if (!newMarking) return;
+
+    setMarkings((prev) =>
+      [...prev, newMarking].sort((a, b) => {
+        if (a.timestamp === b.timestamp) {
+          return a.id - b.id; // id 오름차순
+        }
+        return a.timestamp - b.timestamp; // timestamp 오름차순
+      })
+    );
   };
 
-  const removeMarking = (index: number) => {
-    setMarkings((prev) => prev.filter((_, i) => i !== index));
+  const removeMarking = async (index: number) => {
+    const target = markings[index];
+    if (!target) return;
+    const id = target.id;
+
+    const snapshot = markings;
+
+    // 낙관적 제거
+    setMarkings(prev => prev.filter(m => m.id !== id));
+
+    try {
+      const res = await deleteMarking(id);
+      if (!res?.data) throw new Error('delete failed');
+    } catch (e) {
+      // 롤백
+      setMarkings(snapshot);
+      toast.error('Failed to delete marking');
+    }
   };
 
   const seekTo = (time: number) => {
     if (videoRef) {
       videoRef.currentTime = time;
+    }
+  };
+
+  const handleCounterChange = async (type: CounterType, delta: number) => {
+    // 현재 값 가져오기
+    const current = (() => {
+      switch (type) {
+        case 'attack_attempt_count':
+          return attackAttemptCount;
+        case 'parry_attempt_count':
+          return parryAttemptCount;
+        case 'counter_attack_attempt_count':
+          return counterAttackAttemptCount;
+      }
+    })();
+
+    // 0 이하로 내려가는 경우 막기
+    if (delta < 0 && current === 0) return;
+
+    // 낙관적 업데이트
+    const updater = (v: number) => Math.max(0, v + delta);
+    switch (type) {
+      case 'attack_attempt_count':
+        setAttackAttemptCount(updater);
+        break;
+      case 'parry_attempt_count':
+        setParryAttemptCount(updater);
+        break;
+      case 'counter_attack_attempt_count':
+        setCounterAttackAttemptCount(updater);
+        break;
+    }
+
+    // API 호출
+    const res = await updateCounter(Number(id), type, delta);
+
+    // 실패 시 복구
+    if (!res || res.code !== 200) {
+      switch (type) {
+        case 'attack_attempt_count':
+          setAttackAttemptCount(current);
+          break;
+        case 'parry_attempt_count':
+          setParryAttemptCount(current);
+          break;
+        case 'counter_attack_attempt_count':
+          setCounterAttackAttemptCount(current);
+          break;
+      }
     }
   };
 
@@ -136,14 +231,8 @@ export default function Page() {
           attackCount={attackAttemptCount}
           parryCount={parryAttemptCount}
           counterAttackCount={counterAttackAttemptCount}
-          setAttack={setAttackAttemptCount}
-          setParry={setParryAttemptCount}
-          setCounter={setCounterAttackAttemptCount}
+          onChange={handleCounterChange}
         />
-
-        <Button className="px-6 py-2 text-white bg-black hover:bg-gray-800">
-           Save
-      </Button>
     </div>
 </main>
 )
