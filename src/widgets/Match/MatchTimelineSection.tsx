@@ -107,14 +107,12 @@ function TimelineItem({ mark }: { mark: Marking }) {
             <Clock className="w-3 h-3" />
             <span>{formatTime(mark.remainTime)}</span>
             <span>·</span>
-            {mark.result === 'win' || mark.result === 'attempt' && (
+            {(mark.result === 'win' || mark.result === 'attempt') && (
               <span className="font-medium">{mark.myType}</span>
             )}
             {mark.result === 'lose' && (
               <span className="font-medium">{mark.opponentType}</span>
             )}
-
-            <span>·</span>
           </div>
         </div>
       </div>
