@@ -1,6 +1,5 @@
 export interface CreateMatchRequest {
-  videoLink: string;
-  thumbnailLink: string;
+  objectName: string;
   tournamentName: string;
   tournamentDate: string;
   opponentName: string;

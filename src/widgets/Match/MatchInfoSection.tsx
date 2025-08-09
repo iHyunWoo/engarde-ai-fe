@@ -1,149 +1,83 @@
-import React from 'react';
-import { Button } from '@/widgets/common/Button';
-import { Input } from '@/widgets/common/Input';
-import { Label } from '@/widgets/common/Label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/widgets/common/Card';
-import { Upload } from 'lucide-react';
-
-interface MatchData {
-  tournamentName: string;
-  tournamentDate: string;
-  opponentName: string;
-  opponentTeam: string;
-  myScore: number;
-  opponentScore: number;
-}
+import {Card, CardContent, CardHeader} from "@/widgets/common/Card";
+import {Button} from "@/widgets/common/Button";
+import {Activity, Calendar, Edit2, Shield, Trophy, User, Users, Zap} from "lucide-react";
+import {getMatch} from "@/app/features/match/api/get-match";
+import {formatDate} from "@/shared/lib/format-date";
+import {headers} from "next/headers";
+import Link from "next/link";
 
 interface MatchInfoSectionProps {
-  matchData: MatchData;
-  uploading: boolean;
-  filesCount: number;
-  onUpdateMatchData: (field: keyof MatchData, value: unknown) => void;
-  onUpload: () => void;
+  id: number;
 }
 
-export default function MatchInfoSection({
-                                           matchData,
-                                           uploading,
-                                           filesCount,
-                                           onUpdateMatchData,
-                                           onUpload,
-                                         }: MatchInfoSectionProps) {
+export async function MatchInfoSection({id}: MatchInfoSectionProps) {
+  const header = await headers()
+  const cookie = header.get('cookie')
+  const response = await getMatch(id, cookie ?? "");
+
+  if (!response || response.code !== 200 || !response.data) {
+    return null;
+  }
+
+  const match = response.data;
+
+  const stats = [
+    { label: "날짜", value: formatDate(match.tournamentDate), icon: Calendar },
+    { label: "상대 이름", value: match.opponentName, icon: User },
+    { label: "상대 팀", value: match.opponentTeam, icon: Users },
+    { label: "점수", value: `${match.myScore} vs ${match.opponentScore}`, icon: Trophy },
+    { label: "공격 시도", value: match.attackAttemptCount, icon: Zap },
+    { label: "수비 시도", value: match.parryAttemptCount, icon: Shield },
+    { label: "카운터 시도", value: match.counterAttackAttemptCount, icon: Activity }
+  ];
+
   return (
-    <Card className="shadow-md border-0 bg-white/80 backdrop-blur-md">
+    <Card className="relative">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl text-gray-800">Match Information</CardTitle>
+        {/* Action Buttons */}
+        <div className="absolute top-6 right-6 flex gap-2">
+          <Button variant="outline" size="sm">
+            <Edit2 className="w-4 h-4 mr-2" />
+            편집
+          </Button>
+          <Link href={`/marking/${id}`}>
+            <Button size="sm">
+              마킹하러 가기
+            </Button>
+          </Link>
+
+        </div>
+
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            2025 Fencing Championship
+          </h1>
+          <p className="text-slate-600">경기 상세 정보 및 타임라인</p>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="tournamentName" className="text-sm font-medium text-gray-700">
-            Tournament Name
-          </Label>
-          <Input
-            id="tournamentName"
-            value={matchData.tournamentName}
-            onChange={(e) => onUpdateMatchData('tournamentName', e.target.value)}
-            className="border-gray-300 focus:border-gray-600 focus:ring-gray-400"
-            placeholder="Enter tournament name"
-          />
+
+      <CardContent>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                <div className="flex-shrink-0">
+                  <Icon className="w-4 h-4 text-slate-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    {stat.label}
+                  </p>
+                  <p className="text-sm font-semibold text-slate-900 truncate">
+                    {String(stat.value)}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="tournamentDate" className="text-sm font-medium text-gray-700">
-            Tournament Date
-          </Label>
-          <div>
-            <input
-              id="tournamentDate"
-              type="date"
-              value={matchData.tournamentDate}
-              onChange={(e) => onUpdateMatchData('tournamentDate', e.target.value)}
-              className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-600 bg-white"
-              style={{ WebkitAppearance: 'none' }}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="opponentName" className="text-sm font-medium text-gray-700">
-            Opponent Name
-          </Label>
-          <Input
-            id="opponentName"
-            value={matchData.opponentName}
-            onChange={(e) => onUpdateMatchData('opponentName', e.target.value)}
-            className="border-gray-300 focus:border-gray-600 focus:ring-gray-400"
-            placeholder="Enter opponent name"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="opponentTeam" className="text-sm font-medium text-gray-700">
-            Opponent Team
-          </Label>
-          <Input
-            id="opponentTeam"
-            value={matchData.opponentTeam}
-            onChange={(e) => onUpdateMatchData('opponentTeam', e.target.value)}
-            className="border-gray-300 focus:border-gray-600 focus:ring-gray-400"
-            placeholder="Enter opponent team"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-gray-700">Score</Label>
-
-          <div className="flex items-center gap-2">
-            {/* 내 점수 */}
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-xs text-gray-500">You</span>
-              <Input
-                type="number"
-                min={0}
-                value={matchData.myScore}
-                onChange={(e) =>
-                  onUpdateMatchData('myScore', Number(e.target.value))
-                }
-                className="w-20 text-center border-gray-300 focus:border-gray-600 focus:ring-gray-400"
-              />
-            </div>
-
-            <span className="text-xl font-semibold text-gray-600">:</span>
-
-            {/* 상대 점수 */}
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-xs text-gray-500">Opponent</span>
-              <Input
-                type="number"
-                min={0}
-                value={matchData.opponentScore}
-                onChange={(e) =>
-                  onUpdateMatchData('opponentScore', Number(e.target.value))
-                }
-                className="w-20 text-center border-gray-300 focus:border-gray-600 focus:ring-gray-400"
-              />
-            </div>
-          </div>
-        </div>
-
-        <Button
-          onClick={onUpload}
-          disabled={uploading || filesCount === 0}
-          className="w-full h-12 bg-gray-800 hover:bg-gray-900 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200"
-        >
-          {uploading ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-              업로드 중...
-            </>
-          ) : (
-            <>
-              <Upload className="w-4 h-4 mr-2" />
-              업로드
-            </>
-          )}
-        </Button>
       </CardContent>
     </Card>
-  );
+  )
 }

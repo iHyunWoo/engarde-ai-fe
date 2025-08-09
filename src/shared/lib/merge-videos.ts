@@ -40,9 +40,9 @@ export async function mergeVideos(files: File[]): Promise<File> {
   }
 
   const arrayBuffer = output.slice().buffer;
-  const blob = new Blob([arrayBuffer], { type: 'match/mp4' });
+  const blob = new Blob([arrayBuffer], { type: 'video/mp4' });
 
   // 5. Blob → File 변환 (File 생성자 사용)
-  const file = new File([blob], 'merged-match.mp4', { type: 'match/mp4' });
+  const file = new File([blob], 'merged-match.mp4', { type: 'video/mp4' });
   return file;
 }
