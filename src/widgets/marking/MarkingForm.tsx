@@ -1,25 +1,13 @@
 import {Button} from '@/widgets/common/Button';
 import {AttackType, MarkingType, DefenseType, MarkingQuality, MarkingResult} from '@/entities/marking';
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import {formatTime} from "@/shared/lib/format-time";
+import {useNoteSuggestions} from "@/app/features/marking/hooks/use-note-suggestion";
 
 const markingResults: MarkingResult[] = ['win', 'lose', 'attempt'];
 const attackTypes: AttackType[] = ['lunge', 'advanced_lunge', 'fleche', 'push'];
 const defenseTypes: DefenseType[] = ['parry', 'counter_attack'];
 const qualities: MarkingQuality[] = ['good', 'bad', 'lucky']
-
-
-const mockNotes = [
-  'Nice push',
-  'Fast fleche',
-  'Parry failed',
-  'Counter was late',
-  'Good distance',
-  'Lost balance',
-  'Great rhythm',
-  'Too passive',
-  'Attack without prep',
-];
 
 export function MarkingForm({
                               resultType,
@@ -50,26 +38,15 @@ export function MarkingForm({
   setNote: (v: string) => void;
   onAdd: () => void;
 }) {
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { suggestions } = useNoteSuggestions(note, focused);
 
   const handleSelectSuggestion = (text: string) => {
     setNote(text);
     setFocused(false);
     inputRef.current?.blur();
   };
-
-  useEffect(() => {
-    if (note.length > 1) {
-      // TODO: 실제 API 연동
-      const filtered = mockNotes.filter(n => n.toLowerCase().includes(note.toLowerCase()));
-      setSuggestions(filtered);
-    } else {
-      setSuggestions([]);
-    }
-  }, [note]);
 
   const formatString = (value: string) => {
     return value
