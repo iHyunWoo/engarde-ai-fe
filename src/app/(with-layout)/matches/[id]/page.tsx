@@ -11,7 +11,7 @@ export default async function Page({params}: PageProps) {
     <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       <MatchInfoSection id={Number(id)} />
 
-      <MatchTimelineSection />
+      <MatchTimelineSection id={Number(id)} />
     </main>
   );
 }
