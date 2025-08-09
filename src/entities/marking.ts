@@ -2,10 +2,10 @@
 export type MarkingResult = 'win' | 'lose' | 'attempt';
 
 // 공격 유형 타입 (팡트, 마르세 팡트, 플래시, 밀기)
-export type AttackType = 'none' | 'lunge' | 'advanced lunge' | 'fleche' | 'push';
+export type AttackType = 'none' | 'lunge' | 'advanced_lunge' | 'fleche' | 'push';
 
 // 수비 유형 타입 (빠라드, 꽁트라 어택)
-export type DefenseType = 'none' | 'parry' | 'counter attack';
+export type DefenseType = 'none' | 'parry' | 'counter_attack';
 
 export type MarkingType = AttackType | DefenseType;
 
