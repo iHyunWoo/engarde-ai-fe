@@ -25,7 +25,7 @@ export default function Page() {
         onSubmit={onSubmit}
         className="w-full max-w-md border rounded-xl shadow p-8 space-y-6 bg-white"
       >
-        <h1 className="text-2xl font-bold text-center">EnGrade</h1>
+        <h1 className="text-2xl font-bold text-center">EnGarde</h1>
 
         <div className="space-y-4">
           <div className="space-y-2">
