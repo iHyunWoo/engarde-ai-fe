@@ -1,25 +1,34 @@
+"use client"
+
 import {Card, CardContent, CardHeader} from "@/widgets/common/Card";
 import {Button} from "@/widgets/common/Button";
-import {Activity, Calendar, Edit2, Shield, Trophy, User, Users, Zap} from "lucide-react";
+import {Calendar, Edit2, Trophy} from "lucide-react";
 import {getMatch} from "@/app/features/match/api/get-match";
 import {formatDate} from "@/shared/lib/format-date";
-import {headers} from "next/headers";
 import Link from "next/link";
+import {useEffect, useState} from "react";
+import { Match } from "@/entities/match";
 
 interface MatchInfoSectionProps {
   id: number;
 }
 
-export async function MatchInfoSection({id}: MatchInfoSectionProps) {
-  const header = await headers()
-  const cookie = header.get('cookie')
-  const response = await getMatch(id, cookie ?? "");
+export function MatchInfoSection({id}: MatchInfoSectionProps) {
+  const [match, setMatch] = useState<Match | null>(null);
 
-  if (!response || response.code !== 200 || !response.data) {
-    return null;
-  }
+  useEffect(() => {
+    const fetchMatch = async () => {
+      const res = await getMatch(id);
 
-  const match = response.data;
+      if (res && res.code === 200 && res.data) {
+        setMatch(res.data);
+      }
+    }
+
+    fetchMatch()
+  }, [id]);
+
+  if (!match) return null;
 
   const topStats = [
     {label: "Date", value: formatDate(match.tournamentDate), icon: Calendar},
@@ -102,14 +111,14 @@ export async function MatchInfoSection({id}: MatchInfoSectionProps) {
                       className="inline-flex items-center justify-center rounded-md bg-white px-2 py-1 text-xs font-medium text-slate-600 border border-slate-200">
                         {s.label}
                     </span>
+                    </div>
                   </div>
-                </div>
-                <div className="mt-2 text-center">
+                  <div className="mt-2 text-center">
                   <span className="text-2xl font-bold text-slate-900">
                     {s.value}
                   </span>
+                  </div>
                 </div>
-              </div>
               );
             })}
           </div>
