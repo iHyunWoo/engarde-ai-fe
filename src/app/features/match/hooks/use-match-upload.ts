@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import {mergeVideos} from "@/shared/lib/merge-videos";
-import {uploadFileToFBStorage, uploadToGCS} from "@/shared/lib/upload-file";
+import { uploadToGCS} from "@/shared/lib/upload-file";
 import {toast} from "sonner";
 import {createMatch} from "@/app/features/match/api/create-match";
 import {extractThumbnail} from "@/shared/lib/extract-thumbnail";
@@ -57,9 +57,6 @@ export function useMatchUpload() {
     try {
       const mergedVideo = await mergeVideos(files);
       const objectName = await uploadToGCS(mergedVideo);
-
-      // const thumbnail = await extractThumbnail(files[0])
-      // const thumbnailLink = await uploadFileToFBStorage(thumbnail, 'images');
 
       if (!objectName) {
         throw new Error('Failed to upload video');
