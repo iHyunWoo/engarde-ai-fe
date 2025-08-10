@@ -113,17 +113,16 @@ export default function VideoPlayer({ videoUrl, markings = [], getRef }: VideoPl
           5s <SkipForward className="w-4 h-4 ml-1" />
         </Button>
 
-        <select
-          className="ml-4 border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        <input
+          type="range"
+          min={0.1}
+          max={3}
+          step={0.1}
           value={playbackRate}
           onChange={(e) => changePlaybackRate(Number(e.target.value))}
-        >
-          {[0.5, 1, 1.5, 2, 2.5, 3].map((rate) => (
-            <option key={rate} value={rate}>
-              {rate}x
-            </option>
-          ))}
-        </select>
+          className="ml-4 w-40 accent-blue-500"
+        />
+        <span className="ml-2 text-sm">{playbackRate.toFixed(1)}x</span>
       </div>
 
       {/* 시크바 + 핀 */}
@@ -148,7 +147,7 @@ export default function VideoPlayer({ videoUrl, markings = [], getRef }: VideoPl
           <div className="pointer-events-none absolute inset-0">
             {duration > 0 &&
               markings.map((m, idx) => {
-                const left = `${posPct(m.time)}%`;
+                const left = `${posPct(m.timestamp)}%`;
                 const isWin = m.result === "win";
                 const isLose = m.result === "lose";
                 const isAttempt = m.result === "attempt";
@@ -181,8 +180,8 @@ export default function VideoPlayer({ videoUrl, markings = [], getRef }: VideoPl
                     <button
                       type="button"
                       className={`pointer-events-auto w-2.5 h-2.5 rounded-full border ${colorClasses} shadow`}
-                      onClick={() => seekTo(m.time)}
-                      title={`${m.result.toUpperCase()} • ${formatTime(m.time)}`}
+                      onClick={() => seekTo(m.timestamp)}
+                      title={`${m.result.toUpperCase()} • ${formatTime(m.timestamp)}`}
                     />
                   </div>
                 );

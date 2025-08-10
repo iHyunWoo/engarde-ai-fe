@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EnGrade",
-  description: "EnGrade AI",
+  title: "EnGarde",
+  description: "EnGarde AI",
 };
 
 export default function RootLayout({
