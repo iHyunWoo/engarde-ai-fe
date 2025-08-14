@@ -35,6 +35,7 @@ export type LoseDto = {
 };
 
 export type GetStatisticResponse = {
+  matchCount: number;
   attempt?: AttemptDto;
   lose?: LoseDto;
 };
