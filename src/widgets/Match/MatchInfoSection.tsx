@@ -1,33 +1,15 @@
-"use client"
-
 import {Card, CardContent, CardHeader} from "@/widgets/common/Card";
 import {Button} from "@/widgets/common/Button";
 import {Calendar, Edit2, Trophy} from "lucide-react";
-import {getMatch} from "@/app/features/match/api/get-match";
 import {formatDate} from "@/shared/lib/format-date";
 import Link from "next/link";
-import {useEffect, useState} from "react";
 import { Match } from "@/entities/match";
 
 interface MatchInfoSectionProps {
-  id: number;
+  match: Match;
 }
 
-export function MatchInfoSection({id}: MatchInfoSectionProps) {
-  const [match, setMatch] = useState<Match | null>(null);
-
-  useEffect(() => {
-    const fetchMatch = async () => {
-      const res = await getMatch(id);
-
-      if (res && res.code === 200 && res.data) {
-        setMatch(res.data);
-      }
-    }
-
-    fetchMatch()
-  }, [id]);
-
+export function MatchInfoSection({match}: MatchInfoSectionProps) {
   if (!match) return null;
 
   const topStats = [
@@ -50,7 +32,7 @@ export function MatchInfoSection({id}: MatchInfoSectionProps) {
             <Edit2 className="w-4 h-4 mr-2"/>
             Edit
           </Button>
-          <Link href={`/marking/${id}`}>
+          <Link href={`/marking/${match.id}`}>
             <Button size="sm">
               Go to Marking
             </Button>
