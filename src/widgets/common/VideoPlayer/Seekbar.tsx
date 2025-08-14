@@ -10,8 +10,6 @@ interface SeekbarProps {
 }
 
 export default function Seekbar({ markings = [], videoRef }: SeekbarProps) {
-  if (!videoRef) return null;
-
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const rafRef = useRef<number | null>(null);
@@ -65,6 +63,8 @@ export default function Seekbar({ markings = [], videoRef }: SeekbarProps) {
     if (!duration || duration <= 0) return 0;
     return Math.max(0, Math.min(100, (t / duration) * 100));
   };
+
+  if (!videoRef) return null;
 
   return (
     <div className="space-y-4">

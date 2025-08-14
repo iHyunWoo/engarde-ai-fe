@@ -31,17 +31,17 @@ export function useVideoPlayer(
   // 전체화면 listener
   useEffect(() => {
     const onFS = () => {
-      const d: any = document
-      const fsEl = d.fullscreenElement || d.webkitFullscreenElement
-      setIsFS(!!fsEl)
-    }
-    document.addEventListener('fullscreenchange', onFS)
-    document.addEventListener('webkitfullscreenchange', onFS as any)
+      const fsEl = document.fullscreenElement;
+      setIsFS(!!fsEl);
+    };
+
+    document.addEventListener('fullscreenchange', onFS);
+    onFS();
+
     return () => {
-      document.removeEventListener('fullscreenchange', onFS)
-      document.removeEventListener('webkitfullscreenchange', onFS as any)
-    }
-  }, [])
+      document.removeEventListener('fullscreenchange', onFS);
+    };
+  }, []);
 
   // actions
   const handlePlayPause = async () => {
@@ -96,13 +96,11 @@ export function useVideoPlayer(
   const toggleFS = () => {
     const el = containerRef.current;
     if (!el) return;
-    const d: any = document;
-    if (!d.fullscreenElement && !d.webkitFullscreenElement) {
-      if (el.requestFullscreen) el.requestFullscreen();
-      else if ((el as any).webkitRequestFullscreen) (el as any).webkitRequestFullscreen();
+
+    if (!document.fullscreenElement) {
+      el.requestFullscreen();
     } else {
-      if (d.exitFullscreen) d.exitFullscreen();
-      else if (d.webkitExitFullscreen) d.webkitExitFullscreen();
+      document.exitFullscreen();
     }
   };
 
