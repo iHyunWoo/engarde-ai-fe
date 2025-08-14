@@ -2,22 +2,24 @@ import { useEffect, useRef, useState } from 'react';
 import {getMatchList} from "@/app/features/match/api/get-match-list";
 import {MatchSummary} from "@/entities/match-summary";
 
-export function useInfiniteMatchList() {
+export function useInfiniteMatchList(from?: string, to?: string) {
   const [matches, setMatches] = useState<MatchSummary[]>([]);
   const [cursor, setCursor] = useState<number | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const loadMore = async () => {
     setLoading(true);
 
-    const res = await getMatchList(cursor);
+    const res = await getMatchList(cursor, from, to);
     if (!res || res.code !== 200 || !res.data) {
       setLoading(false);
       return;
     }
 
     const { items, nextCursor } = res.data;
+    if (!nextCursor) setHasMore(false);
 
     setMatches((prev) => {
       const existingIds = new Set(prev.map((m) => m.id));
@@ -30,10 +32,10 @@ export function useInfiniteMatchList() {
   };
 
   // 최초 1회 불러오기
-  useEffect(() => {
-    loadMore();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   loadMore();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   // IntersectionObserver
   useEffect(() => {
@@ -53,5 +55,7 @@ export function useInfiniteMatchList() {
     matches,
     loading,
     loaderRef,
+    fetchData: loadMore,
+    hasMore
   };
 }

@@ -2,9 +2,14 @@
 
 import {MatchListItem} from "@/widgets/Match/MatchListItem";
 import {useInfiniteMatchList} from "@/app/features/match/hooks/use-infinte-match-list";
+import {useEffect} from "react";
 
 export default function MatchListPage() {
-  const { matches, loading, loaderRef } = useInfiniteMatchList();
+  const { matches, loading, loaderRef, fetchData } = useInfiniteMatchList();
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-8 space-y-6">

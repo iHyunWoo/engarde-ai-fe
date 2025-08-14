@@ -48,7 +48,7 @@ export function AttemptChart({attempt}: AttemptChartProps) {
       name: x.name,
       raw: x.raw,
       rate: x.total ? x.win / x.total : 0,
-      labelValue: `${x.win}`,
+      labelValue: `${x.win} / ${x.total}`,
     }));
   }, [attempt]);
 
