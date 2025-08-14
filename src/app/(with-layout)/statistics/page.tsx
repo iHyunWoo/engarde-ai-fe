@@ -1,5 +1,75 @@
-export default function Page() {
+"use client"
+
+import {useEffect, useMemo, useState} from "react";
+import {useStatistics} from "@/app/features/statistic/hooks/use-statistics";
+import {AttemptChart} from "@/widgets/statistic/AttemptChart";
+import {last7DaysRange} from "@/shared/lib/format-percent";
+import {LoseChart} from "@/widgets/statistic/LoseChart";
+import {DateRangeForm} from "@/widgets/common/DataRangeForm";
+import MatchCountBadge from "@/widgets/Match/MatchCountBadge";
+import MatchesModal from "@/widgets/Match/MatchesModal";
+
+export default function StatisticsPage() {
+  const initial = useMemo(() => last7DaysRange(), []);
+  const [range, setRange] = useState(initial);
+  const [openMatchListModal, setOpenMatchListModal] = useState(false);
+
+  const { data, loading, fetchData } = useStatistics();
+
+  useEffect(() => {
+    fetchData(range.from, range.to)
+  }, []);
+
   return (
-    <div>통계 페이지</div>
-  )
+    <div className="min-h-dvh">
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <header className="mb-6">
+          <h1 className="text-2xl font-semibold tracking-tight">Statistics</h1>
+        </header>
+
+        <section className="flex flex-row items-center mb-6 gap-2">
+          <DateRangeForm
+            from={range.from}
+            to={range.to}
+            onSubmit={(r) => {
+              setRange(r);
+              fetchData(r.from, r.to);
+            }}
+            loading={loading}
+          />
+
+          {data && (
+            <>
+              <MatchCountBadge
+                count={data.matchCount}
+                onClick={() => setOpenMatchListModal(true)}
+                className={"mt-5"}
+              />
+
+              <MatchesModal
+                open={openMatchListModal}
+                onCloseAction={() => setOpenMatchListModal(false)}
+                from={range.from}
+                to={range.to}
+              />
+            </>
+          )}
+        </section>
+
+        {data && (
+          <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <AttemptChart
+                attempt={data.attempt}
+              />
+              <LoseChart
+                lose={data.lose}
+              />
+            </div>
+          </main>
+        )}
+      </div>
+    </div>
+  );
 }
+
