@@ -5,9 +5,8 @@ import {ChevronDown, ChevronUp, X} from 'lucide-react';
 import {Button} from '@/widgets/common/Button';
 import {getMatch} from "@/app/features/match/api/get-match";
 import {useParams} from "next/navigation";
-import VideoPlayer from "@/widgets/common/VideoPlayer";
 import {Match} from "@/entities/match";
-import {AttackType, DefenseType, Marking, MarkingQuality, MarkingResult, MarkingType} from "@/entities/marking";
+import {AttackType, DefenseType, Marking, MarkingQuality, MarkingResult} from "@/entities/marking";
 import {MarkingForm} from "@/widgets/marking/MarkingForm";
 import {CounterList} from "@/widgets/Match/MatchCouterSection";
 import {MarkingList} from "@/widgets/marking/MarkingList";
@@ -18,6 +17,8 @@ import {getMarkingList} from "@/app/features/marking/api/get-marking-list";
 import {deleteMarking} from "@/app/features/marking/api/delete-marking";
 import {toast} from "sonner";
 import {CounterType, updateCounter} from "@/app/features/match/api/update-counter";
+import {VideoPlayer} from "@/widgets/common/VideoPlayer";
+import Seekbar from "@/widgets/common/VideoPlayer/Seekbar";
 
 export default function Page() {
   const params = useParams();
@@ -178,12 +179,11 @@ export default function Page() {
     <main className="flex flex-col px-8 py-6 gap-6">
       {/* 영상 */}
       {videoUrl && (
-        <div className="w-full">
-          <VideoPlayer
-            videoUrl={videoUrl}
-            markings={markings}
-            getRef={setVideoRef}
-          />
+        <div className="w-full flex flex-col gap-2">
+          <VideoPlayer src={videoUrl} getRef={setVideoRef}/>
+          {videoRef && (
+            <Seekbar markings={markings} videoRef={videoRef}/>
+          )}
         </div>
       )}
 

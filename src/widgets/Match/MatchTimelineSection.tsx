@@ -2,13 +2,12 @@
 
 import {Card, CardContent, CardHeader} from "@/widgets/common/Card";
 import {Clock} from "lucide-react";
-import {ReactNode, useEffect, useState} from "react";
+import {ReactNode} from "react";
 import {Marking, MarkingResult} from "@/entities/marking";
-import {getMarkingList} from "@/app/features/marking/api/get-marking-list";
 import {formatTime} from "@/shared/lib/format-time";
 
 interface MatchTimelineSectionProps {
-  id: number;
+  markings: Marking[]
 }
 
 const PALETTE: Record<MarkingResult, {
@@ -19,19 +18,7 @@ const PALETTE: Record<MarkingResult, {
   lose:    { border: 'border-rose-500',    dot: 'bg-rose-500',    bg: 'bg-rose-50',    borderLight: 'border-rose-200',    badge: 'bg-rose-100 text-rose-700',   label: '실점' },
 };
 
-export function MatchTimelineSection({id}: MatchTimelineSectionProps) {
-
-  const [markings, setMarkings] = useState<Marking[]>([]);
-
-  useEffect(() => {
-    getMarkings()
-  }, [id])
-
-  const getMarkings = async () => {
-    const response = await getMarkingList(id);
-    const list = response?.data ?? [];
-    setMarkings(list);
-  }
+export function MatchTimelineSection({markings}: MatchTimelineSectionProps) {
   // 타임라인은 timestamp asc, 동시간대는 id asc
   const sorted = [...markings].sort((a,b) =>
     a.timestamp === b.timestamp ? a.id - b.id : a.timestamp - b.timestamp
