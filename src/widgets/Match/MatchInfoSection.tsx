@@ -28,10 +28,12 @@ export function MatchInfoSection({match}: MatchInfoSectionProps) {
       <CardHeader className="pb-4">
 
         <div className="absolute top-6 right-6 flex gap-2">
-          <Button variant="outline" size="sm">
-            <Edit2 className="w-4 h-4 mr-2"/>
-            Edit
-          </Button>
+          <Link href={`/matches/edit/${match.id}`}>
+            <Button variant="outline" size="sm">
+              <Edit2 className="w-4 h-4 mr-2"/>
+              Edit
+            </Button>
+          </Link>
           <Link href={`/marking/${match.id}`}>
             <Button size="sm">
               Go to Marking
