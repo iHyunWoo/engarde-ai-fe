@@ -1,11 +1,11 @@
 'use client';
 
-import { useMatchUpload } from '@/app/features/match/hooks/use-match-upload';
 import React from 'react';
 import VideoUploadSection from "@/widgets/Match/VideoUploadSection";
 import MatchInfoForm from "@/widgets/Match/MatchInfoForm";
+import {useMatchUpload} from "@/app/features/match/hooks/use-match-upload";
 
-export default function MatchUploadPage() {
+export default function Page() {
   const {
     files,
     matchData,
@@ -32,7 +32,6 @@ export default function MatchUploadPage() {
         <MatchInfoForm
           matchData={matchData}
           uploading={uploading}
-          filesCount={files.length}
           onUpdateMatchData={updateMatchData}
           onUpload={handleUpload}
         />

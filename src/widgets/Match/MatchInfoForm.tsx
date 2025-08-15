@@ -4,20 +4,11 @@ import {Input} from '@/widgets/common/Input';
 import {Label} from '@/widgets/common/Label';
 import {Card, CardContent, CardHeader, CardTitle} from '@/widgets/common/Card';
 import {Upload} from 'lucide-react';
-
-interface MatchData {
-  tournamentName: string;
-  tournamentDate: string;
-  opponentName: string;
-  opponentTeam: string;
-  myScore: number;
-  opponentScore: number;
-}
+import {MatchData} from "@/app/features/match/hooks/use-match-form";
 
 interface MatchInfoSectionProps {
   matchData: MatchData;
   uploading: boolean;
-  filesCount: number;
   onUpdateMatchData: (field: keyof MatchData, value: unknown) => void;
   onUpload: () => void;
 }
@@ -25,7 +16,6 @@ interface MatchInfoSectionProps {
 export default function MatchInfoForm({
                                         matchData,
                                         uploading,
-                                        filesCount,
                                         onUpdateMatchData,
                                         onUpload,
                                       }: MatchInfoSectionProps) {
@@ -56,7 +46,9 @@ export default function MatchInfoForm({
             <input
               id="tournamentDate"
               type="date"
-              value={matchData.tournamentDate}
+              value={matchData.tournamentDate
+                ? new Date(matchData.tournamentDate).toISOString().split('T')[0]
+                : ''}
               onChange={(e) => onUpdateMatchData('tournamentDate', e.target.value)}
               className="w-full h-10 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-600 bg-white"
               style={{WebkitAppearance: 'none'}}
@@ -128,7 +120,7 @@ export default function MatchInfoForm({
 
         <Button
           onClick={onUpload}
-          disabled={uploading || filesCount === 0}
+          disabled={uploading}
           className="w-full h-12 bg-gray-800 hover:bg-gray-900 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200"
         >
           {uploading ? (
