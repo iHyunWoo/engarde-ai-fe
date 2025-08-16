@@ -28,7 +28,17 @@ export function useMatchUpload() {
         throw new Error('Failed to upload video');
       }
 
-      const response = await createMatch({ objectName, ...matchData });
+      const response = await createMatch(
+        {
+          objectName,
+          opponentName: matchData.opponentName,
+          opponentTeam: matchData.opponentTeam,
+          opponentScore: matchData.opponentScore,
+          myScore: matchData.myScore,
+          tournamentDate: matchData.tournamentDate,
+          tournamentName: matchData.tournamentName,
+        }
+      );
 
       if (!response) {
         throw new Error('Failed to upload match');

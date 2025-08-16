@@ -1,16 +1,13 @@
-import {fetcher} from "@/shared/lib/fetcher";
-import {PostSignedUrlRequest, PostSignedUrlResponse} from "@/shared/dto/signed-url";
+import {postVideoWriteUrl} from "@/shared/api/post-video-write-url";
+import {PostSignedUrlRequestDto} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 export async function uploadToGCS(file: File): Promise<string | null> {
   // signed url 발급
-  const body: PostSignedUrlRequest = {
+  const body: PostSignedUrlRequestDto = {
     fileName: file.name,
     contentType: file.type
   }
-  const response = await fetcher<PostSignedUrlResponse>("/files/write-signed-url", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  const response = await postVideoWriteUrl(body)
   if (!response?.data) throw new Error("failed to get signed url");
   const { uploadUrl, objectName } = response.data;
 
