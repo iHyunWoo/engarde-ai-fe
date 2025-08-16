@@ -1,20 +1,7 @@
-import {fetcher} from "@/shared/lib/fetcher";
-import {BaseResponse} from "@/shared/dto/base-response";
-import {LoginResponse} from "@/app/features/auth/dto/login-response";
+import * as apis from '@ihyunwoo/engarde-ai-api-sdk'
+import {conn} from "@/shared/lib/api-client";
+import {LoginRequest} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
-interface LoginRequest {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-}
-
-export const login = async ({email, password, rememberMe}: LoginRequest) => {
-  return await fetcher<LoginResponse>('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({
-      email,
-      password,
-      rememberMe
-    })
-  })
+export const login = async (req: LoginRequest) => {
+  return await apis.functional.auth.login(conn, req)
 }
