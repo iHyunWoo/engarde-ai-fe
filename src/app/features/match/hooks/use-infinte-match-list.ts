@@ -27,7 +27,7 @@ export function useInfiniteMatchList(from?: string, to?: string) {
       return [...prev, ...newItems];
     });
 
-    setCursor(nextCursor);
+    setCursor(nextCursor ?? undefined);
     setLoading(false);
   };
 
