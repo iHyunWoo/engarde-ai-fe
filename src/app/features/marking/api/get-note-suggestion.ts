@@ -1,7 +1,7 @@
-import {fetcher} from "@/shared/lib/fetcher";
+import * as apis from '@ihyunwoo/engarde-ai-api-sdk'
+import {conn} from "@/shared/lib/api-client";
+
 
 export const getNoteSuggestion = async (query: string) => {
-  return await fetcher<string[]>('/notes/suggest?query=' + query, {
-    method: 'GET',
-  })
+  return await apis.functional.notes.suggest(conn, {query})
 }
