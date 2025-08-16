@@ -1,9 +1,9 @@
 "use client"
 
-import {LoseDto, TopNote} from "@/app/features/statistic/dto/get-statistics-request";
 import {useMemo} from "react";
 import {Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {NotesTooltip} from "@/widgets/statistic/NotesTooltip";
+import {LoseDto} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 interface LoseChartProps {
   lose?: LoseDto;
