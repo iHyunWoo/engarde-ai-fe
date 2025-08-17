@@ -1,17 +1,15 @@
-import {GetMatchListResponse} from "@/app/features/match/dto/get-match-list-response";
-import {fetcher} from "@/shared/lib/fetcher";
+import * as apis from '@ihyunwoo/engarde-ai-api-sdk'
+import {conn} from "@/shared/lib/api-client";
 
 export const getMatchList = async (
   cursor?: number,
   from?: string,
   to?: string
 ) => {
-  const params = new URLSearchParams({limit: '10'});
-  if (cursor !== undefined) params.append('cursor', cursor.toString());
-  if (from !== undefined) params.append('from', from);
-  if (to !== undefined) params.append('to', to);
-
-  return await fetcher<GetMatchListResponse>(`/matches?${params.toString()}`, {
-    method: 'GET'
-  });
+  return await apis.functional.matches.findManyWithPagination(conn, {
+    cursor,
+    from,
+    to,
+    limit: 10
+  })
 }

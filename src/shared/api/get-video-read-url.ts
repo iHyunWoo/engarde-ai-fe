@@ -1,9 +1,6 @@
-import {fetcher} from "@/shared/lib/fetcher";
-import {GetSignedUrlResponse} from "@/shared/dto/signed-url";
+import * as apis from '@ihyunwoo/engarde-ai-api-sdk'
+import {conn} from "@/shared/lib/api-client";
 
 export const getVideoReadUrl = async (objectName: string) => {
-  return await fetcher<GetSignedUrlResponse>(`/files/read-signed-url?object=${objectName}`, {
-      method: 'GET',
-    }
-  )
+  return await apis.functional.files.read.getReadSignedUrl(conn, {object: objectName})
 }

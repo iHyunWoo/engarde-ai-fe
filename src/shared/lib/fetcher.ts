@@ -3,7 +3,7 @@ import {BaseResponse} from "@/shared/dto/base-response";
 import {useUserStore} from "@/shared/hooks/use-user-store";
 
 interface FetcherOptions {
-  req?: Request; // SSR only
+  req?: Request;
   headers?: HeadersInit;
   retry?: boolean;
 };
@@ -15,23 +15,17 @@ export async function fetcher<T>(
 ): Promise<BaseResponse<T> | null> {
   const { req, headers = {}, retry = false } = options;
 
-  const isServer = typeof window === 'undefined';
-
-  const baseURL = `${process.env.NEXT_PUBLIC_API_URL}`;
-  const url = typeof input === 'string' ? baseURL + input : input;
+  const url = typeof input === 'string' ? input : input;
 
   const finalHeaders: HeadersInit = {
     'Content-Type': 'application/json',
     ...headers,
-    ...(isServer && req
-      ? { cookie: req.headers.get('cookie') || '' }
-      : {}),
   };
 
   const response = await fetch(url, {
     ...init,
     headers: finalHeaders,
-    credentials: 'include', // for CSR: include cookie
+    credentials: 'include',
   });
 
   // 액세스 토큰 만료 → refresh 요청 → 재시도
@@ -46,14 +40,14 @@ export async function fetcher<T>(
             ...options,
             retry: true,
           });
-        } else {
-          // 로그아웃 처리
-          const userStore = useUserStore.getState();
-          userStore.cleanUser();
-          window.location.href = '/login';
-          return null;
         }
       }
+
+      // 로그아웃 처리
+      const userStore = useUserStore.getState();
+      userStore.cleanUser();
+      window.location.href = '/login';
+      return null;
     } catch {
       return null;
     }

@@ -1,10 +1,12 @@
-import {fetcher} from "@/shared/lib/fetcher";
-import {GetStatisticResponse} from "@/app/features/statistic/dto/get-statistics-request";
+import * as apis from '@ihyunwoo/engarde-ai-api-sdk'
+import {conn} from "@/shared/lib/api-client";
 
 export const getStatistics = async (from: string, to: string) => {
-  const url = `/statistics?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
-  return await fetcher<GetStatisticResponse>(url, {
-      method: 'GET',
+  return await apis.functional.statistics.getStatistics(conn,
+    {
+      from,
+      to,
+      scope: 'all'
     }
   )
 }

@@ -1,6 +1,6 @@
-import {GetStatisticResponse} from "@/app/features/statistic/dto/get-statistics-request";
 import {useCallback, useState} from "react";
 import {getStatistics} from "@/app/features/statistic/api/get-statistics";
+import {GetStatisticResponse} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 export function useStatistics() {
   const [data, setData] = useState<GetStatisticResponse | null>(null);

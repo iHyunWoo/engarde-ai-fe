@@ -1,6 +1,6 @@
-import {TopNote} from "@/app/features/statistic/dto/get-statistics-request";
+import {TopNoteDto} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
-export function NotesTooltip({ label, notes }: { label?: string; notes?: TopNote[] }) {
+export function NotesTooltip({ label, notes }: { label?: string; notes?: TopNoteDto[] }) {
   return (
     <div className="rounded-md border bg-white p-3 shadow-sm text-sm max-w-xs">
       <div className="font-medium mb-1">{label}</div>

@@ -1,6 +1,5 @@
 "use client"
 
-import {AttemptDto} from "@/app/features/statistic/dto/get-statistics-request";
 import {useMemo} from "react";
 import {
   Bar,
@@ -9,12 +8,11 @@ import {
   LabelList,
   ResponsiveContainer,
   Tooltip,
-  TooltipProps,
   XAxis,
   YAxis
 } from "recharts";
-import {clamp} from "@/shared/lib/format-percent";
 import {NotesTooltip} from "@/widgets/statistic/NotesTooltip";
+import {AttemptDto} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 interface AttemptChartProps {
   attempt?: AttemptDto;
