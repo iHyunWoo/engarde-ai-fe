@@ -11,7 +11,6 @@ import {MarkingForm} from "@/widgets/marking/MarkingForm";
 import {CounterList} from "@/widgets/Match/MatchCouterSection";
 import {MarkingList} from "@/widgets/marking/MarkingList";
 import {getVideoReadUrl} from "@/shared/api/get-video-read-url";
-import {CreateMarkingRequest} from "@/app/features/marking/dto/create-marking-request";
 import {createMarking} from "@/app/features/marking/api/create-marking";
 import {getMarkingList} from "@/app/features/marking/api/get-marking-list";
 import {deleteMarking} from "@/app/features/marking/api/delete-marking";
@@ -19,6 +18,7 @@ import {toast} from "sonner";
 import {CounterType, updateCounter} from "@/app/features/match/api/update-counter";
 import {VideoPlayer} from "@/widgets/common/VideoPlayer";
 import Seekbar from "@/widgets/common/VideoPlayer/Seekbar";
+import {CreateMarkingRequest} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 export default function Page() {
   const params = useParams();

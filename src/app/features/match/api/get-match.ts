@@ -1,11 +1,6 @@
-import {fetcher} from "@/shared/lib/fetcher";
-import {Match} from "@/entities/match";
+import * as apis from '@ihyunwoo/engarde-ai-api-sdk'
+import {conn} from "@/shared/lib/api-client";
 
-export const getMatch = async (id: number, cookie?: string) => {
-  return await fetcher<Match>(`/matches/${id}`, {
-      method: 'GET',
-    }, {
-      headers: cookie ? {cookie} : {},
-    }
-  )
+export const getMatch = async (id: number) => {
+  return await apis.functional.matches.findOne(conn, id)
 }
