@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import {getMatchList} from "@/app/features/match/api/get-match-list";
-import {MatchSummary} from "@/entities/match-summary";
+import {GetMatchListResponse} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 export function useInfiniteMatchList(from?: string, to?: string) {
-  const [matches, setMatches] = useState<MatchSummary[]>([]);
+  const [matches, setMatches] = useState<GetMatchListResponse[]>([]);
   const [cursor, setCursor] = useState<number | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
