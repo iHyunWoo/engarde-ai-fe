@@ -6,7 +6,6 @@ export const getStatistics = async (from: string, to: string) => {
     {
       from,
       to,
-      scope: 'all'
     }
   )
 }

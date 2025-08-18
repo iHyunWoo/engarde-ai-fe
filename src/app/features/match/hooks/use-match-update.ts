@@ -42,8 +42,8 @@ export function useMatchUpdate(matchId: number) {
     setMatchData({
       tournamentName: match.tournamentName,
       tournamentDate: match.tournamentDate,
-      opponentName: match.opponentName,
-      opponentTeam: match.opponentTeam ?? '',
+      opponentName: match.opponent?.name ?? "",
+      opponentTeam: match.opponent?.team ?? "",
       myScore: match.myScore ?? 0,
       opponentScore: match.opponentScore ?? 0,
       objectName: match.objectName,
@@ -62,7 +62,10 @@ export function useMatchUpdate(matchId: number) {
         if (uploadResult) newObjectName = uploadResult
       }
 
-      await updateMatch(matchId, { ...matchData, objectName: newObjectName ?? "" });
+      await updateMatch(matchId, {
+        objectName: newObjectName ?? "",
+        ...matchData
+      });
       toast('Saved');
     } catch (e) {
       toast(e instanceof Error ? e.message : 'Unexpected error');

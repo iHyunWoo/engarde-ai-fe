@@ -1,12 +1,12 @@
 import {Button} from '@/widgets/common/Button';
-import {AttackType, MarkingType, DefenseType, MarkingQuality, MarkingResult} from '@/entities/marking';
+import {MarkingQuality, MarkingResult} from '@/entities/marking';
 import {useRef, useState} from "react";
 import {formatTime} from "@/shared/lib/format-time";
 import {useNoteSuggestions} from "@/app/features/marking/hooks/use-note-suggestion";
 
 const markingResults: MarkingResult[] = ['win', 'lose', 'attempt'];
-const attackTypes: AttackType[] = ['lunge', 'advanced_lunge', 'fleche', 'push'];
-const defenseTypes: DefenseType[] = ['parry', 'counter_attack'];
+const attackTypes: string[] = ['lunge', 'advanced_lunge', 'fleche', 'push'];
+const defenseTypes: string[] = ['parry', 'counter_attack'];
 const qualities: MarkingQuality[] = ['good', 'bad', 'lucky']
 
 export function MarkingForm({
@@ -26,10 +26,10 @@ export function MarkingForm({
                             }: {
   resultType: MarkingResult;
   setResultType: (v: MarkingResult) => void;
-  myType: MarkingType;
-  setMyType: (v: MarkingType) => void;
-  opponentType: MarkingType;
-  setOpponentType: (v: MarkingType) => void;
+  myType: string;
+  setMyType: (v: string) => void;
+  opponentType: string;
+  setOpponentType: (v: string) => void;
   quality: MarkingQuality
   setQuality: (v: MarkingQuality) => void;
   remainTime: number;
@@ -98,13 +98,13 @@ export function MarkingForm({
         <div className="w-1/2 space-y-2">
           <label className="block text-sm font-medium">Me</label>
           {renderGroupedOptions(myType, (val) => {
-            setMyType(val as MarkingType);
+            setMyType(val);
           })}
         </div>
         <div className="w-1/2 space-y-2">
           <label className="block text-sm font-medium">Opponent</label>
           {renderGroupedOptions(opponentType, (val) => {
-            setOpponentType(val as MarkingType);
+            setOpponentType(val);
           })}
         </div>
       </div>

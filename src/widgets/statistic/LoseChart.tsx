@@ -3,33 +3,34 @@
 import {useMemo} from "react";
 import {Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {NotesTooltip} from "@/widgets/statistic/NotesTooltip";
-import {LoseDto} from "@ihyunwoo/engarde-ai-api-sdk/structures";
+import type {
+  LossCountStatisticsResponse, TopNoteDto
+} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 interface LoseChartProps {
-  lose?: LoseDto;
+  techniques?: LossCountStatisticsResponse;
 }
 
-export function LoseChart({ lose }: LoseChartProps) {
+export function LoseChart({ techniques }: LoseChartProps) {
   const data = useMemo(() => {
-    if (!lose) return [] as { name: string; count: number, raw: string }[];
-    return [
-      {name: "Lunge", count: lose.lungeLoseCount, raw: "lunge"},
-      {name: "Adv Lunge", count: lose.advancedLungeLoseCount, raw: "advancedLunge"},
-      {name: "Fleche", count: lose.flecheLoseCount, raw: "fleche"},
-      {name: "Push", count: lose.pushLoseCount, raw: "push"},
-      {name: "Parry", count: lose.parryLoseCount, raw: "parry"},
-      {name: "Counter", count: lose.counterAttackLoseCount, raw: "counter"},
-    ];
-  }, [lose]);
+    if (!techniques) return [] as { name: string; count: number, raw: string }[];
+    return Object.entries(techniques).map(([id, technique]) => ({
+      name: technique.name,
+      count: technique.count,
+      id: id,
+      raw: technique.name.toLowerCase(),
+    }));
+  }, [techniques]);
 
-  const notesMap = useMemo(() => ({
-    lunge: lose?.topNotesByType?.lunge ?? [],
-    advancedLunge: lose?.topNotesByType?.advancedLunge ?? [],
-    fleche: lose?.topNotesByType?.fleche ?? [],
-    push: lose?.topNotesByType?.push ?? [],
-    parry: lose?.topNotesByType?.parry ?? [],
-    counter: lose?.topNotesByType?.counter ?? [],
-  }), [lose]);
+  const notesMap = useMemo(() => {
+    if (!techniques) return new Map<number, TopNoteDto[]>();
+    return new Map(
+      Object.entries(techniques).map(
+        ([id, technique]) =>
+          [Number(id), technique.topNotes]
+      )
+    );
+  }, [techniques]);
 
   return (
     <div
@@ -47,8 +48,8 @@ export function LoseChart({ lose }: LoseChartProps) {
             <YAxis allowDecimals={false}/>
             <Tooltip content={({ active, payload }) => {
               if (!active || !payload?.length) return null;
-              const raw = payload[0].payload.raw as 'lunge' | 'advancedLunge' | 'fleche' | 'push' | 'parry' | 'counter'
-              return <NotesTooltip notes={notesMap[raw]} />;
+              const id = Number(payload[0].payload.id)
+              return <NotesTooltip notes={notesMap.get(id)}/>;
             }} />
             <Bar dataKey="count" radius={[6, 6, 0, 0]}>
               <LabelList dataKey="count" position="top"/>

@@ -1,9 +1,9 @@
 import {formatDate} from "@/shared/lib/format-date";
 import Link from "next/link";
-import {MatchSummary} from "@/entities/match-summary";
+import {GetMatchListResponse} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 interface MatchListItemProps {
-  match: MatchSummary;
+  match: GetMatchListResponse;
 }
 
 export function MatchListItem({match}: MatchListItemProps) {
@@ -25,7 +25,7 @@ export function MatchListItem({match}: MatchListItemProps) {
       <div className="flex-1 min-w-0">
         <h3 className="font-bold text-xl">{match.tournamentName}</h3>
         <p className="font-medium truncate text-gray-800">
-          vs {match.opponentName}({match.opponentTeam})
+          vs {match.opponent?.name}({match.opponent?.team})
         </p>
         <p className="text-sm text-gray-500">
           Score: {match.myScore} - {match.opponentScore}
