@@ -3,6 +3,8 @@ import { toast } from "sonner";
 import {TechniqueType} from "@/entities/technique-type";
 import {createTechnique} from "@/app/features/technique/api/create-technique";
 import {Technique} from "@/entities/technique";
+import {updateTechnique} from "@/app/features/technique/api/update-technique";
+import {deleteTechnique} from "@/app/features/technique/api/delete-technique";
 
 export function useTechniqueList(
   techniques: Technique[],
@@ -14,7 +16,7 @@ export function useTechniqueList(
   const [expandedTechniques, setExpandedTechniques] = useState<Set<number>>(new Set());
 
   const [showSubForm, setShowSubForm] = useState<Set<number>>(new Set());
-  // 하위 기술 입력 상태 (기술 id별로 상태 관리)
+  // 하위 기술 입력 상태 key: 부모 ID, value: sub 기술 입력 상태
   const [subInputs, setSubInputs] = useState<Record<number, { name: string; type: TechniqueType }>>({});
 
   const addTechnique = async () => {
@@ -101,6 +103,55 @@ export function useTechniqueList(
     });
   };
 
+  const handleUpdate = async (technique: Technique) => {
+    const {code, data: updated, message} = await updateTechnique(technique.id, technique);
+
+    if (code !== 200 || !updated) {
+      toast.error(message);
+      return;
+    }
+
+    setTechniques((prev) =>
+      prev.map((t) => {
+        // 부모 탐색
+        if (t.id === updated.id) {
+          return { ...t, ...updated };
+        }
+
+        // 자식 탐색
+        const updatedChildren = t.children?.map((c) =>
+          c.id === updated.id ? { ...c, ...updated } : c
+        ) ?? [];
+
+        return { ...t, children: updatedChildren };
+      })
+    );
+
+    toast.success("update success");
+  }
+
+  const handleDelete = async (id: number) => {
+    const {code, data, message} = await deleteTechnique(id);
+
+    if (code !== 200 || !data) {
+      toast.error(message);
+      return;
+    }
+
+    setTechniques((prev) =>
+      prev
+        .filter((t) => t.id !== id) // 부모 삭제
+        .map((t) => ({
+          ...t,
+          // 자식 삭제
+          children: t.children?.filter((c) => c.id !== id) ?? [],
+        }))
+    );
+
+
+    toast.success("delete success");
+  }
+
   return {
     techniqueName,
     setTechniqueName,
@@ -114,5 +165,7 @@ export function useTechniqueList(
     setSubInputs,
     addTechnique,
     addSubTechnique,
+    handleUpdate,
+    handleDelete,
   };
 }

@@ -6,6 +6,7 @@ import {useInfiniteTechniqueList} from "@/app/features/technique/hooks/use-infin
 import {TechniqueForm} from "@/widgets/technique/TechniqueForm";
 import {TechniqueListItem} from "@/widgets/technique/TechniqueListItem";
 import {useTechniqueList} from "@/app/features/technique/hooks/use-technique-list";
+import {Technique} from "@/entities/technique";
 
 export default function TechniqueManageSection() {
   const {techniques, setTechniques, loading, loaderRef, fetchData} = useInfiniteTechniqueList();
@@ -22,6 +23,8 @@ export default function TechniqueManageSection() {
     setSubInputs,
     addTechnique,
     addSubTechnique,
+    handleUpdate,
+    handleDelete,
   } = useTechniqueList(
     techniques,
     setTechniques
@@ -41,7 +44,7 @@ export default function TechniqueManageSection() {
             setTechniqueName={setTechniqueName}
             techniqueType={techniqueType}
             setTechniqueType={setTechniqueType}
-            addTechnique={addTechnique}
+            onSubmit={addTechnique}
           />
         </CardContent>
       </Card>
@@ -57,6 +60,8 @@ export default function TechniqueManageSection() {
               toggleTechnique={toggleTechnique}
               expanded={expandedTechniques.has(technique.id)}
               addSubForm={addSubForm}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
             />
 
             {showSubForm.has(technique.id) && (
@@ -77,7 +82,7 @@ export default function TechniqueManageSection() {
                         [technique.id]: {...prev[technique.id], type: type},
                       }))
                     }}
-                    addTechnique={() => addSubTechnique(technique.id)}
+                    onSubmit={() => addSubTechnique(technique.id)}
                   />
                 </CardContent>
               </Card>
@@ -90,6 +95,8 @@ export default function TechniqueManageSection() {
                 <TechniqueListItem
                   isSub={true}
                   technique={child}
+                  onUpdate={handleUpdate}
+                  onDelete={handleDelete}
                 />
               </div>
             ))}
