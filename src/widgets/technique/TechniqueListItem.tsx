@@ -45,7 +45,8 @@ export function TechniqueListItem({
         {isEditing ? (
           <TechniqueForm
             initialData={technique}
-            buttonText={"Save"}
+            id={technique.id}
+            buttonText="Save"
             onCancel={() => setIsEditing(false)}
             onSubmit={(updated) => {
               onUpdate?.(updated);

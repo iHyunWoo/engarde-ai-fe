@@ -6,21 +6,15 @@ import {useInfiniteTechniqueList} from "@/app/features/technique/hooks/use-infin
 import {TechniqueForm} from "@/widgets/technique/TechniqueForm";
 import {TechniqueListItem} from "@/widgets/technique/TechniqueListItem";
 import {useTechniqueList} from "@/app/features/technique/hooks/use-technique-list";
-import {Technique} from "@/entities/technique";
 
 export default function TechniqueManageSection() {
   const {techniques, setTechniques, loading, loaderRef, fetchData} = useInfiniteTechniqueList();
+
   const {
-    techniqueName,
-    setTechniqueName,
-    techniqueType,
-    setTechniqueType,
     expandedTechniques,
     toggleTechnique,
     showSubForm,
     addSubForm,
-    subInputs,
-    setSubInputs,
     addTechnique,
     addSubTechnique,
     handleUpdate,
@@ -40,10 +34,6 @@ export default function TechniqueManageSection() {
         <CardContent>
           <h3 className="text-lg font-semibold mb-4">Add New Technique</h3>
           <TechniqueForm
-            techniqueName={techniqueName}
-            setTechniqueName={setTechniqueName}
-            techniqueType={techniqueType}
-            setTechniqueType={setTechniqueType}
             onSubmit={addTechnique}
           />
         </CardContent>
@@ -68,21 +58,7 @@ export default function TechniqueManageSection() {
               <Card className="ml-8">
                 <CardContent className="p-4">
                   <TechniqueForm
-                    techniqueName={subInputs[technique.id]?.name || ""}
-                    setTechniqueName={(name) => {
-                      setSubInputs((prev) => ({
-                        ...prev,
-                        [technique.id]: {...prev[technique.id], name: name},
-                      }))
-                    }}
-                    techniqueType={subInputs[technique.id]?.type || "attack"}
-                    setTechniqueType={(type) => {
-                      setSubInputs((prev) => ({
-                        ...prev,
-                        [technique.id]: {...prev[technique.id], type: type},
-                      }))
-                    }}
-                    onSubmit={() => addSubTechnique(technique.id)}
+                    onSubmit={(techniqueForm) => addSubTechnique(technique.id, techniqueForm)}
                   />
                 </CardContent>
               </Card>

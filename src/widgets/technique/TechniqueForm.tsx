@@ -7,57 +7,47 @@ import {Technique} from "@/entities/technique";
 import {useState} from "react";
 
 interface TechniqueFormProps {
-  techniqueName?: string;
-  setTechniqueName?: (name: string) => void;
-  techniqueType?: TechniqueType;
-  setTechniqueType?: (type: TechniqueType) => void;
+  initialData?: Omit<Technique, 'id' | 'children'>;
+  id?: number;
   onSubmit: (technique: Technique) => void;
   buttonText?: string;
-  initialData?: Technique;
   onCancel?: () => void;
 }
 
 export function TechniqueForm({
-                                techniqueName,
-                                setTechniqueName,
-                                techniqueType,
-                                setTechniqueType,
+                                initialData,
+                                id,
                                 onSubmit,
                                 buttonText = "Add",
-                                initialData,
                                 onCancel,
                               }: TechniqueFormProps) {
-  const [localName, setLocalName] = useState(initialData?.name ?? techniqueName ?? "");
-  const [localType, setLocalType] = useState<TechniqueType>(initialData?.type ?? techniqueType ?? "etc");
+
+  const [techniqueName, setTechniqueName] = useState(initialData?.name ?? '');
+  const [techniqueType, setTechniqueType] = useState<TechniqueType>(initialData?.type ?? "attack");
 
   const handleSubmit = () => {
     const payload: Technique = {
-      ...(initialData ?? {}),
-      id: initialData?.id ?? 0,
-      name: localName,
-      type: localType,
-      children: initialData?.children ?? [],
+      id: id ?? 0,
+      name: techniqueName ?? '',
+      type: techniqueType ?? 'attack',
+      children: [],
     };
-
-    if (setTechniqueName) setTechniqueName(localName);
-    if (setTechniqueType) setTechniqueType(localType);
 
     onSubmit(payload);
   };
-
 
   return (
     <div className="flex gap-4 items-center">
       <Input
         placeholder="Technique name"
-        value={localName}
-        onChange={(e) => setLocalName(e.target.value)}
+        value={techniqueName}
+        onChange={(e) => setTechniqueName?.(e.target.value)}
         className="flex-1"
       />
 
       <Select
-        value={localType}
-        onValueChange={(val) => setLocalType(val as TechniqueType)}
+        value={techniqueType}
+        onValueChange={(val) => setTechniqueType?.(val as TechniqueType)}
       >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select type" />
