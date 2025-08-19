@@ -1,5 +1,3 @@
-"use client";
-
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/widgets/common/Tabs";
 import OpponentManageSection from "@/widgets/opponent/OpponentManageSection";
 import TechniqueManageSection from "@/widgets/technique/TechniqueManageSection";

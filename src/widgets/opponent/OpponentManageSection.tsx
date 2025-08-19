@@ -16,6 +16,10 @@ export default function OpponentManageSection() {
   const [opponentTeam, setOpponentTeam] = useState("");
 
   const addOpponent = async () => {
+    if (!opponentName) {
+      toast.warning('Opponent name is required');
+     return;
+    }
     const { code, data: newOpponent, message } = await createOpponent(opponentName, opponentTeam);
 
     if (code !== 201 || !newOpponent) {
