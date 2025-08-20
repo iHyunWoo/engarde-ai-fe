@@ -2,8 +2,8 @@ import { Input } from "@/widgets/common/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/widgets/common/Select";
 import { Button } from "@/widgets/common/Button";
 import { Plus, Save } from "lucide-react";
-import {TechniqueType} from "@/entities/technique-type";
-import {Technique} from "@/entities/technique";
+import {TechniqueType} from "@/entities/technique/technique-type";
+import {Technique} from "@/entities/technique/technique";
 import {useState} from "react";
 
 interface TechniqueFormProps {

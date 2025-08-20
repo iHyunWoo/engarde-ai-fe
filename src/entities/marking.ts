@@ -1,4 +1,4 @@
-import {Technique} from "@/entities/technique";
+import {Technique} from "@/entities/technique/technique";
 
 export type MarkingResult = 'win' | 'lose' | 'attempt';
 

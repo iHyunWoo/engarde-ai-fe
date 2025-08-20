@@ -8,7 +8,6 @@ export const createNestiaFetcher: typeof fetch = async (input, init) => {
   }
 
   return new Response(JSON.stringify(res), {
-    status: res.code,
     headers: { "Content-Type": "application/json" },
   });
 };

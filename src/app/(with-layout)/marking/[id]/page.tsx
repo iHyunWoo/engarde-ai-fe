@@ -17,6 +17,10 @@ import {toast} from "sonner";
 import {VideoPlayer} from "@/widgets/common/VideoPlayer";
 import Seekbar from "@/widgets/common/VideoPlayer/Seekbar";
 import {CreateMarkingRequest} from "@ihyunwoo/engarde-ai-api-sdk/structures";
+import {getTechniqueAllList} from "@/app/features/technique/api/get-technique-all-list";
+import {Technique} from "@/entities/technique/technique";
+import {TechniqueByGroup} from "@/entities/technique/technique-by-group";
+import {groupTechniquesByType} from "@/app/features/technique/lib/group-technique-by-type";
 
 export default function Page() {
   const params = useParams();
@@ -30,11 +34,12 @@ export default function Page() {
 
   const [markings, setMarkings] = useState<Marking[]>([]);
   const [resultType, setResultType] = useState<MarkingResult>('win');
-  const [myType, setMyType] = useState<string>('none');
-  const [opponentType, setOpponentType] = useState<string>('none');
+  const [myTechnique, setMyTechnique] = useState<Technique | null>(null);
+  const [opponentTechnique, setOpponentTechnique] = useState<Technique | null>(null);
   const [quality, setQuality] = useState<MarkingQuality>('good')
   const [note, setNote] = useState('');
   const [remainTime, setRemainTime] = useState(0);
+  const [techniques, setTechniques] = useState<TechniqueByGroup | null>(null);
 
   const [attackAttemptCount, setAttackAttemptCount] = useState(0);
   const [parryAttemptCount, setParryAttemptCount] = useState(0);
@@ -66,18 +71,26 @@ export default function Page() {
     const ml = await getMarkingList(Number(id));
     const list = ml?.data ?? [];
     setMarkings(list);
+
+    // 4) 기술 리스트
+    const techniqueRes = await getTechniqueAllList();
+    if (techniqueRes.data) {
+      setTechniques(groupTechniquesByType(techniqueRes.data))
+      setMyTechnique(techniqueRes.data[0])
+      setOpponentTechnique(techniqueRes.data[0])
+    }
   }
 
 
   const addMarking = async () => {
-    if (!videoRef) return;
+    if (!videoRef || !myTechnique || !opponentTechnique) return;
     const time = Math.floor(videoRef.currentTime);
     const body: CreateMarkingRequest = {
       matchId: Number(id),
       timestamp: time,
       result: resultType,
-      myType,
-      opponentType,
+      myTechnique,
+      opponentTechnique,
       quality,
       note,
       remainTime,
@@ -207,21 +220,24 @@ export default function Page() {
           )}
         </div>
 
-        <MarkingForm
-          resultType={resultType}
-          setResultType={setResultType}
-          myType={myType}
-          setMyType={setMyType}
-          opponentType={opponentType}
-          setOpponentType={setOpponentType}
-          quality={quality}
-          setQuality={setQuality}
-          remainTime={remainTime}
-          setRemainTime={setRemainTime}
-          note={note}
-          setNote={setNote}
-          onAdd={addMarking}
-        />
+        {(techniques && myTechnique && opponentTechnique) && (
+          <MarkingForm
+            resultType={resultType}
+            setResultType={setResultType}
+            myTechnique={myTechnique}
+            setMyTechnique={setMyTechnique}
+            opponentTechnique={opponentTechnique}
+            setOpponentTechnique={setOpponentTechnique}
+            quality={quality}
+            setQuality={setQuality}
+            remainTime={remainTime}
+            setRemainTime={setRemainTime}
+            note={note}
+            setNote={setNote}
+            onAdd={addMarking}
+            techniqueByGroup={techniques}
+          />
+        )}
       </div>
 
       <div className="flex items-center justify-between px-4 py-4 mt-6 rounded">
