@@ -1,6 +1,6 @@
 "use client"
 
-import {ChartLine, Gamepad2, Upload} from "lucide-react"
+import {ChartLine, Gamepad2, Upload, User} from "lucide-react"
 
 import {
   Sidebar,
@@ -31,6 +31,11 @@ const items = [
     url: "/upload",
     icon: Upload,
   },
+  {
+    title: "My",
+    url: "/my",
+    icon: User,
+  }
 ]
 
 export function AppSidebar() {
