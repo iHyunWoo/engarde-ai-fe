@@ -1,6 +1,5 @@
 import {Dispatch, SetStateAction, useState} from "react";
 import { toast } from "sonner";
-import {TechniqueType} from "@/entities/technique-type";
 import {createTechnique} from "@/app/features/technique/api/create-technique";
 import {Technique} from "@/entities/technique";
 import {updateTechnique} from "@/app/features/technique/api/update-technique";
