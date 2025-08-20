@@ -1,5 +1,5 @@
 import {Opponent} from "@/entities/opponent";
-import {TechniqueAttempt} from "@/entities/technique-attempt";
+import {TechniqueAttempt} from "@/entities/technique/technique-attempt";
 
 export interface Match {
   id: number;

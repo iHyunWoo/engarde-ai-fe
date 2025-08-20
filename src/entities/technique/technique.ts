@@ -1,4 +1,4 @@
-import {TechniqueType} from "@/entities/technique-type";
+import {TechniqueType} from "@/entities/technique/technique-type";
 
 export interface Technique {
   id: number;

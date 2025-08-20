@@ -4,6 +4,7 @@ import {CheckCircle, Clock, Sparkles, X, XCircle} from "lucide-react";
 import {formatTime} from "@/shared/lib/format-time";
 import {ReactElement} from "react";
 import {QualityPill} from "@/widgets/marking/MarkingQualityFill";
+import {formatTechniqueName} from "@/app/features/technique/lib/format-technique-name";
 
 export function MarkingList({
                               markings,
@@ -32,8 +33,8 @@ export function MarkingList({
 
           {/* 내용 표시 */}
           <div className="flex-1 flex items-center justify-start gap-3 pl-1">
-            <span className="text-gray-800">{mark.result}</span>
-            <span className="text-gray-500">{mark.myTechnique.name}</span>
+            <span className="text-gray-800">{formatTechniqueName(mark.result)}</span>
+            <span className="text-gray-500">{formatTechniqueName(mark.myTechnique.name)}</span>
 
             <QualityPill q={mark.quality}/>
           </div>

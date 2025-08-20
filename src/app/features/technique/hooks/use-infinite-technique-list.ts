@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import {toast} from "sonner";
-import {Technique} from "@/entities/technique";
+import {Technique} from "@/entities/technique/technique";
 import {getTechniqueList} from "@/app/features/technique/api/get-technique-list";
 
 export function useInfiniteTechniqueList() {

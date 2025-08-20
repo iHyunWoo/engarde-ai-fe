@@ -1,7 +1,7 @@
 import {Card, CardContent} from "@/widgets/common/Card";
 import {Button} from "@/widgets/common/Button";
 import {ChevronDown, ChevronRight, Pencil, Trash2, Plus} from "lucide-react";
-import {Technique} from "@/entities/technique";
+import {Technique} from "@/entities/technique/technique";
 import {useState} from "react";
 import {
   AlertDialog,
