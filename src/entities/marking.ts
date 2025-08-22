@@ -9,8 +9,8 @@ export interface Marking {
   id: number;
   timestamp: number;
   result: MarkingResult;
-  myTechnique: Technique;
-  opponentTechnique: Technique;
+  myTechnique: Technique | null;
+  opponentTechnique: Technique | null;
   quality: MarkingQuality;
   note: string;
   remainTime: number;
