@@ -83,7 +83,7 @@ export default function Page() {
 
 
   const addMarking = async () => {
-    if (!videoRef || !myTechnique || !opponentTechnique) return;
+    if (!videoRef) return;
     const time = Math.floor(videoRef.currentTime);
     const body: CreateMarkingRequest = {
       matchId: Number(id),
@@ -220,7 +220,7 @@ export default function Page() {
           )}
         </div>
 
-        {(techniques && myTechnique && opponentTechnique) && (
+        {(techniques) && (
           <MarkingForm
             resultType={resultType}
             setResultType={setResultType}

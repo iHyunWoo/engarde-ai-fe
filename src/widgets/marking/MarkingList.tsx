@@ -34,7 +34,7 @@ export function MarkingList({
           {/* 내용 표시 */}
           <div className="flex-1 flex items-center justify-start gap-3 pl-1">
             <span className="text-gray-800">{formatTechniqueName(mark.result)}</span>
-            <span className="text-gray-500">{formatTechniqueName(mark.myTechnique.name)}</span>
+            <span className="text-gray-500">{formatTechniqueName(mark.myTechnique?.name ?? "None")}</span>
 
             <QualityPill q={mark.quality}/>
           </div>

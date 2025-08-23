@@ -29,10 +29,10 @@ export function MarkingForm({
                             }: {
   resultType: MarkingResult;
   setResultType: (v: MarkingResult) => void;
-  myTechnique: Technique
-  setMyTechnique: (v: Technique) => void
-  opponentTechnique: Technique
-  setOpponentTechnique: (v: Technique) => void
+  myTechnique: Technique | null
+  setMyTechnique: (v: Technique | null) => void
+  opponentTechnique: Technique | null
+  setOpponentTechnique: (v: Technique | null) => void
   quality: MarkingQuality
   setQuality: (v: MarkingQuality) => void;
   remainTime: number;
@@ -53,8 +53,8 @@ export function MarkingForm({
   }
 
   const renderTechniqueSelect = (
-    selected: Technique | undefined,
-    onChange: (v: Technique) => void,
+    selected: Technique | null,
+    onChange: (v: Technique | null) => void,
   ) => {
     const techniqueMap = new Map<number, Technique>();
 
@@ -65,8 +65,9 @@ export function MarkingForm({
 
     return (
       <Select
-        value={selected?.id.toString() ?? ""}
+        value={selected ? selected.id.toString() : "none"}
         onValueChange={(v) => {
+          if (v === "none") return onChange(null);  // none 옵션이면 null set
           const selectedTechnique = techniqueMap.get(Number(v));
           if (selectedTechnique) onChange(selectedTechnique);
         }}
@@ -75,10 +76,12 @@ export function MarkingForm({
             <span className="truncate">
               {selected
               ? `${formatTechniqueName(selected.name)}`
-              : "기술 선택"}
+              : "None"}
             </span>
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="none">None</SelectItem>
+
           {Object.entries(techniqueByGroup).map(([group, techniques]) => (
             <SelectGroup key={group}>
               <div className="px-2 py-1 text-sm text-muted-foreground">{group}</div>
