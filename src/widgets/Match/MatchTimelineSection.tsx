@@ -95,10 +95,10 @@ function TimelineItem({ mark }: { mark: Marking }) {
             <span>{formatTime(mark.remainTime)}</span>
             <span>·</span>
             {(mark.result === 'win' || mark.result === 'attempt') && (
-              <span className="font-medium">{mark.myTechnique.name}</span>
+              <span className="font-medium">{mark.myTechnique?.name ?? "None"}</span>
             )}
             {mark.result === 'lose' && (
-              <span className="font-medium">{mark.opponentTechnique.name}</span>
+              <span className="font-medium">{mark.opponentTechnique?.name ?? "None"}</span>
             )}
           </div>
         </div>
