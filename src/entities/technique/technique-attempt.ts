@@ -1,5 +1,8 @@
 export interface TechniqueAttempt {
   id: number;
-  techniqueName: string;
+  technique: {
+    id: number;
+    name: string;
+  }
   attemptCount: number;
 }
