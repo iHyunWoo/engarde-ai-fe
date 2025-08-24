@@ -19,8 +19,6 @@ import Seekbar from "@/widgets/common/VideoPlayer/Seekbar";
 import {CreateMarkingRequest} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 import {getTechniqueAllList} from "@/app/features/technique/api/get-technique-all-list";
 import {Technique} from "@/entities/technique/technique";
-import {TechniqueByGroup} from "@/entities/technique/technique-by-group";
-import {groupTechniquesByType} from "@/app/features/technique/lib/group-technique-by-type";
 import {CounterList} from "@/widgets/Match/CounterList";
 
 export default function Page() {
@@ -131,55 +129,6 @@ export default function Page() {
       videoRef.currentTime = time;
     }
   };
-
-  // const handleCounterChange = async (type: CounterType, delta: number) => {
-  // // 현재 값 가져오기
-  // const current = (() => {
-  //   switch (type) {
-  //     case 'attack_attempt_count':
-  //       return attackAttemptCount;
-  //     case 'parry_attempt_count':
-  //       return parryAttemptCount;
-  //     case 'counter_attack_attempt_count':
-  //       return counterAttackAttemptCount;
-  //   }
-  // })();
-  //
-  // // 0 이하로 내려가는 경우 막기
-  // if (delta < 0 && current === 0) return;
-  //
-  // // 낙관적 업데이트
-  // const updater = (v: number) => Math.max(0, v + delta);
-  // switch (type) {
-  //   case 'attack_attempt_count':
-  //     setAttackAttemptCount(updater);
-  //     break;
-  //   case 'parry_attempt_count':
-  //     setParryAttemptCount(updater);
-  //     break;
-  //   case 'counter_attack_attempt_count':
-  //     setCounterAttackAttemptCount(updater);
-  //     break;
-  // }
-  //
-  // // API 호출
-  // const res = await updateCounter(Number(id), type, delta);
-  //
-  // // 실패 시 복구
-  // if (!res || res.code !== 200) {
-  //   switch (type) {
-  //     case 'attack_attempt_count':
-  //       setAttackAttemptCount(current);
-  //       break;
-  //     case 'parry_attempt_count':
-  //       setParryAttemptCount(current);
-  //       break;
-  //     case 'counter_attack_attempt_count':
-  //       setCounterAttackAttemptCount(current);
-  //       break;
-  //   }
-  // }
-  // };
 
   if (!match) return null;
 
