@@ -6,11 +6,11 @@ export function Counter({ label, count, changeCount }: {
   changeCount: (delta: number) => void;
 }) {
   return (
-    <div className="space-y-1">
-      <p className="text-gray-500 text-sm">{label}</p>
-      <div className="flex items-center gap-2 justify-center">
+    <div className="flex flex-col items-center">
+      <p className="text-gray-500 text-sm text-center">{label}</p>
+      <div className="flex items-center gap-2 justify-center space-x-2">
         <Button variant="outline" size="icon" onClick={() => changeCount(-1)}>−</Button>
-        <p className="text-xl font-semibold w-6">{count}</p>
+        <p className="text-xl font-semibold min-w-6 text-center">{count}</p>
         <Button variant="outline" size="icon" onClick={() => changeCount(1)}>＋</Button>
       </div>
     </div>

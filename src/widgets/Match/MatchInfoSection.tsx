@@ -17,11 +17,11 @@ export function MatchInfoSection({match}: MatchInfoSectionProps) {
     {label: "Score", value: `${match.myScore} : ${match.opponentScore}`, icon: Trophy},
   ];
 
-  const bottomStats = [
-    {label: "Attack", value: match.attackAttemptCount},
-    {label: "Parry", value: match.parryAttemptCount},
-    {label: "Counter Attack", value: match.counterAttackAttemptCount},
-  ];
+  // const bottomStats = [
+  //   {label: "Attack", value: match.attackAttemptCount},
+  //   {label: "Parry", value: match.parryAttemptCount},
+  //   {label: "Counter Attack", value: match.counterAttackAttemptCount},
+  // ];
 
   return (
     <Card className="relative">
@@ -46,7 +46,7 @@ export function MatchInfoSection({match}: MatchInfoSectionProps) {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             {match.tournamentName}
           </h1>
-          <p className="text-slate-600">vs {match.opponentName}({match.opponentTeam})</p>
+          <p className="text-slate-600">vs {match.opponent?.name}({match.opponent?.team})</p>
         </div>
       </CardHeader>
 
@@ -82,30 +82,30 @@ export function MatchInfoSection({match}: MatchInfoSectionProps) {
           </div>
 
           {/* Bottom row: Attempts */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {bottomStats.map((s, i) => {
-              return (
-                <div
-                  key={i}
-                  className="rounded-xl border border-slate-100 bg-slate-50 p-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                    <span
-                      className="inline-flex items-center justify-center rounded-md bg-white px-2 py-1 text-xs font-medium text-slate-600 border border-slate-200">
-                        {s.label}
-                    </span>
-                    </div>
-                  </div>
-                  <div className="mt-2 text-center">
-                  <span className="text-2xl font-bold text-slate-900">
-                    {s.value}
-                  </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {/*<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">*/}
+          {/*  {bottomStats.map((s, i) => {*/}
+          {/*    return (*/}
+          {/*      <div*/}
+          {/*        key={i}*/}
+          {/*        className="rounded-xl border border-slate-100 bg-slate-50 p-3"*/}
+          {/*      >*/}
+          {/*        <div className="flex items-center justify-between">*/}
+          {/*          <div className="flex items-center gap-2">*/}
+          {/*          <span*/}
+          {/*            className="inline-flex items-center justify-center rounded-md bg-white px-2 py-1 text-xs font-medium text-slate-600 border border-slate-200">*/}
+          {/*              {s.label}*/}
+          {/*          </span>*/}
+          {/*          </div>*/}
+          {/*        </div>*/}
+          {/*        <div className="mt-2 text-center">*/}
+          {/*        <span className="text-2xl font-bold text-slate-900">*/}
+          {/*          {s.value}*/}
+          {/*        </span>*/}
+          {/*        </div>*/}
+          {/*      </div>*/}
+          {/*    );*/}
+          {/*  })}*/}
+          {/*</div>*/}
         </div>
       </CardContent>
     </Card>

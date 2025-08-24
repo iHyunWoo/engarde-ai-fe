@@ -1,6 +1,7 @@
 import {useRef, useState} from "react";
 import {mergeVideos} from "@/shared/lib/merge-videos";
 import {uploadToGCS} from "@/shared/lib/upload-file";
+import {Opponent} from "@/entities/opponent";
 
 export type MatchData = {
   tournamentName: string;

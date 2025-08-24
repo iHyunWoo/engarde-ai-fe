@@ -1,14 +1,14 @@
+import {Opponent} from "@/entities/opponent";
+import {TechniqueAttempt} from "@/entities/technique/technique-attempt";
+
 export interface Match {
   id: number;
   objectName: string;
   tournamentName: string;
   tournamentDate: string;
-  opponentName: string;
-  opponentTeam: string;
+  opponent?: Opponent | undefined;
   myScore: number;
   opponentScore: number;
-  attackAttemptCount: number;
-  parryAttemptCount: number;
-  counterAttackAttemptCount: number;
+  techniqueAttempt: TechniqueAttempt[]
   createdAt: string;
 }

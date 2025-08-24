@@ -1,24 +1,25 @@
 'use client';
 
 import {useState, useEffect} from 'react';
-import {ChevronDown, ChevronUp, X} from 'lucide-react';
+import {ChevronDown, ChevronUp} from 'lucide-react';
 import {Button} from '@/widgets/common/Button';
 import {getMatch} from "@/app/features/match/api/get-match";
 import {useParams} from "next/navigation";
 import {Match} from "@/entities/match";
-import {AttackType, DefenseType, Marking, MarkingQuality, MarkingResult} from "@/entities/marking";
+import {Marking, MarkingQuality, MarkingResult} from "@/entities/marking";
 import {MarkingForm} from "@/widgets/marking/MarkingForm";
-import {CounterList} from "@/widgets/Match/MatchCouterSection";
 import {MarkingList} from "@/widgets/marking/MarkingList";
 import {getVideoReadUrl} from "@/shared/api/get-video-read-url";
 import {createMarking} from "@/app/features/marking/api/create-marking";
 import {getMarkingList} from "@/app/features/marking/api/get-marking-list";
 import {deleteMarking} from "@/app/features/marking/api/delete-marking";
 import {toast} from "sonner";
-import {CounterType, updateCounter} from "@/app/features/match/api/update-counter";
 import {VideoPlayer} from "@/widgets/common/VideoPlayer";
 import Seekbar from "@/widgets/common/VideoPlayer/Seekbar";
 import {CreateMarkingRequest} from "@ihyunwoo/engarde-ai-api-sdk/structures";
+import {getTechniqueAllList} from "@/app/features/technique/api/get-technique-all-list";
+import {Technique} from "@/entities/technique/technique";
+import {CounterList} from "@/widgets/Match/CounterList";
 
 export default function Page() {
   const params = useParams();
@@ -32,15 +33,12 @@ export default function Page() {
 
   const [markings, setMarkings] = useState<Marking[]>([]);
   const [resultType, setResultType] = useState<MarkingResult>('win');
-  const [myType, setMyType] = useState<AttackType | DefenseType>('none');
-  const [opponentType, setOpponentType] = useState<AttackType | DefenseType>('none');
+  const [myTechnique, setMyTechnique] = useState<Technique | null>(null);
+  const [opponentTechnique, setOpponentTechnique] = useState<Technique | null>(null);
   const [quality, setQuality] = useState<MarkingQuality>('good')
   const [note, setNote] = useState('');
   const [remainTime, setRemainTime] = useState(0);
-
-  const [attackAttemptCount, setAttackAttemptCount] = useState(0);
-  const [parryAttemptCount, setParryAttemptCount] = useState(0);
-  const [counterAttackAttemptCount, setCounterAttackAttemptCount] = useState(0);
+  const [techniques, setTechniques] = useState<Technique[]>([]);
 
 
   useEffect(() => {
@@ -55,9 +53,9 @@ export default function Page() {
     if (!match) return;
 
     setMatch(match);
-    setAttackAttemptCount(match.attackAttemptCount ?? 0);
-    setParryAttemptCount(match.parryAttemptCount ?? 0);
-    setCounterAttackAttemptCount(match.counterAttackAttemptCount ?? 0);
+    // setAttackAttemptCount(match.attackAttemptCount ?? 0);
+    // setParryAttemptCount(match.parryAttemptCount ?? 0);
+    // setCounterAttackAttemptCount(match.counterAttackAttemptCount ?? 0);
 
     // 2) 비디오 read URL
     const videoUrlRes = await getVideoReadUrl(match.objectName);
@@ -68,6 +66,14 @@ export default function Page() {
     const ml = await getMarkingList(Number(id));
     const list = ml?.data ?? [];
     setMarkings(list);
+
+    // 4) 기술 리스트
+    const techniqueRes = await getTechniqueAllList();
+    if (techniqueRes.data) {
+      setTechniques(techniqueRes.data)
+      setMyTechnique(techniqueRes.data[0])
+      setOpponentTechnique(techniqueRes.data[0])
+    }
   }
 
 
@@ -78,8 +84,8 @@ export default function Page() {
       matchId: Number(id),
       timestamp: time,
       result: resultType,
-      myType,
-      opponentType,
+      myTechnique,
+      opponentTechnique,
       quality,
       note,
       remainTime,
@@ -124,55 +130,6 @@ export default function Page() {
     }
   };
 
-  const handleCounterChange = async (type: CounterType, delta: number) => {
-    // 현재 값 가져오기
-    const current = (() => {
-      switch (type) {
-        case 'attack_attempt_count':
-          return attackAttemptCount;
-        case 'parry_attempt_count':
-          return parryAttemptCount;
-        case 'counter_attack_attempt_count':
-          return counterAttackAttemptCount;
-      }
-    })();
-
-    // 0 이하로 내려가는 경우 막기
-    if (delta < 0 && current === 0) return;
-
-    // 낙관적 업데이트
-    const updater = (v: number) => Math.max(0, v + delta);
-    switch (type) {
-      case 'attack_attempt_count':
-        setAttackAttemptCount(updater);
-        break;
-      case 'parry_attempt_count':
-        setParryAttemptCount(updater);
-        break;
-      case 'counter_attack_attempt_count':
-        setCounterAttackAttemptCount(updater);
-        break;
-    }
-
-    // API 호출
-    const res = await updateCounter(Number(id), type, delta);
-
-    // 실패 시 복구
-    if (!res || res.code !== 200) {
-      switch (type) {
-        case 'attack_attempt_count':
-          setAttackAttemptCount(current);
-          break;
-        case 'parry_attempt_count':
-          setParryAttemptCount(current);
-          break;
-        case 'counter_attack_attempt_count':
-          setCounterAttackAttemptCount(current);
-          break;
-      }
-    }
-  };
-
   if (!match) return null;
 
   return (
@@ -209,32 +166,30 @@ export default function Page() {
           )}
         </div>
 
-        <MarkingForm
-          resultType={resultType}
-          setResultType={setResultType}
-          myType={myType}
-          setMyType={setMyType}
-          opponentType={opponentType}
-          setOpponentType={setOpponentType}
-          quality={quality}
-          setQuality={setQuality}
-          remainTime={remainTime}
-          setRemainTime={setRemainTime}
-          note={note}
-          setNote={setNote}
-          onAdd={addMarking}
-        />
+        {(techniques) && (
+          <MarkingForm
+            resultType={resultType}
+            setResultType={setResultType}
+            myTechnique={myTechnique}
+            setMyTechnique={setMyTechnique}
+            opponentTechnique={opponentTechnique}
+            setOpponentTechnique={setOpponentTechnique}
+            quality={quality}
+            setQuality={setQuality}
+            remainTime={remainTime}
+            setRemainTime={setRemainTime}
+            note={note}
+            setNote={setNote}
+            onAdd={addMarking}
+            techniques={techniques}
+          />
+        )}
       </div>
 
       <div className="flex items-center justify-between px-4 py-4 mt-6 rounded">
-        <CounterList
-          attackCount={attackAttemptCount}
-          parryCount={parryAttemptCount}
-          counterAttackCount={counterAttackAttemptCount}
-          onChange={handleCounterChange}
-        />
-    </div>
-</main>
-)
-  ;
+        <CounterList matchId={match.id} techniques={techniques} />
+      </div>
+
+    </main>
+  )
 }

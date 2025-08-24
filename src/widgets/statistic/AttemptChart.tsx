@@ -12,49 +12,41 @@ import {
   YAxis
 } from "recharts";
 import {NotesTooltip} from "@/widgets/statistic/NotesTooltip";
-import {AttemptDto} from "@ihyunwoo/engarde-ai-api-sdk/structures";
+import type {TopNoteDto, WinRateStatisticsResponse} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 interface AttemptChartProps {
-  attempt?: AttemptDto;
+  techniques?: WinRateStatisticsResponse;
 }
 
-export function AttemptChart({attempt}: AttemptChartProps) {
+export function AttemptChart({techniques}: AttemptChartProps) {
   const data = useMemo(() => {
-    if (!attempt) return [];
-    const arr = [
-      {
-        name: "Attack",
-        win: attempt.attackWinCount,
-        total: attempt.attackAttemptCount,
-        raw: "attack"
-      },
-      {
-        name: "Parry",
-        win: attempt.parryWinCount,
-        total: attempt.parryAttemptCount,
-        raw: "parry"
-      },
-      {
-        name: "Counter",
-        win: attempt.counterAttackWinCount,
-        total: attempt.counterAttackAttemptCount,
-        raw: "counter"
-      },
-    ];
+    if (!techniques) return [];
+    const arr = Object.entries(techniques).map(([id, technique]) => ({
+      name: technique.name,
+      win: technique.winCount,
+      total: technique.attemptCount,
+      id: id,
+      raw: technique.name.toLowerCase(),
+    }));
 
     return arr.map(x => ({
       name: x.name,
       raw: x.raw,
+      id: x.id,
       rate: x.total ? x.win / x.total : 0,
       labelValue: `${x.win} / ${x.total}`,
     }));
-  }, [attempt]);
+  }, [techniques]);
 
-  const notesMap = useMemo(() => ({
-    attack: attempt?.topNotesByType?.attack ?? [],
-    parry: attempt?.topNotesByType?.parry ?? [],
-    counter: attempt?.topNotesByType?.counterAttack ?? [],
-  }), [attempt]);
+  const notesMap = useMemo(() => {
+    if (!techniques) return new Map<number, TopNoteDto[]>();
+    return new Map(
+      Object.entries(techniques).map(
+        ([id, technique]) =>
+          [Number(id), technique.topNotes]
+      )
+    );
+  }, [techniques]);
 
   return (
     <div
@@ -72,8 +64,8 @@ export function AttemptChart({attempt}: AttemptChartProps) {
             <YAxis domain={[0, 1]} tickFormatter={(v) => `${v * 100}%`}/>
             <Tooltip content={({active, payload}) => {
               if (!active || !payload?.length) return null;
-              const raw = payload[0].payload.raw as 'attack' | 'parry' | 'counter';
-              return <NotesTooltip notes={notesMap[raw]}/>;
+              const id = Number(payload[0].payload.id)
+              return <NotesTooltip notes={notesMap.get(id)}/>;
             }}/>
             <Bar dataKey="rate" radius={[6, 6, 0, 0]}>
               <LabelList dataKey="labelValue" position="top"/>
