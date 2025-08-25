@@ -8,6 +8,7 @@ import {LoseChart} from "@/widgets/statistic/LoseChart";
 import {DateRangeForm} from "@/widgets/common/DataRangeForm";
 import MatchCountBadge from "@/widgets/Match/MatchCountBadge";
 import MatchesModal from "@/widgets/Match/MatchesModal";
+import {OpponentChart} from "@/widgets/statistic/OpponentChart";
 
 export default function StatisticsPage() {
   const initial = useMemo(() => last7DaysRange(), []);
@@ -59,6 +60,13 @@ export default function StatisticsPage() {
         {data && (
           <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
+              <div className="flex gap-6 overflow-x-auto pb-4">
+                {data.opponentStats.map((opponent) => (
+                  <div key={opponent.opponent.id}>
+                    <OpponentChart opponent={opponent} />
+                  </div>
+                ))}
+              </div>
               <AttemptChart
                 techniques={data.winRate}
               />

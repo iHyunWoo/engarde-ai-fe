@@ -1,7 +1,7 @@
 import {useRef, useState} from "react";
 import {mergeVideos} from "@/shared/lib/merge-videos";
 import {uploadToGCS} from "@/shared/lib/upload-file";
-import {Opponent} from "@/entities/opponent";
+import {MatchStage} from "@/entities/match-stage";
 
 export type MatchData = {
   tournamentName: string;
@@ -11,6 +11,7 @@ export type MatchData = {
   myScore: number;
   opponentScore: number;
   objectName?: string;
+  stage: MatchStage;
 };
 
 export function useMatchForm(initial?: MatchData) {
@@ -23,6 +24,7 @@ export function useMatchForm(initial?: MatchData) {
     myScore: 0,
     opponentScore: 0,
     objectName: undefined,
+    stage: 'preliminary',
     ...initial,
   });
   const updateMatchData = (field: keyof MatchData, value: unknown) => {
