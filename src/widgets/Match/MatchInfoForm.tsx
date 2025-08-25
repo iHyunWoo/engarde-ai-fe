@@ -10,6 +10,7 @@ import {MatchData} from "@/app/features/match/hooks/use-match-form";
 import {useSuggestions} from "@/shared/hooks/use-suggestion";
 import {getOpponentSuggest} from "@/app/features/opponent/api/get-opponent-suggest";
 import {OpponentResponse} from "@ihyunwoo/engarde-ai-api-sdk/structures";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/widgets/common/Select";
 
 interface MatchInfoSectionProps {
   matchData: MatchData;
@@ -172,6 +173,22 @@ export default function MatchInfoForm({
                 className="w-20 text-center border-gray-300 focus:border-gray-600 focus:ring-gray-400"
               />
             </div>
+
+            <div className="pt-4 pl-4">
+              <Select
+                value={matchData.stage}
+                onValueChange={(stage) => onUpdateMatchData('stage', stage)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select Stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="preliminary">Preliminary</SelectItem>
+                  <SelectItem value="main">Main</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
           </div>
         </div>
 
