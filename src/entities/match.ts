@@ -1,5 +1,6 @@
 import {Opponent} from "@/entities/opponent";
 import {TechniqueAttempt} from "@/entities/technique/technique-attempt";
+import {MatchStage} from "@/entities/match-stage";
 
 export interface Match {
   id: number;
@@ -11,4 +12,5 @@ export interface Match {
   opponentScore: number;
   techniqueAttempt: TechniqueAttempt[]
   createdAt: string;
+  stage: MatchStage;
 }

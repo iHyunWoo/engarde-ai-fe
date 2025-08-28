@@ -33,29 +33,30 @@ export function LoseChart({ techniques }: LoseChartProps) {
   }, [techniques]);
 
   return (
-    <div
-      className="rounded-2xl border bg-white p-4 shadow-sm"
-    >
+    <div className="rounded-2xl border bg-white p-4 shadow-sm">
       <div className="flex items-baseline justify-between mb-3">
         <h3 className="text-sm font-semibold">Loss types</h3>
         <span className="text-xs text-gray-500">(Counts)</span>
       </div>
-      <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{left: 8, right: 8}}>
-            <CartesianGrid strokeDasharray="3 3"/>
-            <XAxis dataKey="name"/>
-            <YAxis allowDecimals={false}/>
-            <Tooltip content={({ active, payload }) => {
-              if (!active || !payload?.length) return null;
-              const id = Number(payload[0].payload.id)
-              return <NotesTooltip notes={notesMap.get(id)}/>;
-            }} />
-            <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-              <LabelList dataKey="count" position="top"/>
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+      
+      <div className="overflow-x-auto">
+        <div className="h-64 min-w-[700px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ left: 8, right: 8 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis allowDecimals={false} />
+              <Tooltip content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const id = Number(payload[0].payload.id);
+                return <NotesTooltip notes={notesMap.get(id)} />;
+              }} />
+              <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+                <LabelList dataKey="count" position="top" />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

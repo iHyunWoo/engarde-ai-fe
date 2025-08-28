@@ -47,6 +47,7 @@ export function useMatchUpdate(matchId: number) {
       myScore: match.myScore ?? 0,
       opponentScore: match.opponentScore ?? 0,
       objectName: match.objectName,
+      stage: match.stage
     });
     setInitialLoading(false);
   }

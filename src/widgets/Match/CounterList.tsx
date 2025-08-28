@@ -72,10 +72,14 @@ export function CounterList({matchId, techniques}: CounterListProps) {
     getTechniqueAttempts()
   }, []);
 
+  // chidren flatten
+  const flattenedTechniques = flattenTechniques(techniques);
+
   // 이미 선택된 기술들 제외
-  const existingIds = new Set(attempts.map((attempt) => attempt.technique.id));
-  const availableTechniques = techniques.filter(
-    (technique) => !existingIds.has(technique.id)
+  const existingIds = new Set(attempts.map((a) => a.technique.id));
+  // 중복 제거
+  const availableTechniques = flattenedTechniques.filter(
+    (t) => !existingIds.has(t.id)
   );
 
   return (
@@ -130,4 +134,16 @@ export function CounterList({matchId, techniques}: CounterListProps) {
       </div>
     </div>
   );
+}
+
+function flattenTechniques(techniques: Technique[]): Technique[] {
+  const result: Technique[] = [];
+
+  function traverse(technique: Technique) {
+    result.push(technique);
+    technique.children?.forEach(traverse);
+  }
+
+  techniques.forEach(traverse);
+  return result;
 }

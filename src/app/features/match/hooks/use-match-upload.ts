@@ -37,6 +37,7 @@ export function useMatchUpload() {
           myScore: matchData.myScore,
           tournamentDate: matchData.tournamentDate,
           tournamentName: matchData.tournamentName,
+          stage: matchData.stage,
         }
       );
 
