@@ -10,6 +10,7 @@ import MatchCountBadge from "@/widgets/Match/MatchCountBadge";
 import MatchesModal from "@/widgets/Match/MatchesModal";
 import {OpponentChart} from "@/widgets/statistic/OpponentChart";
 import {SummaryChart} from "@/widgets/statistic/SummaryChart";
+import {TechniquesByMatchChart} from "@/widgets/statistic/TechniquesByMatchChart";
 
 export default function StatisticsPage() {
   const initial = useMemo(() => last7DaysRange(), []);
@@ -69,6 +70,14 @@ export default function StatisticsPage() {
                 title="Lose Techniques"
                 data={data.summary.lose}
               />
+            </div>
+
+            <div className="flex gap-6 overflow-x-auto pb-4">
+              {data.techniquesByMatch.map((techniques) => (
+                <div key={techniques.match.id}>
+                  <TechniquesByMatchChart techniques={techniques} />
+                </div>
+              ))}
             </div>
 
             <div className="flex gap-6 overflow-x-auto pb-4">

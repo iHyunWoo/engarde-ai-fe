@@ -53,10 +53,19 @@ export function SummaryChart({title, data}: SummaryChartProps) {
             {data.map((entry, index) => (
               <div key={entry.id} className="flex items-center gap-2 mb-1">
                 <div
-                  className="w-3 h-3 rounded-sm"
+                  className={`w-3 h-3 ${
+                    entry.isMainTechnique ? "rounded-full" : "rounded-sm"
+                  }`}
                   style={{backgroundColor: COLORS[index % COLORS.length]}}
                 />
-                <span>{entry.name}</span>
+                <span className="flex items-center">
+                  {entry.name}
+                  {entry.isMainTechnique && (
+                    <span className="ml-2 px-1.5 py-0.5 text-xs rounded bg-blue-100 text-blue-600">
+                    Main
+                  </span>
+                  )}
+                </span>
               </div>
             ))}
           </div>
