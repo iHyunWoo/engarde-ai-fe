@@ -5,7 +5,7 @@ import {useStatistics} from "@/app/features/statistic/hooks/use-statistics";
 import {AttemptChart} from "@/widgets/statistic/AttemptChart";
 import {last7DaysRange} from "@/shared/lib/format-percent";
 import {LoseChart} from "@/widgets/statistic/LoseChart";
-import {DateRangeForm} from "@/widgets/common/DataRangeForm";
+import {DateRangeForm} from "@/widgets/statistic/DataRangeForm";
 import MatchCountBadge from "@/widgets/Match/MatchCountBadge";
 import MatchesModal from "@/widgets/Match/MatchesModal";
 import {OpponentChart} from "@/widgets/statistic/OpponentChart";
@@ -18,7 +18,7 @@ export default function StatisticsPage() {
   const { data, loading, fetchData } = useStatistics();
 
   useEffect(() => {
-    fetchData(range.from, range.to)
+    fetchData(range.from, range.to, 'all')
   }, []);
 
   return (
@@ -34,7 +34,7 @@ export default function StatisticsPage() {
             to={range.to}
             onSubmit={(r) => {
               setRange(r);
-              fetchData(r.from, r.to);
+              fetchData(r.from, r.to, r.mode);
             }}
             loading={loading}
           />
