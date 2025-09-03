@@ -8,15 +8,7 @@ import {
 } from "recharts";
 import type {TechniquesByMatch} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 import {Card, CardContent, CardHeader} from "@/widgets/common/Card";
-
-const COLORS = [
-  "#8884d8",
-  "#82ca9d",
-  "#ffc658",
-  "#ff7f50",
-  "#a4de6c",
-  "#d0ed57",
-];
+import {CHART_COLORS} from "@/app/features/statistic/constants/chart-colors";
 
 interface TechniquesByMatchChartProps {
   techniques: TechniquesByMatch;
@@ -84,7 +76,7 @@ export function TechniquesByMatchChart({
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${entry.id}`}
-                  fill={COLORS[index % COLORS.length]}
+                  fill={CHART_COLORS[index % CHART_COLORS.length]}
                 />
               ))}
             </Pie>
@@ -98,7 +90,7 @@ export function TechniquesByMatchChart({
                   className={`w-3 h-3 ${
                     entry.isMainTechnique ? "rounded-full" : "rounded-sm"
                   }`}
-                  style={{backgroundColor: COLORS[index % COLORS.length]}}
+                  style={{backgroundColor: CHART_COLORS[index % CHART_COLORS.length]}}
                 />
                 <span className="flex items-center">
                   {entry.name}

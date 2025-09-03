@@ -1,13 +1,13 @@
 "use client"
 
-import {BarChart, ResponsiveContainer, YAxis, XAxis, Tooltip, Bar} from "recharts";
+import {BarChart, ResponsiveContainer, YAxis, XAxis, Tooltip, Bar, Cell} from "recharts";
 import {GetMatchListResponse, OpponentStat} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 import {useState} from "react";
-import {Match} from "@/entities/match";
 import {getMatchListByOpponent} from "@/app/features/match/api/get-match-list-by-opponent";
 import {MatchByOpponentModal} from "@/widgets/Match/MatchByOpponentModal";
 import {Button} from "@/widgets/common/Button";
 import {toast} from "sonner";
+import {CHART_COLORS} from "@/app/features/statistic/constants/chart-colors";
 
 interface OpponentChartProps {
   opponent: OpponentStat
@@ -67,7 +67,15 @@ export function OpponentChart({opponent}: OpponentChartProps) {
             <XAxis type="number" hide/>
             <YAxis dataKey="name" type="category" width={100}/>
             <Tooltip/>
-            <Bar dataKey="count"/>
+            <Bar dataKey="count">
+              {opponent.topWinTechniques.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.isMainTechnique ? CHART_COLORS[0] : CHART_COLORS[1]}
+                />
+              ))}
+            </Bar>
+
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -84,7 +92,14 @@ export function OpponentChart({opponent}: OpponentChartProps) {
             <XAxis type="number" hide/>
             <YAxis dataKey="name" type="category" width={100}/>
             <Tooltip/>
-            <Bar dataKey="count"/>
+            <Bar dataKey="count">
+              {opponent.topLoseTechniques.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.isMainTechnique ? CHART_COLORS[0] : CHART_COLORS[1]}
+                />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>

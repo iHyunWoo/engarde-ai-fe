@@ -1,11 +1,12 @@
 "use client"
 
 import {useMemo} from "react";
-import {Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {NotesTooltip} from "@/widgets/statistic/NotesTooltip";
 import type {
   LossCountStatisticsResponse, TopNoteDto
 } from "@ihyunwoo/engarde-ai-api-sdk/structures";
+import {CHART_COLORS} from "@/app/features/statistic/constants/chart-colors";
 
 interface LoseChartProps {
   techniques?: LossCountStatisticsResponse;
@@ -13,12 +14,13 @@ interface LoseChartProps {
 
 export function LoseChart({ techniques }: LoseChartProps) {
   const data = useMemo(() => {
-    if (!techniques) return [] as { name: string; count: number, raw: string }[];
+    if (!techniques) return [] as { name: string; count: number, raw: string, isMainTechnique: boolean }[];
     return Object.entries(techniques).map(([id, technique]) => ({
       name: technique.name,
       count: technique.count,
       id: id,
       raw: technique.name.toLowerCase(),
+      isMainTechnique: technique.isMainTechnique,
     }));
   }, [techniques]);
 
@@ -52,6 +54,12 @@ export function LoseChart({ techniques }: LoseChartProps) {
                 return <NotesTooltip notes={notesMap.get(id)} />;
               }} />
               <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.isMainTechnique ? CHART_COLORS[0] : CHART_COLORS[1]}
+                  />
+                ))}
                 <LabelList dataKey="count" position="top" />
               </Bar>
             </BarChart>

@@ -4,7 +4,7 @@ import {useMemo} from "react";
 import {
   Bar,
   BarChart,
-  CartesianGrid,
+  CartesianGrid, Cell,
   LabelList,
   ResponsiveContainer,
   Tooltip,
@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import {NotesTooltip} from "@/widgets/statistic/NotesTooltip";
 import type {TopNoteDto, WinRateStatisticsResponse} from "@ihyunwoo/engarde-ai-api-sdk/structures";
+import {CHART_COLORS} from "@/app/features/statistic/constants/chart-colors";
 
 interface AttemptChartProps {
   techniques?: WinRateStatisticsResponse;
@@ -21,21 +22,19 @@ interface AttemptChartProps {
 export function AttemptChart({techniques}: AttemptChartProps) {
   const data = useMemo(() => {
     if (!techniques) return [];
-    const arr = Object.entries(techniques).map(([id, technique]) => ({
-      name: technique.name,
-      win: technique.winCount,
-      total: technique.attemptCount,
-      id: id,
-      raw: technique.name.toLowerCase(),
-    }));
 
-    return arr.map(x => ({
-      name: x.name,
-      raw: x.raw,
-      id: x.id,
-      rate: x.total ? x.win / x.total : 0,
-      labelValue: `${x.win} / ${x.total}`,
-    }));
+    return Object.entries(techniques).map(([id, technique]) => {
+      const { name, winCount, attemptCount, isMainTechnique } = technique;
+
+      return {
+        id,
+        name,
+        raw: name.toLowerCase(),
+        rate: attemptCount ? winCount / attemptCount : 0,
+        labelValue: `${winCount} / ${attemptCount}`,
+        isMainTechnique,
+      };
+    });
   }, [techniques]);
 
   const notesMap = useMemo(() => {
@@ -68,6 +67,12 @@ export function AttemptChart({techniques}: AttemptChartProps) {
                 return <NotesTooltip notes={notesMap.get(id)} />;
               }} />
               <Bar dataKey="rate" radius={[6, 6, 0, 0]}>
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.isMainTechnique ? CHART_COLORS[0] : CHART_COLORS[1]}
+                  />
+                ))}
                 <LabelList dataKey="labelValue" position="top" />
               </Bar>
             </BarChart>
