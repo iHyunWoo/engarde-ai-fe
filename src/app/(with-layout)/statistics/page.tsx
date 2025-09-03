@@ -5,10 +5,12 @@ import {useStatistics} from "@/app/features/statistic/hooks/use-statistics";
 import {AttemptChart} from "@/widgets/statistic/AttemptChart";
 import {last7DaysRange} from "@/shared/lib/format-percent";
 import {LoseChart} from "@/widgets/statistic/LoseChart";
-import {DateRangeForm} from "@/widgets/common/DataRangeForm";
+import {DateRangeForm} from "@/widgets/statistic/DataRangeForm";
 import MatchCountBadge from "@/widgets/Match/MatchCountBadge";
 import MatchesModal from "@/widgets/Match/MatchesModal";
 import {OpponentChart} from "@/widgets/statistic/OpponentChart";
+import {SummaryChart} from "@/widgets/statistic/SummaryChart";
+import {TechniquesByMatchChart} from "@/widgets/statistic/TechniquesByMatchChart";
 
 export default function StatisticsPage() {
   const initial = useMemo(() => last7DaysRange(), []);
@@ -18,12 +20,12 @@ export default function StatisticsPage() {
   const { data, loading, fetchData } = useStatistics();
 
   useEffect(() => {
-    fetchData(range.from, range.to)
+    fetchData(range.from, range.to, 'all')
   }, []);
 
   return (
     <div className="min-h-dvh">
-      <div className="mx-auto max-w-[calc(100vw-260px)] px-4 py-8">
+      <div className="mx-auto px-4 py-8">
         <header className="mb-6">
           <h1 className="text-2xl font-semibold tracking-tight">Statistics</h1>
         </header>
@@ -34,7 +36,7 @@ export default function StatisticsPage() {
             to={range.to}
             onSubmit={(r) => {
               setRange(r);
-              fetchData(r.from, r.to);
+              fetchData(r.from, r.to, r.mode);
             }}
             loading={loading}
           />
@@ -59,6 +61,25 @@ export default function StatisticsPage() {
 
         {data && (
           <div className="lg:col-span-2 space-y-6">
+            <div className="flex flex-col md:flex-row gap-6">
+              <SummaryChart
+                title="Win Techniques"
+                data={data.summary.win}
+              />
+              <SummaryChart
+                title="Lose Techniques"
+                data={data.summary.lose}
+              />
+            </div>
+
+            <div className="flex gap-6 overflow-x-auto pb-4">
+              {data.techniquesByMatch.map((techniques) => (
+                <div key={techniques.match.id}>
+                  <TechniquesByMatchChart techniques={techniques} />
+                </div>
+              ))}
+            </div>
+
             <div className="flex gap-6 overflow-x-auto pb-4">
               {data.opponentStats.map((opponent) => (
                 <div key={opponent.opponent.id}>
@@ -66,6 +87,7 @@ export default function StatisticsPage() {
                 </div>
               ))}
             </div>
+
             <AttemptChart
               techniques={data.winRate}
             />
