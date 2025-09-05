@@ -4,7 +4,7 @@ import {useMemo} from "react";
 import {Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {NotesTooltip} from "@/widgets/statistic/NotesTooltip";
 import type {
-  LossCountStatisticsResponse, TopNoteDto
+  LossCountStatisticsResponse, TopNotesDTO
 } from "@ihyunwoo/engarde-ai-api-sdk/structures";
 import {CHART_COLORS} from "@/app/features/statistic/constants/chart-colors";
 
@@ -25,7 +25,7 @@ export function LoseChart({ techniques }: LoseChartProps) {
   }, [techniques]);
 
   const notesMap = useMemo(() => {
-    if (!techniques) return new Map<number, TopNoteDto[]>();
+    if (!techniques) return new Map<number, TopNotesDTO[]>();
     return new Map(
       Object.entries(techniques).map(
         ([id, technique]) =>
