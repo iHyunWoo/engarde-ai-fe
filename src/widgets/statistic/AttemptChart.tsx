@@ -12,7 +12,7 @@ import {
   YAxis
 } from "recharts";
 import {NotesTooltip} from "@/widgets/statistic/NotesTooltip";
-import type {TopNoteDto, WinRateStatisticsResponse} from "@ihyunwoo/engarde-ai-api-sdk/structures";
+import type {TopNotesDTO, WinRateStatisticsResponse} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 import {CHART_COLORS} from "@/app/features/statistic/constants/chart-colors";
 
 interface AttemptChartProps {
@@ -38,7 +38,7 @@ export function AttemptChart({techniques}: AttemptChartProps) {
   }, [techniques]);
 
   const notesMap = useMemo(() => {
-    if (!techniques) return new Map<number, TopNoteDto[]>();
+    if (!techniques) return new Map<number, TopNotesDTO[]>();
     return new Map(
       Object.entries(techniques).map(
         ([id, technique]) =>
