@@ -16,6 +16,7 @@ export default function Page() {
     handleMove,
     updateMatchData,
     handleUpload,
+    // handleUploadWithCloudMerge,
   } = useMatchUpload();
 
   return (
