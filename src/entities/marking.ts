@@ -1,6 +1,6 @@
 import {Technique} from "@/entities/technique/technique";
 
-export type MarkingResult = 'win' | 'lose' | 'attempt';
+export type MarkingResult = 'win' | 'lose' | 'attempt' | 'setEnded';
 
 export type MarkingQuality = 'good' | 'bad' | 'lucky'
 

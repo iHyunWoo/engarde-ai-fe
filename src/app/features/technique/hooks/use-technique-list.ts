@@ -16,16 +16,15 @@ export function useTechniqueList(
   const [showSubForm, setShowSubForm] = useState<Set<number>>(new Set());
 
   const addTechnique = async (technique: TechniqueFormState) => {
-    const { name, type } = technique
+    const { name } = technique
 
-    if (!name || !type) {
-      toast.warning('Technique name and type is required');
+    if (!name) {
+      toast.warning('Technique name is required');
       return;
     }
 
     const {code, data: newTechnique, message} = await createTechnique({
       name: name,
-      type: type,
     });
 
     if (code !== 201 || !newTechnique) {
@@ -37,15 +36,14 @@ export function useTechniqueList(
   };
 
   const addSubTechnique = async (parentId: number, technique: TechniqueFormState) => {
-    const { name, type } = technique
-    if (!name || !type) {
-      toast.warning("Technique name and type is required");
+    const { name } = technique
+    if (!name) {
+      toast.warning("Technique name is required");
       return;
     }
 
     const {code, data: newChild, message} = await createTechnique({
       name: name,
-      type: type,
       parentId,
     });
 
