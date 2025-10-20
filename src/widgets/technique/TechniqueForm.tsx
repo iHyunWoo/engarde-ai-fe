@@ -23,13 +23,11 @@ export function TechniqueForm({
                               }: TechniqueFormProps) {
 
   const [techniqueName, setTechniqueName] = useState(initialData?.name ?? '');
-  const [techniqueType, setTechniqueType] = useState<TechniqueType>(initialData?.type ?? "attack");
 
   const handleSubmit = () => {
     const payload: Technique = {
       id: id ?? 0,
       name: techniqueName ?? '',
-      type: techniqueType ?? 'attack',
       children: [],
     };
 
@@ -45,7 +43,7 @@ export function TechniqueForm({
         className="flex-1"
       />
 
-      <Select
+      {/* <Select
         value={techniqueType}
         onValueChange={(val) => setTechniqueType?.(val as TechniqueType)}
       >
@@ -58,7 +56,7 @@ export function TechniqueForm({
           <SelectItem value="defense">Defense</SelectItem>
           <SelectItem value="etc">Etc</SelectItem>
         </SelectContent>
-      </Select>
+      </Select> */}
 
       <Button onClick={handleSubmit}>
         {buttonText === "Add" ? (

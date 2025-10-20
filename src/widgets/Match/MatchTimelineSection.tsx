@@ -16,6 +16,7 @@ const PALETTE: Record<MarkingResult, {
   win:     { border: 'border-emerald-500', dot: 'bg-emerald-500', bg: 'bg-emerald-50', borderLight: 'border-emerald-200', badge: 'bg-emerald-100 text-emerald-700', label: '득점' },
   attempt: { border: 'border-sky-500',     dot: 'bg-sky-500',     bg: 'bg-sky-50',     borderLight: 'border-sky-200',     badge: 'bg-sky-100 text-sky-700',     label: '시도' },
   lose:    { border: 'border-rose-500',    dot: 'bg-rose-500',    bg: 'bg-rose-50',    borderLight: 'border-rose-200',    badge: 'bg-rose-100 text-rose-700',   label: '실점' },
+  setEnded: { border: 'border-gray-500',    dot: 'bg-gray-500',    bg: 'bg-gray-50',    borderLight: 'border-gray-200',    badge: 'bg-gray-100 text-gray-700',   label: '세트 종료' },
 };
 
 export function MatchTimelineSection({markings}: MatchTimelineSectionProps) {
