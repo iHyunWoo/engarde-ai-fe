@@ -106,10 +106,9 @@ export default function Page() {
     );
   };
 
-  const removeMarking = async (index: number) => {
-    const target = markings[index];
+  const removeMarking = async (id: number) => {
+    const target = markings.find(m => m.id === id);
     if (!target) return;
-    const id = target.id;
 
     const snapshot = markings;
 
