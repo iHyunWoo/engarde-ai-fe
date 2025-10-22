@@ -6,12 +6,14 @@ interface TechniqueSelectProps {
   techniques: Technique[];
   selected: Technique | null;
   onChange: (technique: Technique | null) => void;
+  disabled: boolean;
 }
 
 export function TechniqueSelect({
                                   techniques,
                                   selected,
                                   onChange,
+                                  disabled,
                                 }: TechniqueSelectProps) {
 
   return (
@@ -22,6 +24,7 @@ export function TechniqueSelect({
         const selectedTechnique = techniques.find((tech) => tech.id === Number(v));
         if (selectedTechnique) onChange(selectedTechnique);
       }}
+      disabled={disabled}
     >
       <SelectTrigger className="w-full">
             <span className="truncate">

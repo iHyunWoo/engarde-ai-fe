@@ -84,6 +84,7 @@ export function MarkingForm({
             techniques={techniques}
             selected={myTechnique}
             onChange={setMyTechnique}
+            disabled={resultType === 'setEnded'}
           />
         </div>
         <div className="w-1/2 space-y-2">
@@ -92,6 +93,7 @@ export function MarkingForm({
             techniques={techniques}
             selected={opponentTechnique}
             onChange={setOpponentTechnique}
+            disabled={resultType === 'setEnded'}
           />
         </div>
       </div>
@@ -99,7 +101,7 @@ export function MarkingForm({
       {/* Quality */}
       <div>
         <label className="block text-sm font-medium mb-1">Quality</label>
-        <Select value={quality} onValueChange={(value) => setQuality(value as MarkingQuality)}>
+        <Select value={quality} onValueChange={(value) => setQuality(value as MarkingQuality)} disabled={resultType === 'setEnded'}>
           <SelectTrigger className="w-1/2">
             <SelectValue placeholder="Select quality"/>
           </SelectTrigger>
@@ -124,7 +126,8 @@ export function MarkingForm({
               max={59}
               value={remainMinutes}
               onChange={(e) => setRemainMinutes(Math.max(0, Math.min(59, Number(e.target.value))))}
-              className="w-full border px-2 py-1 rounded text-sm"
+              className={`w-full border px-2 py-1 rounded text-sm ${resultType === 'setEnded' ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={resultType === 'setEnded'}
             />
             <p className="text-md text-gray-500 mt-1 text-center">m</p>
           </div>
@@ -135,7 +138,8 @@ export function MarkingForm({
               max={59}
               value={remainSeconds}
               onChange={(e) => setRemainSeconds(Math.max(0, Math.min(59, Number(e.target.value))))}
-              className="w-full border px-2 py-1 rounded text-sm"
+              className={`w-full border px-2 py-1 rounded text-sm ${resultType === 'setEnded' ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={resultType === 'setEnded'}
             />
             <p className="text-md text-gray-500 mt-1 text-center">s</p>
           </div>
@@ -153,9 +157,10 @@ export function MarkingForm({
               if (e.target.value.length <= 100) setNote(e.target.value)
             }}
             placeholder="Enter note (max 100 characters)"
-            className="w-full border px-2 py-1 rounded text-sm"
+            className={`w-full border px-2 py-1 rounded text-sm ${resultType === 'setEnded' ? 'cursor-not-allowed opacity-50' : ''}`}
             onFocus={() => setFocused(true)}
             onBlur={() => setTimeout(() => setFocused(false), 100)}
+            disabled={resultType === 'setEnded'}
           />
           {focused && suggestions.length > 0 && (
             <ul
