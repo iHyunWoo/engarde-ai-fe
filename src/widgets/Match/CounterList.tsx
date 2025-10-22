@@ -4,13 +4,17 @@ import {Counter} from "@/widgets/common/Counter";
 import {TechniqueAttempt} from "@/entities/technique/technique-attempt";
 import {Technique} from "@/entities/technique/technique";
 import {useEffect, useState} from "react";
-import {Plus} from "lucide-react";
+import {Plus, X} from "lucide-react";
 import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/widgets/common/Dialog";
 import {Command, CommandEmpty, CommandInput, CommandItem, CommandList} from "@/widgets/common/Command";
+import {AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle} from "@/widgets/common/AlertDialog";
 import {createTechniqueAttempt} from "@/app/features/technique/api/create-technique-attempt";
 import {toast} from "sonner";
 import {getTechniqueAttemptList} from "@/app/features/technique/api/get-technique-attempt-list";
 import {updateTechniqueAttemptCounter} from "@/app/features/technique/api/update-technique-attempt-counter";
+import {deleteTechniqueAttempt} from "@/app/features/technique/api/delete-technique-attempt";
+import { Button } from "../common/Button";
+import { Card } from "../common/Card";
 
 interface CounterListProps {
   matchId: number;
@@ -20,6 +24,8 @@ interface CounterListProps {
 export function CounterList({matchId, techniques}: CounterListProps) {
   const [open, setOpen] = useState(false);
   const [attempts, setAttempts] = useState<TechniqueAttempt[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [attemptToDelete, setAttemptToDelete] = useState<TechniqueAttempt | null>(null);
 
   const handleCounterChange = async (id: number, delta: number) => {
     const current = attempts.find((a) => a.id === id);
@@ -65,7 +71,37 @@ export function CounterList({matchId, techniques}: CounterListProps) {
     }
 
     setAttempts((prev) => [...prev, data]);
-    setOpen(false);
+  };
+
+  const handleDeleteClick = (attempt: TechniqueAttempt) => {
+    setAttemptToDelete(attempt);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!attemptToDelete) return;
+    
+    const prevAttempts = [...attempts];
+    
+    // 낙관적 삭제
+    setAttempts((prev) => prev.filter((attempt) => attempt.id !== attemptToDelete.id));
+
+    try {
+      const result = await deleteTechniqueAttempt(attemptToDelete.id);
+      if (result.code !== 200) {
+        throw new Error(result.message);
+      }
+      toast.success('Technique attempt deleted successfully');
+    } catch (error) {
+      // 롤백
+      setAttempts(prevAttempts);
+      toast.error('Failed to delete technique attempt');
+    } finally {
+      setDeleteDialogOpen(false);
+      setAttemptToDelete(null);
+      // Dialog 상태를 명시적으로 유지
+      setOpen(true);
+    }
   };
 
   useEffect(() => {
@@ -96,29 +132,83 @@ export function CounterList({matchId, techniques}: CounterListProps) {
           </div>
         </DialogTrigger>
 
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Select Technique</DialogTitle>
+            <DialogTitle>Manage Techniques</DialogTitle>
           </DialogHeader>
 
-          <Command className="rounded-lg border shadow-md">
-            <CommandInput placeholder="Search Technique" className="h-9" />
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              {availableTechniques.map((technique) => (
-                <CommandItem
-                  key={technique.id}
-                  value={technique.name}
-                  onSelect={() => handleSelectTechnique(technique.id)}
-                  className="cursor-pointer"
-                >
-                  <span>{technique.name}</span>
-                </CommandItem>
-              ))}
-            </CommandList>
-          </Command>
+          <div className="space-y-4">
+            {/* 기존 기술들 */}
+            {attempts.length > 0 && (
+              <div>
+                <h3 className="text-sm font-medium mb-2">Current Techniques</h3>
+                <div className="space-y-2">
+                  {attempts.map((attempt) => (
+                    <div key={attempt.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <p className="text-sm font-medium">{attempt.technique.name}</p>
+                      </div>
+                      <Button
+                        onClick={() => handleDeleteClick(attempt)}
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 새 기술 추가 */}
+            <div>
+              <h3 className="text-sm font-medium mb-2">Add New Technique</h3>
+              <Command className="rounded-lg border shadow-md">
+                <CommandInput placeholder="Search Technique" className="h-9" />
+                <CommandList>
+                  <CommandEmpty>No results found.</CommandEmpty>
+                  {availableTechniques.map((technique) => (
+                    <CommandItem
+                      key={technique.id}
+                      value={technique.name}
+                      onSelect={() => handleSelectTechnique(technique.id)}
+                      className="cursor-pointer"
+                    >
+                      <span>{technique.name}</span>
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
+
+      {/* 삭제 확인 다이얼로그 */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={(open) => {
+        setDeleteDialogOpen(open);
+        // AlertDialog가 닫힐 때 Dialog 상태를 명시적으로 유지
+        if (!open) {
+          setOpen(true);
+        }
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Technique Attempt</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;{attemptToDelete?.technique.name}&quot;? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-500 hover:bg-red-600">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Counter 리스트 */}
       <div className="flex flex-wrap space-x-4 space-y-4">

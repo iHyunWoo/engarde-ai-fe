@@ -1,6 +1,6 @@
 'use client';
 
-import {useState, useEffect} from 'react';
+import {useState, useEffect, Dispatch, SetStateAction} from 'react';
 import {ChevronDown, ChevronUp} from 'lucide-react';
 import {Button} from '@/widgets/common/Button';
 import {getMatch} from "@/app/features/match/api/get-match";
@@ -37,7 +37,8 @@ export default function Page() {
   const [opponentTechnique, setOpponentTechnique] = useState<Technique | null>(null);
   const [quality, setQuality] = useState<MarkingQuality>('good')
   const [note, setNote] = useState('');
-  const [remainTime, setRemainTime] = useState(0);
+  const [remainMinutes, setRemainMinutes] = useState(0);
+  const [remainSeconds, setRemainSeconds] = useState(0);
   const [techniques, setTechniques] = useState<Technique[]>([]);
 
 
@@ -80,6 +81,7 @@ export default function Page() {
   const addMarking = async () => {
     if (!videoRef) return;
     const time = Math.floor(videoRef.currentTime);
+    const remainTimeInSeconds = remainMinutes * 60 + remainSeconds;
     const body: CreateMarkingRequest = {
       matchId: Number(id),
       timestamp: time,
@@ -88,7 +90,7 @@ export default function Page() {
       opponentTechnique,
       quality,
       note,
-      remainTime,
+      remainTime: remainTimeInSeconds,
     }
     const res = await createMarking(body);
     const newMarking = res?.data;
@@ -104,10 +106,9 @@ export default function Page() {
     );
   };
 
-  const removeMarking = async (index: number) => {
-    const target = markings[index];
+  const removeMarking = async (id: number) => {
+    const target = markings.find(m => m.id === id);
     if (!target) return;
-    const id = target.id;
 
     const snapshot = markings;
 
@@ -176,8 +177,10 @@ export default function Page() {
             setOpponentTechnique={setOpponentTechnique}
             quality={quality}
             setQuality={setQuality}
-            remainTime={remainTime}
-            setRemainTime={setRemainTime}
+            remainMinutes={remainMinutes}
+            setRemainMinutes={setRemainMinutes}
+            remainSeconds={remainSeconds}
+            setRemainSeconds={setRemainSeconds}
             note={note}
             setNote={setNote}
             onAdd={addMarking}

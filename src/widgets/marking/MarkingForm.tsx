@@ -1,14 +1,15 @@
 import {Button} from '@/widgets/common/Button';
 import {MarkingQuality, MarkingResult} from '@/entities/marking';
-import {useRef, useState} from "react";
+import {useRef, useState, Dispatch, SetStateAction} from "react";
 import {formatTime} from "@/shared/lib/format-time";
 import {useNoteSuggestions} from "@/app/features/marking/hooks/use-note-suggestion";
 import {Technique} from "@/entities/technique/technique";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/widgets/common/Select";
 import {formatTechniqueName} from "@/app/features/technique/lib/format-technique-name";
 import {TechniqueSelect} from "@/widgets/technique/TechniqueSelect";
+import { Input } from '../common/Input';
 
-const markingResults: MarkingResult[] = ['win', 'lose', 'attempt'];
+const markingResults: MarkingResult[] = ['win', 'lose', 'attempt', 'setEnded'];
 const qualities: MarkingQuality[] = ['good', 'bad', 'lucky']
 
 export function MarkingForm({
@@ -20,25 +21,29 @@ export function MarkingForm({
                               setOpponentTechnique,
                               quality,
                               setQuality,
-                              remainTime,
-                              setRemainTime,
+                              remainMinutes,
+                              setRemainMinutes,
+                              remainSeconds,
+                              setRemainSeconds,
                               note,
                               setNote,
                               onAdd,
                               techniques,
                             }: {
   resultType: MarkingResult;
-  setResultType: (v: MarkingResult) => void;
+  setResultType: Dispatch<SetStateAction<MarkingResult>>;
   myTechnique: Technique | null
-  setMyTechnique: (v: Technique | null) => void
+  setMyTechnique: Dispatch<SetStateAction<Technique | null>>
   opponentTechnique: Technique | null
-  setOpponentTechnique: (v: Technique | null) => void
+  setOpponentTechnique: Dispatch<SetStateAction<Technique | null>>
   quality: MarkingQuality
-  setQuality: (v: MarkingQuality) => void;
-  remainTime: number;
-  setRemainTime: (v: number) => void;
+  setQuality: Dispatch<SetStateAction<MarkingQuality>>;
+  remainMinutes: number;
+  setRemainMinutes: Dispatch<SetStateAction<number>>;
+  remainSeconds: number;
+  setRemainSeconds: Dispatch<SetStateAction<number>>;
   note: string;
-  setNote: (v: string) => void;
+  setNote: Dispatch<SetStateAction<string>>;
   onAdd: () => void;
   techniques: Technique[]
 }) {
@@ -57,7 +62,7 @@ export function MarkingForm({
       {/* Result Type */}
       <div>
         <label className="block text-sm font-medium mb-1">Result Type</label>
-        <Select value={resultType} onValueChange={setResultType}>
+        <Select value={resultType} onValueChange={(value) => setResultType(value as MarkingResult)}>
           <SelectTrigger className="w-1/2">
             <SelectValue placeholder="Select result"/>
           </SelectTrigger>
@@ -79,6 +84,7 @@ export function MarkingForm({
             techniques={techniques}
             selected={myTechnique}
             onChange={setMyTechnique}
+            disabled={resultType === 'setEnded'}
           />
         </div>
         <div className="w-1/2 space-y-2">
@@ -87,6 +93,7 @@ export function MarkingForm({
             techniques={techniques}
             selected={opponentTechnique}
             onChange={setOpponentTechnique}
+            disabled={resultType === 'setEnded'}
           />
         </div>
       </div>
@@ -94,7 +101,7 @@ export function MarkingForm({
       {/* Quality */}
       <div>
         <label className="block text-sm font-medium mb-1">Quality</label>
-        <Select value={quality} onValueChange={setQuality}>
+        <Select value={quality} onValueChange={(value) => setQuality(value as MarkingQuality)} disabled={resultType === 'setEnded'}>
           <SelectTrigger className="w-1/2">
             <SelectValue placeholder="Select quality"/>
           </SelectTrigger>
@@ -111,17 +118,32 @@ export function MarkingForm({
       {/* Remain Time */}
       <div>
         <label className="block text-sm font-medium mb-1">Remain Time</label>
-        <input
-          type="number"
-          min={0}
-          value={remainTime}
-          onChange={(e) => setRemainTime(Number(e.target.value))}
-          className="w-full border px-2 py-1 rounded text-sm"
-          placeholder="Enter remaining time in seconds"
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          {formatTime(remainTime)}
-        </p>
+        <div className="flex gap-8">
+          <div className="flex-1 flex flex-row gap-2">
+            <Input
+              type="number"
+              min={0}
+              max={59}
+              value={remainMinutes}
+              onChange={(e) => setRemainMinutes(Math.max(0, Math.min(59, Number(e.target.value))))}
+              className={`w-full border px-2 py-1 rounded text-sm ${resultType === 'setEnded' ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={resultType === 'setEnded'}
+            />
+            <p className="text-md text-gray-500 mt-1 text-center">m</p>
+          </div>
+          <div className="flex-1 flex flex-row gap-2">
+            <Input
+              type="number"
+              min={0}
+              max={59}
+              value={remainSeconds}
+              onChange={(e) => setRemainSeconds(Math.max(0, Math.min(59, Number(e.target.value))))}
+              className={`w-full border px-2 py-1 rounded text-sm ${resultType === 'setEnded' ? 'cursor-not-allowed opacity-50' : ''}`}
+              disabled={resultType === 'setEnded'}
+            />
+            <p className="text-md text-gray-500 mt-1 text-center">s</p>
+          </div>
+        </div>
       </div>
 
       {/* Note */}
@@ -135,9 +157,10 @@ export function MarkingForm({
               if (e.target.value.length <= 100) setNote(e.target.value)
             }}
             placeholder="Enter note (max 100 characters)"
-            className="w-full border px-2 py-1 rounded text-sm"
+            className={`w-full border px-2 py-1 rounded text-sm ${resultType === 'setEnded' ? 'cursor-not-allowed opacity-50' : ''}`}
             onFocus={() => setFocused(true)}
             onBlur={() => setTimeout(() => setFocused(false), 100)}
+            disabled={resultType === 'setEnded'}
           />
           {focused && suggestions.length > 0 && (
             <ul
