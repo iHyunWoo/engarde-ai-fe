@@ -198,7 +198,7 @@ export function CounterList({matchId, techniques}: CounterListProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Technique Attempt</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{attemptToDelete?.technique.name}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{attemptToDelete?.technique.name}&quot;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
