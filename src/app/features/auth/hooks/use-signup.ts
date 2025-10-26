@@ -24,7 +24,13 @@ export function useSignup() {
       return;
     }
 
-    const res = await signup({ email, password, name });
+    // invite code 체크
+    if (!inviteCode) {
+      toast('Invite code is required');
+      return;
+    }
+
+    const res = await signup({ email, password, name, inviteCode });
 
     if (!res) {
       toast('Unknown error');
