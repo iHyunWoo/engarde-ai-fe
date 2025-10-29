@@ -1,12 +1,81 @@
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@/widgets/common/Button';
+import { Card, CardContent } from '@/widgets/common/Card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/widgets/common/Dialog';
+import { useGetTeamInfiniteQuery } from '@/app/features/team/hooks/use-get-team-infinite-query';
+import { useCreateTeam } from '@/app/features/team/hooks/use-create-team';
+import { TeamListItem } from '@/widgets/team/TeamListItem';
+import { TeamForm } from '@/widgets/team/TeamForm';
+import { LoadingSpinner } from '@/widgets/common/Spinner';
+import { Plus } from 'lucide-react';
+
 export default function TeamsPage() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { teams, isLoading, loaderRef, isFetchingNextPage, hasNextPage } = useGetTeamInfiniteQuery();
+  const { handleCreateTeam } = useCreateTeam();
+
+  const handleSubmit = async (team: { name: string; description?: string }) => {
+    await handleCreateTeam(team);
+    setIsDialogOpen(false);
+  };
+
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">팀 관리</h1>
-      <p className="text-gray-600">관리자만 접근할 수 있는 페이지입니다.</p>
-      <div className="mt-4 p-4 bg-green-50 rounded-lg">
-        <p className="font-semibold">현재 역할: ADMIN</p>
-        <p className="text-sm text-gray-600 mt-1">이 페이지는 관리자 계정으로만 접근할 수 있습니다.</p>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">Team Management</h1>
+        </div>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Team
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create Team</DialogTitle>
+            </DialogHeader>
+            <TeamForm
+              onSubmit={handleSubmit}
+              onCancel={() => setIsDialogOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
+
+      {isLoading ? (
+        <div className="flex justify-center items-center py-8">
+          <LoadingSpinner />
+        </div>
+      ) : teams.length === 0 ? (
+        <Card>
+          <CardContent className="py-8">
+            <p className="text-center text-gray-400">No teams created yet.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {teams.map((team) => (
+            <TeamListItem key={team.id} team={team} />
+          ))}
+          <div ref={loaderRef} className="h-12" />
+          {isFetchingNextPage && (
+            <div className="flex justify-center items-center py-4">
+              <LoadingSpinner size="sm" />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
