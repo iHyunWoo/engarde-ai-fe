@@ -7,7 +7,7 @@ import { Input } from '@/widgets/common/Input';
 import { Label } from '@/widgets/common/Label';
 import { LoadingSpinner } from '@/widgets/common/Spinner';
 import { useTeamDetail } from '@/app/features/team/hooks/use-team-detail';
-import { ArrowLeft, Copy, RefreshCw, UserPlus, Users } from 'lucide-react';
+import { ArrowLeft, UserPlus, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { regenerateInviteCode } from '@/app/features/team/api/regenerate-invite-code';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,6 +15,9 @@ import { queryKeys } from '@/shared/lib/query-keys';
 import { CoachAssignmentDialog } from '@/widgets/team/CoachAssignmentDialog';
 import { assignCoachToTeam } from '@/app/features/admin/api/assign-coach-to-team';
 import { removeCoachFromTeam } from '@/app/features/admin/api/remove-coach-from-team';
+import { InviteCodeSection } from '@/widgets/team/InviteCodeSection';
+import { TeamMemberList } from '@/widgets/team/TeamMemberList';
+import { TeamOverview } from '@/widgets/team/TeamOverview';
 import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 
@@ -46,13 +49,6 @@ export default function TeamDetailPage() {
     toast.success('Invite code copied to clipboard');
   };
 
-  const isInviteCodeExpired = () => {
-    if (!data?.data?.inviteCodeExpiresAt) return false;
-    return new Date(data.data.inviteCodeExpiresAt) < new Date();
-  };
-
-  const needsRegeneration = !data?.data?.inviteCode || isInviteCodeExpired();
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -83,67 +79,17 @@ export default function TeamDetailPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">{team.name}</h1>
+      <TeamOverview team={team} />
 
       <div className="space-y-6">
-        {/* Team Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Team Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label>Description</Label>
-              <p className="text-sm text-muted-foreground mt-1">
-                {team.description || 'No description'}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Invite Code */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Invite Code</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {needsRegeneration ? (
-              <div className="p-4 bg-yellow-50 rounded-lg">
-                <p className="text-sm text-yellow-800 mb-4">
-                  {!team.inviteCode
-                    ? 'No invite code generated yet.'
-                    : 'Invite code has expired.'}
-                </p>
-                <Button onClick={handleRegenerateInviteCode}>
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Generate Invite Code
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={team.inviteCode}
-                    readOnly
-                    className="font-mono"
-                  />
-                  <Button variant="outline" onClick={handleCopyInviteCode}>
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" onClick={handleRegenerateInviteCode}>
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Regenerate
-                  </Button>
-                </div>
-                {team.inviteCodeExpiresAt && (
-                  <p className="text-xs text-muted-foreground">
-                    Expires at: {new Date(team.inviteCodeExpiresAt).toLocaleString()}
-                  </p>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <InviteCodeSection
+          inviteCode={team.inviteCode}
+          inviteCodeExpiresAt={team.inviteCodeExpiresAt}
+          onRegenerate={handleRegenerateInviteCode}
+          onCopy={handleCopyInviteCode}
+        />
 
         {/* Coach Assignment */}
         <Card>
@@ -214,35 +160,7 @@ export default function TeamDetailPage() {
         />
 
         {/* Members */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              Members ({team.members.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {team.members.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No members yet
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {team.members.map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between p-3 border rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium">{member.name}</p>
-                      <p className="text-sm text-muted-foreground">{member.email}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <TeamMemberList members={team.members} />
       </div>
     </div>
   );

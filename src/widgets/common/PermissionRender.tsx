@@ -26,7 +26,7 @@ export function PermissionRender({
   }
 
   // 역할 체크
-  if (requiredRole && !hasRole(requiredRole)) {
+  if (requiredRole && !hasRole([requiredRole])) {
     return <>{fallback}</>;
   }
 

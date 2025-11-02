@@ -1,6 +1,6 @@
 "use client"
 
-import {ChartLine, Gamepad2, Upload, User, Settings, Users, Shield} from "lucide-react"
+import {ChartLine, Gamepad2, Upload, User, Settings, Users, Shield, type LucideIcon} from "lucide-react"
 
 import {
   Sidebar,
@@ -21,7 +21,7 @@ import { UserRole } from '@/entities/user-role';
 interface MenuItem {
   title: string;
   url: string;
-  icon: any;
+  icon: LucideIcon;
   requiredRole?: UserRole[];
 }
 

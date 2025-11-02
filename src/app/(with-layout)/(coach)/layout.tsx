@@ -9,7 +9,7 @@ export default function CoachLayout({
   children: ReactNode;
 }>) {
   return (
-    <ProtectedRoute requiredRole={['ADMIN', 'COACH']}>
+    <ProtectedRoute requiredRole={['COACH']}>
       {children}
     </ProtectedRoute>
   );

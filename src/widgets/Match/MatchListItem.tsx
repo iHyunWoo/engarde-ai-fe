@@ -4,12 +4,16 @@ import {GetMatchListResponse} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 
 interface MatchListItemProps {
   match: GetMatchListResponse;
+  href?: string;
 }
 
-export function MatchListItem({match}: MatchListItemProps) {
+export function MatchListItem({match, href}: MatchListItemProps) {
+  const defaultHref = `/matches/${match.id}`;
+  const finalHref = href || defaultHref;
+
   return (
     <Link
-      href={`/matches/${match.id}`}
+      href={finalHref}
       className="flex items-center gap-4 p-4 border rounded-md shadow-sm hover:shadow-md transition"
     >
       {/*{match.thumbnailUrl && (*/}
