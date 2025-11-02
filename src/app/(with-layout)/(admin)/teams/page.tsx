@@ -64,7 +64,7 @@ export default function TeamsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="flex flex-col gap-4">
           {teams.map((team) => (
             <TeamListItem key={team.id} team={team} />
           ))}
