@@ -51,7 +51,12 @@ export default function Page() {
     <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {match && (
         <>
-          <MatchInfoSection match={match} />
+          <MatchInfoSection
+            match={match}
+            onCoachFeedbackChange={(feedback) =>
+              setMatch((prev) => (prev ? { ...prev, coachFeedback: feedback ?? null } : prev))
+            }
+          />
 
           {videoUrl && (
             <div className="w-full flex flex-col gap-2">

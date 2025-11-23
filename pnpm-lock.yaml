@@ -15,8 +15,8 @@ importers:
         specifier: ^0.12.2
         version: 0.12.2
       '@ihyunwoo/engarde-ai-api-sdk':
-        specifier: 0.3.14
-        version: 0.3.14
+        specifier: 0.3.15
+        version: 0.3.15
       '@nestia/fetcher':
         specifier: ^7.3.3
         version: 7.3.3
@@ -249,8 +249,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@ihyunwoo/engarde-ai-api-sdk@0.3.14':
-    resolution: {integrity: sha512-fuOOz0VmGO7y06gRtKsJlQtwBW+kXGTQnL5AkSiaFb9++8QxiJmRHJdxQSbAnReOBFc7nr/e6FQXW2Ux7uifkA==, tarball: https://npm.pkg.github.com/download/@ihyunwoo/engarde-ai-api-sdk/0.3.14/e935361d3c99c273bbec24847c521afe7e612bed}
+  '@ihyunwoo/engarde-ai-api-sdk@0.3.15':
+    resolution: {integrity: sha512-RLzk0v8zduM2950wSb7h2z8z1M4CRgTGwU1XEAZIRYPRaDH4GysTocHqd/NG91tLa2znjIwyYHbdeWGq2mgqfw==, tarball: https://npm.pkg.github.com/download/@ihyunwoo/engarde-ai-api-sdk/0.3.15/8a7c906364813f4c13f538cceebe2d008cee9422}
 
   '@img/sharp-darwin-arm64@0.34.3':
     resolution: {integrity: sha512-ryFMfvxxpQRsgZJqBd4wsttYQbCxsJksrv9Lw/v798JcQ8+w84mBWuXwl+TT0WJ/WrYOLaYpwQXi3sA9nTIaIg==}
@@ -2771,7 +2771,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@ihyunwoo/engarde-ai-api-sdk@0.3.14': {}
+  '@ihyunwoo/engarde-ai-api-sdk@0.3.15': {}
 
   '@img/sharp-darwin-arm64@0.34.3':
     optionalDependencies:

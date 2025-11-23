@@ -11,6 +11,11 @@ export const queryKeys = {
       }
       return ['coach', 'student-matches', userId] as const;
     },
+    studentMatchDetail: (userId: string, matchId: string) =>
+      ['coach', 'student-match-detail', userId, matchId] as const,
+    studentMatchVideo: (objectName: string) =>
+      ['coach', 'student-match-video', objectName] as const,
+    studentMatchMarkings: (matchId: string | number) =>
+      ['coach', 'student-match-markings', matchId] as const,
   },
 };
-

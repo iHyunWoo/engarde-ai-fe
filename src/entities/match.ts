@@ -13,4 +13,5 @@ export interface Match {
   techniqueAttempt: TechniqueAttempt[]
   createdAt: string;
   stage: MatchStage;
+  coachFeedback?: string | null;
 }
