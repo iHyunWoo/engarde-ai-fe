@@ -35,7 +35,7 @@ export default function StudentStatisticsPage() {
     }
   }, [userId]);
 
-  const pageTitle = studentName ? `${studentName}의 통계` : '학생 통계';
+  const pageTitle = studentName ? `${studentName}'s Statistics` : 'Student Statistics';
 
   return (
     <div className="min-h-dvh">
