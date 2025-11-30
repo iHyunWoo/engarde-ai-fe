@@ -5,8 +5,9 @@ import { MatchListItem } from '@/widgets/Match/MatchListItem';
 import { useStudentMatchesInfinite } from '@/app/features/coach/hooks/use-student-matches-infinite';
 import { useStudentName } from '@/app/features/team/hooks/use-student-name';
 import { LoadingSpinner } from '@/widgets/common/Spinner';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChartLine } from 'lucide-react';
 import { Button } from '@/widgets/common/Button';
+import Link from 'next/link';
 
 export default function StudentMatchesPage() {
   const params = useParams();
@@ -19,11 +20,19 @@ export default function StudentMatchesPage() {
 
   return (
     <main className="px-4 py-8 space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => router.back()}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-        </Button>
-        <h1 className="text-2xl font-bold">{pageTitle}</h1>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={() => router.back()}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+          </Button>
+          <h1 className="text-2xl font-bold">{pageTitle}</h1>
+        </div>
+        <Link href={`/my-team/students/${userId}/statistics`}>
+          <Button>
+            <ChartLine className="w-4 h-4 mr-2" />
+            View Statistics
+          </Button>
+        </Link>
       </div>
 
       {isLoading && matches.length === 0 ? (

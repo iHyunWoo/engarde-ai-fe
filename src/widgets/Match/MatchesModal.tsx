@@ -2,6 +2,7 @@
 
 import { Button } from '@/widgets/common/Button';
 import {useInfiniteMatchList} from "@/app/features/match/hooks/use-infinte-match-list";
+import {useStudentMatchesInfinite} from "@/app/features/coach/hooks/use-student-matches-infinite";
 import {formatDate} from "@/shared/lib/format-date";
 import {useEffect} from "react";
 import Link from "next/link";
@@ -12,18 +13,30 @@ export default function MatchesModal({
                                        onCloseAction,
                                        from,
                                        to,
+                                       userId,
                                      }: {
   open: boolean;
   onCloseAction: () => void;
   from: string;
   to: string;
+  userId?: string;
 }) {
-  // 페이징 상태
-  const { matches, loading, loaderRef, fetchData, hasMore } = useInfiniteMatchList(from, to);
+  // 학생 매치인 경우와 일반 매치인 경우를 구분
+  const studentMatchesQuery = useStudentMatchesInfinite(userId || '', from, to);
+  const regularMatchesQuery = useInfiniteMatchList(from, to);
+
+  const isStudentMode = !!userId;
+  const matches = isStudentMode ? studentMatchesQuery.matches : regularMatchesQuery.matches;
+  const loading = isStudentMode ? studentMatchesQuery.isLoading : regularMatchesQuery.loading;
+  const loaderRef = isStudentMode ? studentMatchesQuery.loaderRef : regularMatchesQuery.loaderRef;
+  const hasMore = isStudentMode ? studentMatchesQuery.hasNextPage : regularMatchesQuery.hasMore;
+  const fetchData = isStudentMode ? () => {} : regularMatchesQuery.fetchData;
 
   useEffect(() => {
-    fetchData()
-  }, [from, to])
+    if (!isStudentMode) {
+      fetchData();
+    }
+  }, [from, to, isStudentMode])
 
   useEffect(() => {
     if (!open) return;
@@ -67,7 +80,7 @@ export default function MatchesModal({
                   className="w-full px-4 py-3"
                 >
                   <Link
-                    href={`/matches/${match.id}`}
+                    href={userId ? `/my-team/students/${userId}/matches/${match.id}` : `/matches/${match.id}`}
                     className="flex w-full items-center gap-4 p-4 rounded-md hover:shadow-sm transition"
                   >
                     <div className="w-full flex-1">
