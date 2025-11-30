@@ -3,6 +3,8 @@ import {useUserStore} from "@/shared/hooks/use-user-store";
 import {User} from "@/entities/user";
 import {useRouter} from "next/navigation";
 import {toast} from "sonner";
+import { useUserInfo } from "./use-user-info";
+import { getUserInfo } from "../api/get-user-info";
 
 export function useLogin() {
   const { setUser } = useUserStore();
@@ -29,7 +31,14 @@ export function useLogin() {
 
     const user: User = { id: userId, email, name };
     setUser(user);
-    router.push('/matches');
+
+    const userInfo = await getUserInfo();
+
+    if (userInfo?.role === 'COACH') {
+      router.push('/my-team');
+    } else {
+      router.push('/matches');
+    }
   };
 
   return { handleLogin };

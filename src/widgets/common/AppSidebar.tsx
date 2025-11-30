@@ -12,10 +12,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
 } from "@/widgets/common/Sidebar"
 import {useUserStore} from "@/shared/hooks/use-user-store";
 import {useUserInfo} from "@/app/features/auth/hooks/use-user-info";
 import {Separator} from "@/widgets/common/Separator";
+import {Skeleton} from "@/widgets/common/Skeleton";
 import { UserRole } from '@/entities/user-role';
 
 interface MenuItem {
@@ -74,10 +76,34 @@ const coachItems: MenuItem[] = [
 
 export function AppSidebar() {
   const { user } = useUserStore();
-  const { hasRole } = useUserInfo();
+  const { hasRole, loading } = useUserInfo();
 
   const hasAdminAccess = hasRole(['ADMIN']);
   const hasCoachAccess = hasRole(['COACH']);
+
+  if (loading) {
+    return (
+      <Sidebar>
+        <SidebarHeader>
+          <Skeleton className="h-7 w-32" />
+        </SidebarHeader>
+        <Separator/>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {baseItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuSkeleton showIcon />
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+  }
 
   return (
     <Sidebar>
