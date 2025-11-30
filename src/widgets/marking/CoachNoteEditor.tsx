@@ -33,12 +33,12 @@ export function CoachNoteEditor({
 
   return (
     <div className="px-2 pb-2 pt-2 border-t bg-gray-50">
-      {/* 학생 노트 표시 */}
+      {/* Student Note Display */}
       {hasStudentNote && (
         <div className="mb-2 text-xs bg-white p-2 rounded border border-gray-200">
           <div className="flex items-center gap-1.5 text-gray-600 mb-1">
             <User className="w-3.5 h-3.5" />
-            <span className="font-medium">학생 노트</span>
+            <span className="font-medium">Student Note</span>
           </div>
           <div className="text-gray-700 pl-5">
             {studentNote}
@@ -47,17 +47,17 @@ export function CoachNoteEditor({
       )}
 
       {isEditing ? (
-        // 편집 모드
+        // Edit Mode
         <div className="space-y-2">
           <div className="bg-white rounded border border-gray-200">
             <div className="flex items-center gap-1.5 px-3 pt-2 pb-1 text-xs text-blue-700 border-b border-gray-200">
               <GraduationCap className="w-3.5 h-3.5" />
-              <span className="font-medium">코치 노트 작성</span>
+              <span className="font-medium">Write Coach Note</span>
             </div>
             <Textarea
               value={editedCoachNote}
               onChange={(e) => onCoachNoteChange(e.target.value)}
-              placeholder="코치 코멘트를 입력하세요..."
+              placeholder="Enter coach comment..."
               className="text-sm min-h-24 bg-white border-0 rounded-t-none"
               maxLength={500}
             />
@@ -74,7 +74,7 @@ export function CoachNoteEditor({
                 disabled={isSaving}
                 className="h-7 text-xs"
               >
-                취소
+                Cancel
               </Button>
               <Button
                 size="sm"
@@ -82,17 +82,17 @@ export function CoachNoteEditor({
                 disabled={isSaving}
                 className="h-7 text-xs"
               >
-                {isSaving ? '저장 중...' : '저장'}
+                {isSaving ? 'Saving...' : 'Save'}
               </Button>
             </div>
           </div>
         </div>
       ) : hasCoachNote ? (
-        // 코멘트가 있는 경우: 표시 + 편집/삭제 버튼
+        // Coach Note Display: Show + Edit/Delete buttons
         <div className="bg-white rounded border border-blue-200">
           <div className="flex items-center gap-1.5 px-3 pt-2 pb-1 text-xs text-blue-700 border-b border-blue-200">
             <GraduationCap className="w-3.5 h-3.5" />
-            <span className="font-medium">코치 노트</span>
+            <span className="font-medium">Coach Note</span>
           </div>
           <div className="flex items-start justify-between gap-2 p-3">
             <div className="flex-1 text-xs text-blue-800">
@@ -105,7 +105,7 @@ export function CoachNoteEditor({
                 onClick={onStartEditing}
                 disabled={isSaving}
                 className="h-7 w-7 p-0"
-                title="편집"
+                title="Edit"
               >
                 <Pencil className="w-3.5 h-3.5" />
               </Button>
@@ -115,7 +115,7 @@ export function CoachNoteEditor({
                 onClick={onDelete}
                 disabled={isSaving}
                 className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
-                title="삭제"
+                title="Delete"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </Button>
@@ -123,11 +123,11 @@ export function CoachNoteEditor({
           </div>
         </div>
       ) : (
-        // 코멘트가 없는 경우: 생성하기 버튼
+        // No Coach Note: Create button
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-xs text-gray-500">
             <GraduationCap className="w-3.5 h-3.5" />
-            <span>코치 노트가 없습니다.</span>
+            <span>No coach note.</span>
           </div>
           <Button
             size="sm"
@@ -136,7 +136,7 @@ export function CoachNoteEditor({
             className="h-7 text-xs"
           >
             <Plus className="w-3.5 h-3.5 mr-1" />
-            작성
+            Create
           </Button>
         </div>
       )}
