@@ -1,12 +1,14 @@
 import {Marking} from "@/entities/marking";
 import {Button} from "@/widgets/common/Button";
-import {Clock, X, Bookmark, Pencil, Trash2, Plus} from "lucide-react";
+import {Clock, X, Bookmark} from "lucide-react";
 import {formatTime} from "@/shared/lib/format-time";
 import {useState, useEffect} from "react";
 import {QualityPill} from "@/widgets/marking/MarkingQualityFill";
 import {formatTechniqueName} from "@/app/features/technique/lib/format-technique-name";
 import {Separator} from "@/widgets/common/Separator";
-import {Textarea} from "@/widgets/common/Textarea";
+import {StudentNote} from "@/widgets/marking/StudentNote";
+import {CoachNote} from "@/widgets/marking/CoachNote";
+import {CoachNoteEditor} from "@/widgets/marking/CoachNoteEditor";
 
 export function MarkingList({
                               markings,
@@ -167,119 +169,28 @@ export function MarkingList({
             {!isCoachMode && (
               <>
                 {hasStudentNote && (
-                  <div className="px-2 pb-2 pt-1 border-t bg-gray-50">
-                    <div className="text-xs text-gray-700">
-                      <span className="font-medium">Note: </span>
-                      {mark.note}
-                    </div>
-                  </div>
+                  <StudentNote note={mark.note!} />
                 )}
                 {hasCoachNote && (
-                  <div className="px-2 pb-2 pt-1 border-t bg-blue-50">
-                    <div className="text-xs text-blue-700">
-                      {mark.coachNote}
-                    </div>
-                  </div>
+                  <CoachNote note={mark.coachNote!} />
                 )}
               </>
             )}
 
             {/* 코치 모드: 코멘트 섹션 */}
             {isCoachMode && (
-              <div className="px-2 pb-2 pt-2 border-t bg-gray-50">
-                {/* 학생 노트 표시 (편집 모드가 아니어도 항상 표시) */}
-                {hasStudentNote && !isEditing && (
-                  <div className="mb-2 text-xs text-gray-600 bg-white p-2 rounded border">
-                    <span className="font-medium">Student Note: </span>
-                    {mark.note}
-                  </div>
-                )}
-                {isEditing ? (
-                  // 편집 모드
-                  <div className="space-y-2">
-                    {mark.note && (
-                      <div className="text-xs text-gray-600 bg-white p-2 rounded border">
-                        <span className="font-medium">Student Note: </span>
-                        {mark.note}
-                      </div>
-                    )}
-                    <Textarea
-                      value={coachNotes[mark.id] ?? ''}
-                      onChange={(e) => handleCoachCommentChange(mark.id, e.target.value)}
-                      placeholder="Enter coach comment..."
-                      className="text-sm min-h-24 bg-white"
-                      maxLength={500}
-                    />
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-500">
-                        {(coachNotes[mark.id] ?? '').length}/500
-                      </span>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => cancelEditing(mark.id)}
-                          disabled={isSaving}
-                          className="h-7 text-xs"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleSaveCoachComment(mark.id)}
-                          disabled={isSaving}
-                          className="h-7 text-xs"
-                        >
-                          {isSaving ? 'Saving...' : 'Save'}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ) : hasCoachNote ? (
-                  // 코멘트가 있는 경우: 표시 + 편집/삭제 버튼
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 text-xs text-gray-700 bg-white p-2 rounded border">
-                      {mark.coachNote}
-                    </div>
-                    <div className="flex gap-1">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => startEditing(mark.id)}
-                        disabled={isSaving}
-                        className="h-7 w-7 p-0"
-                        title="Edit"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDeleteCoachComment(mark.id)}
-                        disabled={isSaving}
-                        className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  // 코멘트가 없는 경우: 생성하기 버튼
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">No coach comment.</span>
-                    <Button
-                      size="sm"
-                      onClick={() => startEditing(mark.id)}
-                      disabled={isSaving}
-                      className="h-7 text-xs"
-                    >
-                      <Plus className="w-3.5 h-3.5 mr-1" />
-                      Create
-                    </Button>
-                  </div>
-                )}
-              </div>
+              <CoachNoteEditor
+                studentNote={mark.note}
+                coachNote={mark.coachNote}
+                isEditing={isEditing}
+                isSaving={isSaving}
+                editedCoachNote={coachNotes[mark.id] ?? ''}
+                onCoachNoteChange={(value) => handleCoachCommentChange(mark.id, value)}
+                onStartEditing={() => startEditing(mark.id)}
+                onCancelEditing={() => cancelEditing(mark.id)}
+                onSave={() => handleSaveCoachComment(mark.id)}
+                onDelete={() => handleDeleteCoachComment(mark.id)}
+              />
             )}
           </div>
         );
