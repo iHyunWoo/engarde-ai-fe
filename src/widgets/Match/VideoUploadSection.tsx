@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button } from '@/widgets/common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/widgets/common/Card';
-import { ChevronDown, ChevronUp, Upload, Video, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Info, Upload, Video, X } from 'lucide-react';
 import {VideoThumbnail} from "@/widgets/Match/VideoThumbnail";
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/widgets/common/Tooltip';
 
 interface VideoUploadSectionProps {
   files: File[];
@@ -70,6 +71,16 @@ export default function VideoUploadSection({
         <CardTitle className="flex items-center gap-2 text-xl text-gray-800">
           <Video className="w-5 h-5 text-gray-700" />
           Video Upload <span className="text-red-500">*</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className="inline-flex items-center">
+                <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 transition-colors" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs">
+              <p>You can upload up to 5 videos. Videos will be merged automatically when you upload.</p>
+            </TooltipContent>
+          </Tooltip>
           <p className="ml-auto text-sm text-gray-500">{files.length}/5</p>
         </CardTitle>
       </CardHeader>
