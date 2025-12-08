@@ -42,6 +42,8 @@ export default function MatchInfoForm({
 
   const { suggestions } = useSuggestions(query, handleSuggest, focused, { minChars: 1 })
 
+  const isFormValid = matchData.tournamentName?.trim() !== '' && matchData.tournamentDate?.trim() !== '';
+
   return (
     <Card className="shadow-md border-0 bg-white/80 backdrop-blur-md">
       <CardHeader className="pb-4">
@@ -50,7 +52,7 @@ export default function MatchInfoForm({
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="tournamentName" className="text-sm font-medium text-gray-700">
-            Tournament Name
+            Tournament Name <span className="text-red-500">*</span>
           </Label>
           <Input
             id="tournamentName"
@@ -63,7 +65,7 @@ export default function MatchInfoForm({
 
         <div className="space-y-2">
           <Label htmlFor="tournamentDate" className="text-sm font-medium text-gray-700">
-            Tournament Date
+            Tournament Date <span className="text-red-500">*</span>
           </Label>
           <div>
             <input
@@ -194,8 +196,8 @@ export default function MatchInfoForm({
 
         <Button
           onClick={onUpload}
-          disabled={uploading}
-          className="w-full h-12 bg-gray-800 hover:bg-gray-900 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200"
+          disabled={uploading || !isFormValid}
+          className="w-full h-12 bg-gray-800 hover:bg-gray-900 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? (
             <>

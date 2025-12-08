@@ -69,7 +69,7 @@ export default function VideoUploadSection({
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl text-gray-800">
           <Video className="w-5 h-5 text-gray-700" />
-          Video Upload
+          Video Upload <span className="text-red-500">*</span>
           <p className="ml-auto text-sm text-gray-500">{files.length}/5</p>
         </CardTitle>
       </CardHeader>
