@@ -16,7 +16,7 @@ export function TeamOverview({ team }: TeamOverviewProps) {
       )}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Users className="w-4 h-4" />
-        <span>{team.members.length} members</span>
+        <span>{team.members.length}{team.maxMembers ? ` / ${team.maxMembers}` : ''} members</span>
       </div>
     </div>
   );

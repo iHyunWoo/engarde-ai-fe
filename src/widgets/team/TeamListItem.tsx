@@ -21,7 +21,7 @@ export function TeamListItem({ team }: TeamListItemProps) {
             <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Users className="w-4 h-4" />
-                <span>Members: {team.memberCount}</span>
+                <span>Members: {team.memberCount}{team.maxMembers ? ` / ${team.maxMembers}` : ''}</span>
               </div>
               {team.coach ? (
                 <span>Coach: {team.coach.name}</span>

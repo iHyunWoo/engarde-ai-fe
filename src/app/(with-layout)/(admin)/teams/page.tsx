@@ -17,13 +17,14 @@ import { TeamListItem } from '@/widgets/team/TeamListItem';
 import { TeamForm } from '@/widgets/team/TeamForm';
 import { LoadingSpinner } from '@/widgets/common/Spinner';
 import { Plus } from 'lucide-react';
+import { CreateTeamRequest } from '@ihyunwoo/engarde-ai-api-sdk/structures';
 
 export default function TeamsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { teams, isLoading, loaderRef, isFetchingNextPage, hasNextPage } = useGetTeamInfiniteQuery();
   const { handleCreateTeam } = useCreateTeam();
 
-  const handleSubmit = async (team: { name: string; description?: string }) => {
+  const handleSubmit = async (team: CreateTeamRequest) => {
     await handleCreateTeam(team);
     setIsDialogOpen(false);
   };
