@@ -14,4 +14,5 @@ export interface Marking {
   quality: MarkingQuality;
   note: string;
   remainTime: number;
+  coachNote?: string;
 }

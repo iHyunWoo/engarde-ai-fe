@@ -1,21 +1,33 @@
 "use client"
 
-import {ChartLine, Gamepad2, Upload, User} from "lucide-react"
+import {ChartLine, Gamepad2, Upload, User, Settings, Users, Shield, type LucideIcon} from "lucide-react"
 
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
 } from "@/widgets/common/Sidebar"
 import {useUserStore} from "@/shared/hooks/use-user-store";
+import {useUserInfo} from "@/app/features/auth/hooks/use-user-info";
 import {Separator} from "@/widgets/common/Separator";
+import {Skeleton} from "@/widgets/common/Skeleton";
+import { UserRole } from '@/entities/user-role';
 
-const items = [
+interface MenuItem {
+  title: string;
+  url: string;
+  icon: LucideIcon;
+  requiredRole?: UserRole[];
+}
+
+const baseItems: MenuItem[] = [
   {
     title: "Matches",
     url: "/matches",
@@ -36,10 +48,63 @@ const items = [
     url: "/my",
     icon: User,
   }
-]
+];
+
+const adminItems: MenuItem[] = [
+  {
+      title: "All Users",
+    url: "/users",
+    icon: Settings,
+    requiredRole: ["ADMIN"],
+  },
+  {
+    title: "All Teams",
+    url: "/teams",
+    icon: Users,
+    requiredRole: ["ADMIN"],
+  },
+];
+
+const coachItems: MenuItem[] = [
+  {
+    title: "Team Management",
+    url: "/my-team",
+    icon: Users,
+    requiredRole: ["ADMIN", "COACH"],
+  },
+];
 
 export function AppSidebar() {
-  const { user } = useUserStore()
+  const { user } = useUserStore();
+  const { hasRole, loading } = useUserInfo();
+
+  const hasAdminAccess = hasRole(['ADMIN']);
+  const hasCoachAccess = hasRole(['COACH']);
+
+  if (loading) {
+    return (
+      <Sidebar>
+        <SidebarHeader>
+          <Skeleton className="h-7 w-32" />
+        </SidebarHeader>
+        <Separator/>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {baseItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuSkeleton showIcon />
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    );
+  }
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -52,10 +117,11 @@ export function AppSidebar() {
       </SidebarHeader>
       <Separator/>
       <SidebarContent>
+        {!hasCoachAccess && (
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {baseItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
@@ -68,6 +134,49 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        )}
+
+        {/* 관리자 메뉴 */}
+        {hasAdminAccess && (
+          <SidebarGroup>
+            <SidebarGroupLabel>관리자</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* 코치 메뉴 */}
+        {hasCoachAccess && (
+          <SidebarGroup>
+            <SidebarGroupLabel>코치</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {coachItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
     </Sidebar>
   )

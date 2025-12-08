@@ -5,6 +5,8 @@ import {Clock} from "lucide-react";
 import {ReactNode} from "react";
 import {Marking, MarkingResult} from "@/entities/marking";
 import {formatTime} from "@/shared/lib/format-time";
+import {StudentNote} from "@/widgets/marking/StudentNote";
+import {CoachNote} from "@/widgets/marking/CoachNote";
 
 interface MatchTimelineSectionProps {
   markings: Marking[]
@@ -76,6 +78,8 @@ function TimelineItem({ mark }: { mark: Marking }) {
   // lose → 오른쪽, 나머지 왼쪽
   const isRight = mark.result === "lose";
   const theme = PALETTE[mark.result];
+  const hasStudentNote = mark.note && mark.note.trim().length > 0;
+  const hasCoachNote = mark.coachNote && mark.coachNote.trim().length > 0;
 
   return (
     <div className={`relative flex items-start space-x-6 ${isRight ? 'flex-row-reverse space-x-reverse' : ''}`}>
@@ -86,22 +90,32 @@ function TimelineItem({ mark }: { mark: Marking }) {
 
       {/* Content */}
       <div className={`flex-1 min-w-0 ${isRight ? 'text-right' : ''}`}>
-        <div className={`inline-block max-w-md p-4 rounded-lg border ${theme.bg} ${theme.borderLight}`}>
-          <div className={`flex items-center gap-2 mb-2 ${isRight ? 'justify-end' : ''}`}>
-            <span className={`px-2 py-0.5 text-xs rounded ${theme.badge}`}>{theme.label}</span>
+        <div className={`inline-block max-w-md w-full rounded-lg border ${theme.bg} ${theme.borderLight} overflow-hidden`}>
+          <div className="p-4">
+            <div className={`flex items-center gap-2 mb-2 ${isRight ? 'justify-end' : ''}`}>
+              <span className={`px-2 py-0.5 text-xs rounded ${theme.badge}`}>{theme.label}</span>
+            </div>
+
+            <div className={`flex items-center gap-2 text-xs text-slate-500 ${isRight ? 'justify-end' : ''}`}>
+              <Clock className="w-3 h-3" />
+              <span>{formatTime(mark.remainTime)}</span>
+              <span>·</span>
+              {(mark.result === 'win' || mark.result === 'attempt') && (
+                <span className="font-medium">{mark.myTechnique?.name ?? "None"}</span>
+              )}
+              {mark.result === 'lose' && (
+                <span className="font-medium">{mark.opponentTechnique?.name ?? "None"}</span>
+              )}
+            </div>
           </div>
 
-          <div className={`flex items-center gap-2 text-xs text-slate-500 ${isRight ? 'justify-end' : ''}`}>
-            <Clock className="w-3 h-3" />
-            <span>{formatTime(mark.remainTime)}</span>
-            <span>·</span>
-            {(mark.result === 'win' || mark.result === 'attempt') && (
-              <span className="font-medium">{mark.myTechnique?.name ?? "None"}</span>
-            )}
-            {mark.result === 'lose' && (
-              <span className="font-medium">{mark.opponentTechnique?.name ?? "None"}</span>
-            )}
-          </div>
+          {/* 노트 표시 */}
+          {hasStudentNote && (
+            <StudentNote note={mark.note} className="border-t-0 rounded-b-lg" />
+          )}
+          {hasCoachNote && (
+            <CoachNote note={mark.coachNote!} className="border-t-0 rounded-b-lg" />
+          )}
         </div>
       </div>
     </div>
