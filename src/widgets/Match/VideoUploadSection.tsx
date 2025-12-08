@@ -27,6 +27,43 @@ export default function VideoUploadSection({
                                              onRemove,
                                              onMove,
                                            }: VideoUploadSectionProps) {
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const droppedFiles = e.dataTransfer.files;
+    if (droppedFiles.length > 0 && inputRef.current) {
+      const dataTransfer = new DataTransfer();
+      Array.from(droppedFiles).forEach((file) => {
+        if (file.type.startsWith('video/')) {
+          dataTransfer.items.add(file);
+        }
+      });
+      
+      if (dataTransfer.files.length > 0) {
+        inputRef.current.files = dataTransfer.files;
+        const changeEvent = new Event('change', { bubbles: true }) as unknown as React.ChangeEvent<HTMLInputElement>;
+        Object.defineProperty(changeEvent, 'target', { value: inputRef.current, enumerable: true });
+        onAddFile(changeEvent);
+      }
+    }
+  };
+
   return (
     <Card className="shadow-md border-0 bg-white/80 backdrop-blur-md">
       <CardHeader className="pb-4">
@@ -102,8 +139,15 @@ export default function VideoUploadSection({
               className="hidden"
             />
             <Card
-              className="border-2 border-dashed border-gray-400 hover:border-gray-600 transition-colors duration-200 cursor-pointer group bg-white"
+              className={`border-2 border-dashed transition-colors duration-200 cursor-pointer group bg-white ${
+                isDragging
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-400 hover:border-gray-600'
+              }`}
               onClick={() => inputRef.current?.click()}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
             >
               <CardContent className="p-8 text-center">
                 <Upload className="w-8 h-8 text-gray-400 group-hover:text-gray-600 mx-auto mb-3 transition-colors" />
