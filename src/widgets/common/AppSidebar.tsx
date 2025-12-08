@@ -1,10 +1,11 @@
 "use client"
 
-import {ChartLine, Gamepad2, Upload, User, Settings, Users, Shield, type LucideIcon} from "lucide-react"
+import {ChartLine, Gamepad2, Upload, User, Settings, Users, Shield, LogOut, type LucideIcon} from "lucide-react"
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -16,6 +17,7 @@ import {
 } from "@/widgets/common/Sidebar"
 import {useUserStore} from "@/shared/hooks/use-user-store";
 import {useUserInfo} from "@/app/features/auth/hooks/use-user-info";
+import {useLogout} from "@/app/features/auth/hooks/use-logout";
 import {Separator} from "@/widgets/common/Separator";
 import {Skeleton} from "@/widgets/common/Skeleton";
 import { UserRole } from '@/entities/user-role';
@@ -77,6 +79,7 @@ const coachItems: MenuItem[] = [
 export function AppSidebar() {
   const { user } = useUserStore();
   const { hasRole, loading } = useUserInfo();
+  const { mutate: handleLogout, isPending } = useLogout();
 
   const hasAdminAccess = hasRole(['ADMIN']);
   const hasCoachAccess = hasRole(['COACH']);
@@ -178,6 +181,23 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
       </SidebarContent>
+      {user && (
+        <SidebarFooter>
+          <Separator />
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton 
+                onClick={() => handleLogout()} 
+                disabled={isPending}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 disabled:opacity-50"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>{isPending ? 'Logging out...' : 'Logout'}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      )}
     </Sidebar>
   )
 }
