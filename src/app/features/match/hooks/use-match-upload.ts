@@ -20,7 +20,10 @@ export function useMatchUpload() {
   const [uploading, setUploading] = useState(false);
 
   const handleUpload = async () => {
-    if (files.length === 0) return;
+    if (files.length === 0) {
+      toast('Please upload a video file');
+      return;
+    }
 
     setUploading(true);
     try {

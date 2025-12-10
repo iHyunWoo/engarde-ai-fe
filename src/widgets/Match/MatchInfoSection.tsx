@@ -20,7 +20,7 @@ interface MatchInfoSectionProps {
 export function MatchInfoSection({ match, onCoachFeedbackChange, studentId }: MatchInfoSectionProps) {
   const { hasRole } = useUserInfo();
 
-  const isCoach = hasRole(['COACH', 'ADMIN']);
+  const isCoach = hasRole(['COACH']);
 
   const [note, setNote] = useState(match.coachFeedback ?? '');
   const [draft, setDraft] = useState(match.coachFeedback ?? '');
@@ -47,6 +47,8 @@ export function MatchInfoSection({ match, onCoachFeedbackChange, studentId }: Ma
   const markingHref = studentId !== undefined && isCoach
     ? `/my-team/students/${studentId}/markings/${match.id}`
     : `/marking/${match.id}`;
+
+  
 
   const topStats = [
     { label: 'Date', value: formatDate(match.tournamentDate), icon: Calendar },

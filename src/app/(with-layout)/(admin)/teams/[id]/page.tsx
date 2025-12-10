@@ -19,7 +19,16 @@ import { InviteCodeSection } from '@/widgets/team/InviteCodeSection';
 import { TeamMemberList } from '@/widgets/team/TeamMemberList';
 import { TeamOverview } from '@/widgets/team/TeamOverview';
 import { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Settings } from 'lucide-react';
+import { Counter } from '@/widgets/common/Counter';
+import { updateTeamMaxMembers } from '@/app/features/team/api/update-team';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/widgets/common/Dialog';
 
 export default function TeamDetailPage() {
   const params = useParams();
@@ -28,6 +37,9 @@ export default function TeamDetailPage() {
   const teamId = params.id as string;
   const { data, isLoading, error } = useTeamDetail(teamId);
   const [isCoachDialogOpen, setIsCoachDialogOpen] = useState(false);
+  const [isMaxMembersDialogOpen, setIsMaxMembersDialogOpen] = useState(false);
+  const [tempMaxMembers, setTempMaxMembers] = useState(10);
+  const [isUpdatingMaxMembers, setIsUpdatingMaxMembers] = useState(false);
 
   const handleRegenerateInviteCode = async () => {
     if (!teamId) return;
@@ -77,12 +89,51 @@ export default function TeamDetailPage() {
 
   const team = data.data;
 
+  const handleOpenMaxMembersDialog = () => {
+    setTempMaxMembers(team.maxMembers ?? 10);
+    setIsMaxMembersDialogOpen(true);
+  };
+
+  const handleSaveMaxMembers = async () => {
+    if (tempMaxMembers < 1) {
+      toast.error('Max members must be at least 1.');
+      return;
+    }
+
+    setIsUpdatingMaxMembers(true);
+    try {
+      const { code, message } = await updateTeamMaxMembers(teamId, { maxMembers: tempMaxMembers });
+
+      if (code !== 200) {
+        if (code === 400) {
+          toast.error('The current number of members exceeds the maximum member limit.');
+        } else {
+          toast.error(message);
+        }
+        return;
+      }
+
+      toast.success('Max members updated successfully.');
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.detail(Number(teamId)) });
+      setIsMaxMembersDialogOpen(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to update max members.');
+    } finally {
+      setIsUpdatingMaxMembers(false);
+    }
+  };
+
   return (
     <div className="p-6">
-      <TeamOverview team={team} />
+      <div className="flex items-center justify-between mb-6">
+        <TeamOverview team={team} />
+        <Button onClick={handleOpenMaxMembersDialog} variant="outline">
+          <Settings className="w-4 h-4 mr-2" />
+          Change Max Members
+        </Button>
+      </div>
 
       <div className="space-y-6">
-
         {/* Invite Code */}
         <InviteCodeSection
           inviteCode={team.inviteCode}
@@ -162,6 +213,53 @@ export default function TeamDetailPage() {
         {/* Members */}
         <TeamMemberList members={team.members} />
       </div>
+
+      {/* Max Members Dialog */}
+      <Dialog open={isMaxMembersDialogOpen} onOpenChange={setIsMaxMembersDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Max Members</DialogTitle>
+            <DialogDescription>
+              Set the maximum number of members for this team.<br />
+              Current members: {team.members.length}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            <div className="flex items-center justify-center">
+              <Counter
+                label="Max Members"
+                count={tempMaxMembers}
+                changeCount={(delta) => {
+                  const newValue = tempMaxMembers + delta;
+                  if (newValue >= 1) {
+                    setTempMaxMembers(newValue);
+                  }
+                }}
+                onValueChange={(value) => {
+                  if (value >= 1) {
+                    setTempMaxMembers(value);
+                  }
+                }}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsMaxMembersDialogOpen(false)}
+                disabled={isUpdatingMaxMembers}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveMaxMembers}
+                disabled={isUpdatingMaxMembers || tempMaxMembers < 1}
+              >
+                {isUpdatingMaxMembers ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

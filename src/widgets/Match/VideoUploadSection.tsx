@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button } from '@/widgets/common/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/widgets/common/Card';
-import { ChevronDown, ChevronUp, Upload, Video, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Info, Upload, Video, X } from 'lucide-react';
 import {VideoThumbnail} from "@/widgets/Match/VideoThumbnail";
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/widgets/common/Tooltip';
 
 interface VideoUploadSectionProps {
   files: File[];
@@ -27,12 +28,59 @@ export default function VideoUploadSection({
                                              onRemove,
                                              onMove,
                                            }: VideoUploadSectionProps) {
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const droppedFiles = e.dataTransfer.files;
+    if (droppedFiles.length > 0 && inputRef.current) {
+      const dataTransfer = new DataTransfer();
+      Array.from(droppedFiles).forEach((file) => {
+        if (file.type.startsWith('video/')) {
+          dataTransfer.items.add(file);
+        }
+      });
+      
+      if (dataTransfer.files.length > 0) {
+        inputRef.current.files = dataTransfer.files;
+        const changeEvent = new Event('change', { bubbles: true }) as unknown as React.ChangeEvent<HTMLInputElement>;
+        Object.defineProperty(changeEvent, 'target', { value: inputRef.current, enumerable: true });
+        onAddFile(changeEvent);
+      }
+    }
+  };
+
   return (
     <Card className="shadow-md border-0 bg-white/80 backdrop-blur-md">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-xl text-gray-800">
           <Video className="w-5 h-5 text-gray-700" />
-          Video Upload
+          Video Upload <span className="text-red-500">*</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className="inline-flex items-center">
+                <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 transition-colors" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs">
+              <p>You can upload up to 5 videos. Videos will be merged automatically when you upload.</p>
+            </TooltipContent>
+          </Tooltip>
           <p className="ml-auto text-sm text-gray-500">{files.length}/5</p>
         </CardTitle>
       </CardHeader>
@@ -102,8 +150,15 @@ export default function VideoUploadSection({
               className="hidden"
             />
             <Card
-              className="border-2 border-dashed border-gray-400 hover:border-gray-600 transition-colors duration-200 cursor-pointer group bg-white"
+              className={`border-2 border-dashed transition-colors duration-200 cursor-pointer group bg-white ${
+                isDragging
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-400 hover:border-gray-600'
+              }`}
               onClick={() => inputRef.current?.click()}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
             >
               <CardContent className="p-8 text-center">
                 <Upload className="w-8 h-8 text-gray-400 group-hover:text-gray-600 mx-auto mb-3 transition-colors" />
