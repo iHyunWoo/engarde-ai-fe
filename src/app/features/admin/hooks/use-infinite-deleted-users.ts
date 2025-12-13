@@ -1,18 +1,20 @@
 import { useEffect, useRef } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getDeletedUsers } from '@/app/features/admin/api/get-deleted-users';
-import { BaseResponseCursorResponseUserResponse } from '@ihyunwoo/engarde-ai-api-sdk/structures';
+import type { BaseResponse__object } from '@ihyunwoo/engarde-ai-api-sdk/structures';
 import { queryKeys } from '@/shared/lib/query-keys';
+
+type DeletedUsersResponse = BaseResponse__object.o7;
 
 export function useInfiniteDeletedUsers() {
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  const query = useInfiniteQuery<BaseResponseCursorResponseUserResponse>({
+  const query = useInfiniteQuery<DeletedUsersResponse>({
     queryKey: queryKeys.admin.deletedUsers(),
     queryFn: ({ pageParam }) => getDeletedUsers({
       cursor: pageParam as string | undefined,
     }),
-    initialPageParam: undefined,
+    initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => {
       if (lastPage.code !== 200 || !lastPage.data?.nextCursor) {
         return undefined;
