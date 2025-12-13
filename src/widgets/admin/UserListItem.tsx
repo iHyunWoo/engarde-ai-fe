@@ -1,12 +1,37 @@
 import { Card, CardContent } from '@/widgets/common/Card';
-import { User } from 'lucide-react';
 import { UserResponse } from '@ihyunwoo/engarde-ai-api-sdk/structures';
+import { X } from 'lucide-react';
+import { Button } from '@/widgets/common/Button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/widgets/common/AlertDialog';
+import { useSoftDeleteUser } from '@/app/features/admin/hooks/use-soft-delete-user';
+import { useState } from 'react';
 
 interface UserListItemProps {
   user: UserResponse;
 }
 
 export function UserListItem({ user }: UserListItemProps) {
+  const [open, setOpen] = useState(false);
+  const { mutate: deleteUser, isPending } = useSoftDeleteUser();
+
+  const handleDelete = () => {
+    deleteUser(Number(user.id), {
+      onSuccess: () => {
+        setOpen(false);
+      },
+    });
+  };
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
@@ -31,6 +56,38 @@ export function UserListItem({ user }: UserListItemProps) {
               )}
             </div>
           </div>
+          {user.role !== 'COACH' && user.role !== 'ADMIN' && (
+            <AlertDialog open={open} onOpenChange={setOpen}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-400 hover:text-red-600 hover:bg-red-50"
+                  disabled={isPending}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Deactivate User</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to deactivate this user? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    disabled={isPending}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    {isPending ? 'Deactivating...' : 'Deactivate'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </CardContent>
     </Card>

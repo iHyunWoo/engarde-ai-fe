@@ -20,5 +20,6 @@ export const queryKeys = {
   },
   admin: {
     users: (search?: string) => (search ? ['admin', 'users', search] : ['admin', 'users']),
+    deletedUsers: () => ['admin', 'deleted-users'] as const,
   },
 };
