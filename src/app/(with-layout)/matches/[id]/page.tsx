@@ -3,7 +3,7 @@
 import {MatchInfoSection} from "@/widgets/Match/MatchInfoSection";
 import {MatchTimelineSection} from "@/widgets/Match/MatchTimelineSection";
 import {useParams} from "next/navigation";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import {getMatch} from "@/app/features/match/api/get-match";
 import {getVideoReadUrl} from "@/shared/api/get-video-read-url";
 import {getMarkingList} from "@/app/features/marking/api/get-marking-list";
@@ -21,6 +21,7 @@ export default function Page() {
   const [markings, setMarkings] = useState<Marking[]>([]);
 
   const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
+  const videoContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -59,7 +60,7 @@ export default function Page() {
           />
 
           {videoUrl && (
-            <div className="w-full flex flex-col gap-2">
+            <div ref={videoContainerRef} className="w-full flex flex-col gap-2">
               <VideoPlayer src={videoUrl} getRef={setVideoRef}/>
               {videoRef && (
                 <Seekbar markings={markings} videoRef={videoRef}/>
@@ -67,7 +68,17 @@ export default function Page() {
             </div>
           )}
 
-          <MatchTimelineSection markings={markings} />
+          <MatchTimelineSection 
+            markings={markings} 
+            onSeek={(timestamp) => {
+              if (videoRef) {
+                videoRef.currentTime = timestamp;
+              }
+              if (videoContainerRef.current) {
+                videoContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+          />
         </>
       )}
     </main>

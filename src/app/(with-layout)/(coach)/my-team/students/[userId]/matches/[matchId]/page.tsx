@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { MatchInfoSection } from '@/widgets/Match/MatchInfoSection';
 import { MatchTimelineSection } from '@/widgets/Match/MatchTimelineSection';
 import { useStudentMatchDetail } from '@/app/features/coach/hooks/use-student-match-detail';
@@ -33,6 +33,7 @@ export default function StudentMatchDetailPage() {
   const videoUrl = videoResponse?.data?.url ?? null;
 
   const [videoRef, setVideoRef] = useState<HTMLVideoElement | null>(null);
+  const videoContainerRef = useRef<HTMLDivElement | null>(null);
 
   if (matchLoading) {
     return (
@@ -55,7 +56,7 @@ export default function StudentMatchDetailPage() {
       <MatchInfoSection match={match} studentId={userId} />
 
       {objectName && (
-        <div className="w-full flex flex-col gap-2">
+        <div ref={videoContainerRef} className="w-full flex flex-col gap-2">
           {videoLoading && !videoUrl ? (
             <div className="flex justify-center py-8">
               <LoadingSpinner />
@@ -76,7 +77,17 @@ export default function StudentMatchDetailPage() {
           <LoadingSpinner />
         </div>
       ) : (
-        <MatchTimelineSection markings={markings} />
+        <MatchTimelineSection 
+          markings={markings} 
+          onSeek={(timestamp) => {
+            if (videoRef) {
+              videoRef.currentTime = timestamp;
+            }
+            if (videoContainerRef.current) {
+              videoContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }}
+        />
       )}
     </main>
   );
