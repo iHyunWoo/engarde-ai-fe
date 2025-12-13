@@ -37,7 +37,7 @@ export function TechniqueForm({
   return (
     <div className="flex gap-4 items-center">
       <Input
-        placeholder="Technique name"
+        placeholder="Tactic name"
         value={techniqueName}
         onChange={(e) => setTechniqueName?.(e.target.value)}
         className="flex-1"

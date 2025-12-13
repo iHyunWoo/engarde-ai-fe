@@ -18,4 +18,8 @@ export const queryKeys = {
     studentMatchMarkings: (matchId: string | number) =>
       ['coach', 'student-match-markings', matchId] as const,
   },
+  admin: {
+    users: (search?: string) => (search ? ['admin', 'users', search] : ['admin', 'users']),
+    deletedUsers: () => ['admin', 'deleted-users'] as const,
+  },
 };

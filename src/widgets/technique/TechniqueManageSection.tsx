@@ -32,7 +32,7 @@ export default function TechniqueManageSection() {
     <div className="space-y-6">
       <Card>
         <CardContent>
-          <h3 className="text-lg font-semibold mb-4">Add New Technique</h3>
+          <h3 className="text-lg font-semibold mb-4">Add New Tactics</h3>
           <TechniqueForm
             onSubmit={addTechnique}
           />

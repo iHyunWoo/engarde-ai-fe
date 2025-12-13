@@ -126,7 +126,7 @@ export default function TeamDetailPage() {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <TeamOverview team={team} />
+      <TeamOverview team={team} />
         <Button onClick={handleOpenMaxMembersDialog} variant="outline">
           <Settings className="w-4 h-4 mr-2" />
           Change Max Members

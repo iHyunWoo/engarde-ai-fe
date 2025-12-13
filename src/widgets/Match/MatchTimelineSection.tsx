@@ -9,7 +9,8 @@ import {StudentNote} from "@/widgets/marking/StudentNote";
 import {CoachNote} from "@/widgets/marking/CoachNote";
 
 interface MatchTimelineSectionProps {
-  markings: Marking[]
+  markings: Marking[];
+  onSeek?: (timestamp: number) => void;
 }
 
 const PALETTE: Record<MarkingResult, {
@@ -21,7 +22,7 @@ const PALETTE: Record<MarkingResult, {
   setEnded: { border: 'border-gray-500',    dot: 'bg-gray-500',    bg: 'bg-gray-50',    borderLight: 'border-gray-200',    badge: 'bg-gray-100 text-gray-700',   label: '세트 종료' },
 };
 
-export function MatchTimelineSection({markings}: MatchTimelineSectionProps) {
+export function MatchTimelineSection({markings, onSeek}: MatchTimelineSectionProps) {
   // 타임라인은 timestamp asc, 동시간대는 id asc
   const sorted = [...markings].sort((a,b) =>
     a.timestamp === b.timestamp ? a.id - b.id : a.timestamp - b.timestamp
@@ -42,7 +43,7 @@ export function MatchTimelineSection({markings}: MatchTimelineSectionProps) {
       if (prevRemain !== null) setIndex += 1;
     }
     prevRemain = mark.remainTime;
-    items.push(<TimelineItem key={mark.id} mark={mark} />);
+    items.push(<TimelineItem key={mark.id} mark={mark} onSeek={onSeek} />);
   });
 
   return (
@@ -74,12 +75,18 @@ function Divider() {
   );
 }
 
-function TimelineItem({ mark }: { mark: Marking }) {
+function TimelineItem({ mark, onSeek }: { mark: Marking; onSeek?: (timestamp: number) => void }) {
   // lose → 오른쪽, 나머지 왼쪽
   const isRight = mark.result === "lose";
   const theme = PALETTE[mark.result];
   const hasStudentNote = mark.note && mark.note.trim().length > 0;
   const hasCoachNote = mark.coachNote && mark.coachNote.trim().length > 0;
+
+  const handleClick = () => {
+    if (onSeek) {
+      onSeek(mark.timestamp);
+    }
+  };
 
   return (
     <div className={`relative flex items-start space-x-6 ${isRight ? 'flex-row-reverse space-x-reverse' : ''}`}>
@@ -90,7 +97,10 @@ function TimelineItem({ mark }: { mark: Marking }) {
 
       {/* Content */}
       <div className={`flex-1 min-w-0 ${isRight ? 'text-right' : ''}`}>
-        <div className={`inline-block max-w-md w-full rounded-lg border ${theme.bg} ${theme.borderLight} overflow-hidden`}>
+        <div 
+          className={`inline-block max-w-md w-full rounded-lg border ${theme.bg} ${theme.borderLight} overflow-hidden ${onSeek ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
+          onClick={handleClick}
+        >
           <div className="p-4">
             <div className={`flex items-center gap-2 mb-2 ${isRight ? 'justify-end' : ''}`}>
               <span className={`px-2 py-0.5 text-xs rounded ${theme.badge}`}>{theme.label}</span>
