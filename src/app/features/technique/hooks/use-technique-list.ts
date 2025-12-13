@@ -19,7 +19,7 @@ export function useTechniqueList(
     const { name } = technique
 
     if (!name) {
-      toast.warning('Technique name is required');
+      toast.warning('Tactic name is required');
       return;
     }
 
@@ -38,7 +38,7 @@ export function useTechniqueList(
   const addSubTechnique = async (parentId: number, technique: TechniqueFormState) => {
     const { name } = technique
     if (!name) {
-      toast.warning("Technique name is required");
+      toast.warning("Tactic name is required");
       return;
     }
 

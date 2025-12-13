@@ -8,7 +8,7 @@ export default function ManagePage() {
       <Tabs defaultValue="opponent">
         <TabsList>
           <TabsTrigger value="opponent">Opponent</TabsTrigger>
-          <TabsTrigger value="technique">Technique</TabsTrigger>
+          <TabsTrigger value="technique">Tactics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="opponent">

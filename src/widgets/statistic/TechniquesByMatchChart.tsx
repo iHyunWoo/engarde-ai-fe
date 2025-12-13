@@ -135,8 +135,8 @@ export function TechniquesByMatchChart({
 
       <CardContent>
         <div className="flex flex-row justify-center gap-12">
-          <ChartBlock title="Win Techniques" data={summary.win}/>
-          <ChartBlock title="Lose Techniques" data={summary.lose}/>
+          <ChartBlock title="Win Tactics" data={summary.win}/>
+          <ChartBlock title="Lose Tactics" data={summary.lose}/>
         </div>
       </CardContent>
     </Card>

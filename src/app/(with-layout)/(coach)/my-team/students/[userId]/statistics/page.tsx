@@ -91,11 +91,11 @@ export default function StudentStatisticsPage() {
           <div className="lg:col-span-2 space-y-6">
             <div className="flex flex-col md:flex-row gap-6">
               <SummaryChart
-                title="Win Techniques"
+                title="Win Tactics"
                 data={data.summary.win}
               />
               <SummaryChart
-                title="Lose Techniques"
+                title="Lose Tactics"
                 data={data.summary.lose}
               />
             </div>

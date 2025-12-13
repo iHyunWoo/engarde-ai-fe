@@ -55,9 +55,9 @@ export function OpponentChart({opponent}: OpponentChartProps) {
         </div>
       </div>
 
-      {/* Win Techniques Chart */}
+      {/* Win Tactics Chart */}
       <div className="flex-1 items-center justify-center flex flex-col">
-        <div className="text-sm font-medium mb-1">Win Techniques</div>
+        <div className="text-sm font-medium mb-1">Win Tactics</div>
         <ResponsiveContainer width="100%" height={120}>
           <BarChart
             layout="vertical"
@@ -80,9 +80,9 @@ export function OpponentChart({opponent}: OpponentChartProps) {
         </ResponsiveContainer>
       </div>
 
-      {/* Lose Techniques Chart */}
+      {/* Lose Tactics Chart */}
       <div className="flex-1 items-center justify-center flex flex-col">
-        <div className="text-sm font-medium mb-1">Lose Techniques</div>
+        <div className="text-sm font-medium mb-1">Lose Tactics</div>
         <ResponsiveContainer width="100%" height={120}>
           <BarChart
             layout="vertical"

@@ -134,14 +134,14 @@ export function CounterList({matchId, techniques}: CounterListProps) {
 
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Manage Techniques</DialogTitle>
+            <DialogTitle>Manage Tactics</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             {/* 기존 기술들 */}
             {attempts.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium mb-2">Current Techniques</h3>
+                <h3 className="text-sm font-medium mb-2">Current Tactics</h3>
                 <div className="space-y-2">
                   {attempts.map((attempt) => (
                     <div key={attempt.id} className="flex items-center justify-between p-3 border rounded-lg">
@@ -164,9 +164,9 @@ export function CounterList({matchId, techniques}: CounterListProps) {
 
             {/* 새 기술 추가 */}
             <div>
-              <h3 className="text-sm font-medium mb-2">Add New Technique</h3>
+              <h3 className="text-sm font-medium mb-2">Add New Tactics</h3>
               <Command className="rounded-lg border shadow-md">
-                <CommandInput placeholder="Search Technique" className="h-9" />
+                <CommandInput placeholder="Search Tactics" className="h-9" />
                 <CommandList>
                   <CommandEmpty>No results found.</CommandEmpty>
                   {availableTechniques.map((technique) => (
@@ -196,7 +196,7 @@ export function CounterList({matchId, techniques}: CounterListProps) {
       }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Technique Attempt</AlertDialogTitle>
+            <AlertDialogTitle>Delete Tactics Attempt</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete &quot;{attemptToDelete?.technique.name}&quot;? This action cannot be undone.
             </AlertDialogDescription>
