@@ -13,6 +13,6 @@ export interface Marking {
   opponentTechnique: Technique | null;
   quality: MarkingQuality;
   note: string;
-  pisteLocation: number;
+  pisteLocation: number | null;
   coachNote?: string;
 }
