@@ -21,10 +21,8 @@ export function MarkingForm({
                               setOpponentTechnique,
                               quality,
                               setQuality,
-                              remainMinutes,
-                              setRemainMinutes,
-                              remainSeconds,
-                              setRemainSeconds,
+                              pisteLocation,
+                              setPisteLocation,
                               note,
                               setNote,
                               onAdd,
@@ -38,10 +36,8 @@ export function MarkingForm({
   setOpponentTechnique: Dispatch<SetStateAction<Technique | null>>
   quality: MarkingQuality
   setQuality: Dispatch<SetStateAction<MarkingQuality>>;
-  remainMinutes: number;
-  setRemainMinutes: Dispatch<SetStateAction<number>>;
-  remainSeconds: number;
-  setRemainSeconds: Dispatch<SetStateAction<number>>;
+  pisteLocation: number;
+  setPisteLocation: Dispatch<SetStateAction<number>>;
   note: string;
   setNote: Dispatch<SetStateAction<string>>;
   onAdd: () => void;
@@ -113,37 +109,6 @@ export function MarkingForm({
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      {/* Remain Time */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Remain Time</label>
-        <div className="flex gap-8">
-          <div className="flex-1 flex flex-row gap-2">
-            <Input
-              type="number"
-              min={0}
-              max={59}
-              value={remainMinutes}
-              onChange={(e) => setRemainMinutes(Math.max(0, Math.min(59, Number(e.target.value))))}
-              className={`w-full border px-2 py-1 rounded text-sm ${resultType === 'setEnded' ? 'cursor-not-allowed opacity-50' : ''}`}
-              disabled={resultType === 'setEnded'}
-            />
-            <p className="text-md text-gray-500 mt-1 text-center">m</p>
-          </div>
-          <div className="flex-1 flex flex-row gap-2">
-            <Input
-              type="number"
-              min={0}
-              max={59}
-              value={remainSeconds}
-              onChange={(e) => setRemainSeconds(Math.max(0, Math.min(59, Number(e.target.value))))}
-              className={`w-full border px-2 py-1 rounded text-sm ${resultType === 'setEnded' ? 'cursor-not-allowed opacity-50' : ''}`}
-              disabled={resultType === 'setEnded'}
-            />
-            <p className="text-md text-gray-500 mt-1 text-center">s</p>
-          </div>
-        </div>
       </div>
 
       {/* Note */}
