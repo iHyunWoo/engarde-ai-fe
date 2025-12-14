@@ -37,8 +37,7 @@ export default function Page() {
   const [opponentTechnique, setOpponentTechnique] = useState<Technique | null>(null);
   const [quality, setQuality] = useState<MarkingQuality>('good')
   const [note, setNote] = useState('');
-  const [remainMinutes, setRemainMinutes] = useState(0);
-  const [remainSeconds, setRemainSeconds] = useState(0);
+  const [pisteLocation, setPisteLocation] = useState(0);
   const [techniques, setTechniques] = useState<Technique[]>([]);
 
 
@@ -81,7 +80,6 @@ export default function Page() {
   const addMarking = async () => {
     if (!videoRef) return;
     const time = Math.floor(videoRef.currentTime);
-    const remainTimeInSeconds = remainMinutes * 60 + remainSeconds;
     const body: CreateMarkingRequest = {
       matchId: Number(id),
       timestamp: time,
@@ -90,7 +88,7 @@ export default function Page() {
       opponentTechnique,
       quality,
       note,
-      remainTime: remainTimeInSeconds,
+      pisteLocation,
     }
     const res = await createMarking(body);
     const newMarking = res?.data;
@@ -177,10 +175,8 @@ export default function Page() {
             setOpponentTechnique={setOpponentTechnique}
             quality={quality}
             setQuality={setQuality}
-            remainMinutes={remainMinutes}
-            setRemainMinutes={setRemainMinutes}
-            remainSeconds={remainSeconds}
-            setRemainSeconds={setRemainSeconds}
+            pisteLocation={pisteLocation}
+            setPisteLocation={setPisteLocation}
             note={note}
             setNote={setNote}
             onAdd={addMarking}

@@ -151,11 +151,6 @@ export function MarkingList({
                 <QualityPill q={mark.quality}/>
               </div>
 
-              <div className="flex items-center gap-1 text-xs text-gray-500">
-                <Clock className="w-3.5 h-3.5"/>
-                <span className="font-mono">{formatTime(mark.remainTime)}</span>
-              </div>
-
               {/* 일반 모드일 때 삭제 버튼 */}
               {!isCoachMode && onRemove && (
                 <X

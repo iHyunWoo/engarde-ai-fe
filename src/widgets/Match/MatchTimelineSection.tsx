@@ -23,28 +23,6 @@ const PALETTE: Record<MarkingResult, {
 };
 
 export function MatchTimelineSection({markings, onSeek}: MatchTimelineSectionProps) {
-  // 타임라인은 timestamp asc, 동시간대는 id asc
-  const sorted = [...markings].sort((a,b) =>
-    a.timestamp === b.timestamp ? a.id - b.id : a.timestamp - b.timestamp
-  );
-
-  const items: ReactNode[] = [];
-  let prevRemain: number | null = null;
-  let setIndex = 1;
-
-  // 각 item을 돌면서 remainTime 기준으로 세트를 계산.
-  // remainTime이 감소하다 증가하는 시점에 divider 추가
-  sorted.forEach((mark, idx) => {
-    const startNewSet = prevRemain === null || mark.remainTime > (prevRemain ?? 0);
-    if (startNewSet && idx !== 0) {
-      items.push(
-        <Divider key={`set-${setIndex}-${mark.id}`} />
-      );
-      if (prevRemain !== null) setIndex += 1;
-    }
-    prevRemain = mark.remainTime;
-    items.push(<TimelineItem key={mark.id} mark={mark} onSeek={onSeek} />);
-  });
 
   return (
     <Card>
@@ -58,7 +36,11 @@ export function MatchTimelineSection({markings, onSeek}: MatchTimelineSectionPro
       <CardContent>
         <div className="relative">
           <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-slate-200 via-slate-300 to-slate-200" />
-          <div className="space-y-6">{items}</div>
+          <div className="space-y-6">
+            {markings.map((mark) => (
+              <TimelineItem key={mark.id} mark={mark} onSeek={onSeek} />
+            ))}
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -107,9 +89,6 @@ function TimelineItem({ mark, onSeek }: { mark: Marking; onSeek?: (timestamp: nu
             </div>
 
             <div className={`flex items-center gap-2 text-xs text-slate-500 ${isRight ? 'justify-end' : ''}`}>
-              <Clock className="w-3 h-3" />
-              <span>{formatTime(mark.remainTime)}</span>
-              <span>·</span>
               {(mark.result === 'win' || mark.result === 'attempt') && (
                 <span className="font-medium">{mark.myTechnique?.name ?? "None"}</span>
               )}
