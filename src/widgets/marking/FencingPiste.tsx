@@ -164,7 +164,7 @@ export function FencingPiste({
                   
                   {/* Read-only 모드에서 선택된 위치 표시 */}
                   {!disabledZone && readOnly && selected && (
-                    <div className="absolute inset-0 bg-primary/20 border-2 border-primary/50 z-10" />
+                    <div className="absolute inset-0 bg-primary/20 z-10" />
                   )}
                   
                   {/* Warning Zone 패턴 (1번과 6번) - 선택 가능 */}
