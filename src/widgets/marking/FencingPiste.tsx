@@ -25,10 +25,19 @@ export function FencingPiste({
   showDirectionToggle = true,
   className = '',
 }: FencingPisteProps) {
+  // Disabled zone인지 확인 (양 끝 - 0, 7)
+  const isDisabledZone = (position: number): boolean => {
+    return position === 0 || position === 7;
+  };
+
+  // Warning zone인지 확인 (1번과 6번)
+  const isWarningZone = (position: number): boolean => {
+    return position === 1 || position === 6;
+  };
 
   // 피스트 위치 선택 핸들러
   const handlePisteLocationSelect = (position: number) => {
-    if (readOnly || disabled || position === 0 || position === 7) return;
+    if (readOnly || disabled || isDisabledZone(position)) return;
     
     // 1-6만 선택 가능
     // My가 왼쪽일 때: 1,2,3,4,5,6 (위치 1,2,3,4,5,6)
@@ -50,17 +59,14 @@ export function FencingPiste({
 
   // 선택된 위치인지 확인
   const isSelected = (position: number): boolean => {
-    if (position === 0 || position === 7) return false;
+    // Disabled zone (0, 7)은 선택 불가
+    if (isDisabledZone(position)) return false;
+    // 1-6번만 선택 가능
     if (isLeftPosition) {
       return value === position;
     } else {
       return value === (7 - position);
     }
-  };
-
-  // Warning zone인지 확인 (양 끝)
-  const isWarningZone = (position: number): boolean => {
-    return position === 0 || position === 7;
   };
 
   // En-garde 라인 위치인지 확인 (위치 1과 6)
@@ -128,9 +134,8 @@ export function FencingPiste({
           <div className="absolute inset-0 flex">
             {[0, 1, 2, 3, 4, 5, 6, 7].map((position) => {
               const selected = isSelected(position);
+              const disabledZone = isDisabledZone(position);
               const warningZone = isWarningZone(position);
-              const enGardeLine = isEnGardeLine(position);
-              const centerLine = isCenterLine(position);
               const needsDiv = needsDivider(position);
               const isCenterDiv = isCenterDivider(position);
               
@@ -140,8 +145,8 @@ export function FencingPiste({
                   className="relative h-full"
                   style={{ width: getPositionWidth(position) }}
                 >
-                  {/* 클릭 가능한 영역 (1-6번만) */}
-                  {!warningZone && isInteractive && (
+                  {/* 클릭 가능한 영역 (1-6번만, disabled zone 제외) */}
+                  {!disabledZone && isInteractive && (
                     <button
                       type="button"
                       onClick={() => handlePisteLocationSelect(position)}
@@ -149,8 +154,8 @@ export function FencingPiste({
                       className={`
                         absolute inset-0 w-full h-full transition-all
                         ${selected
-                          ? 'bg-primary/30 border-2 border-primary z-10'
-                          : 'hover:bg-primary/10 border-2 border-transparent hover:border-primary/50'
+                          ? 'bg-primary/30  z-10'
+                          : 'hover:bg-primary/10 '
                         }
                         ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
                       `}
@@ -158,18 +163,23 @@ export function FencingPiste({
                   )}
                   
                   {/* Read-only 모드에서 선택된 위치 표시 */}
-                  {!warningZone && readOnly && selected && (
+                  {!disabledZone && readOnly && selected && (
                     <div className="absolute inset-0 bg-primary/20 border-2 border-primary/50 z-10" />
                   )}
                   
-                  {/* Warning Zone 패턴 (양 끝) */}
+                  {/* Warning Zone 패턴 (1번과 6번) - 선택 가능 */}
                   {warningZone && (
                     <div 
-                      className="absolute inset-0 bg-gray-100"
+                      className="absolute inset-0 bg-gray-100 z-0 pointer-events-none"
                       style={{
                         backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.1) 4px, rgba(0,0,0,0.1) 8px)'
                       }}
                     />
+                  )}
+                  
+                  {/* Disabled Zone (양 끝 - 0, 7) - 선택 불가 */}
+                  {disabledZone && (
+                    <div className="absolute inset-0 bg-gray-200 border-2 border-dashed border-gray-400 cursor-not-allowed z-0" />
                   )}
 
                   
@@ -182,8 +192,8 @@ export function FencingPiste({
                     />
                   )}
                   
-                  {/* 선택 표시 (1-6번만) */}
-                  {selected && !warningZone && (
+                  {/* 선택 표시 (1-6번만, disabled zone 제외, warning zone 포함) */}
+                  {selected && !disabledZone && (
                     <div className="absolute inset-0 flex items-center justify-center z-30">
                       <div className="w-3 h-3 rounded-full bg-primary border-2 border-white shadow-lg" />
                     </div>
