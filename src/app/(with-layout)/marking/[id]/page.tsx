@@ -38,6 +38,7 @@ export default function Page() {
   const [quality, setQuality] = useState<MarkingQuality>('good')
   const [note, setNote] = useState('');
   const [pisteLocation, setPisteLocation] = useState(0);
+  const [isLeftPosition, setIsLeftPosition] = useState(true);
   const [techniques, setTechniques] = useState<Technique[]>([]);
 
 
@@ -89,6 +90,7 @@ export default function Page() {
       quality,
       note,
       pisteLocation,
+      isLeftPosition
     }
     const res = await createMarking(body);
     const newMarking = res?.data;
@@ -167,6 +169,8 @@ export default function Page() {
 
         {(techniques) && (
           <MarkingForm
+            isLeftPosition={isLeftPosition}
+            setIsLeftPosition={setIsLeftPosition}
             resultType={resultType}
             setResultType={setResultType}
             myTechnique={myTechnique}
