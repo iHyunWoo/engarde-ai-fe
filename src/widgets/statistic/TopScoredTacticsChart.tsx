@@ -48,17 +48,6 @@ export function TopScoredTacticsChart({ data }: TopScoredTacticsChartProps) {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 flex flex-wrap gap-4 text-sm">
-              {sortedData.map((item, index) => (
-                <div key={item.id} className="flex items-center gap-2">
-                  <div
-                    className={`w-3 h-3 ${item.isMain ? "rounded-full" : "rounded-sm"}`}
-                    style={{ backgroundColor: item.isMain ? CHART_COLORS[0] : CHART_COLORS[1] }}
-                  />
-                  <span>{item.name}: {item.count} times</span>
-                </div>
-              ))}
-            </div>
           </>
         ) : (
           <div className="h-80 flex items-center justify-center text-gray-500">
