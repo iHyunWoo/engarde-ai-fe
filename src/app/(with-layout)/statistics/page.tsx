@@ -1,27 +1,30 @@
 "use client"
 
-import {useEffect, useMemo, useState} from "react";
-import {useStatistics} from "@/app/features/statistic/hooks/use-statistics";
-import {AttemptChart} from "@/widgets/statistic/AttemptChart";
+import {useMemo, useState} from "react";
+import {useStatisticsV3} from "@/app/features/statistic/hooks/use-statistics-v3";
 import {last7DaysRange} from "@/shared/lib/format-percent";
-import {LoseChart} from "@/widgets/statistic/LoseChart";
 import {DateRangeForm} from "@/widgets/statistic/DataRangeForm";
 import MatchCountBadge from "@/widgets/Match/MatchCountBadge";
 import MatchesModal from "@/widgets/Match/MatchesModal";
-import {OpponentChart} from "@/widgets/statistic/OpponentChart";
-import {SummaryChart} from "@/widgets/statistic/SummaryChart";
-import {TechniquesByMatchChart} from "@/widgets/statistic/TechniquesByMatchChart";
+import {TopScoredTacticsChart} from "@/widgets/statistic/TopScoredTacticsChart";
+import {TopReceivedTacticsChart} from "@/widgets/statistic/TopReceivedTacticsChart";
+import {TacticSynergyMatrix} from "@/widgets/statistic/TacticSynergyMatrix";
+
+// 기존 통계들 주석처리
+// import {AttemptChart} from "@/widgets/statistic/AttemptChart";
+// import {LoseChart} from "@/widgets/statistic/LoseChart";
+// import {OpponentChart} from "@/widgets/statistic/OpponentChart";
+// import {SummaryChart} from "@/widgets/statistic/SummaryChart";
+// import {TechniquesByMatchChart} from "@/widgets/statistic/TechniquesByMatchChart";
 
 export default function StatisticsPage() {
   const initial = useMemo(() => last7DaysRange(), []);
   const [range, setRange] = useState(initial);
+  const [mode, setMode] = useState<'all' | 'preliminary' | 'main'>('all');
   const [openMatchListModal, setOpenMatchListModal] = useState(false);
 
-  const { data, loading, fetchData } = useStatistics();
+  const { data, loading } = useStatisticsV3(range.from, range.to, mode);
 
-  useEffect(() => {
-    fetchData(range.from, range.to, 'all')
-  }, []);
 
   return (
     <div className="min-h-dvh">
@@ -35,31 +38,29 @@ export default function StatisticsPage() {
             from={range.from}
             to={range.to}
             onSubmit={(r) => {
-              setRange(r);
-              fetchData(r.from, r.to, r.mode);
+              setRange({ from: r.from, to: r.to });
+              setMode(r.mode);
             }}
             loading={loading}
           />
 
-          {data && (
-            <>
-              <MatchCountBadge
-                count={data.matchCount}
-                onClick={() => setOpenMatchListModal(true)}
-                className={"mt-5"}
-              />
-
-              <MatchesModal
-                open={openMatchListModal}
-                onCloseAction={() => setOpenMatchListModal(false)}
-                from={range.from}
-                to={range.to}
-              />
-            </>
-          )}
         </section>
 
         {data && (
+          <div className="space-y-6">
+            {/* 점한 횟수 높은 tactic (전체) */}
+            <TopScoredTacticsChart data={data.topScoringTactics} />
+            
+            {/* 득점을 제일 많이 당한 tactic (전체) */}
+            <TopReceivedTacticsChart data={data.topConcededTactics} />
+            
+            {/* Tactic 상성 매트릭스 */}
+            <TacticSynergyMatrix data={data.tacticMatchups} />
+          </div>
+        )}
+
+        {/* 기존 통계들 주석처리 */}
+        {/* {data && (
           <div className="lg:col-span-2 space-y-6">
             <div className="flex flex-col md:flex-row gap-6">
               <SummaryChart
@@ -95,7 +96,7 @@ export default function StatisticsPage() {
               techniques={data.lossCount}
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

@@ -14,5 +14,6 @@ export interface Marking {
   quality: MarkingQuality;
   note: string;
   pisteLocation: number | null;
+  isLeftPosition: boolean;
   coachNote?: string;
 }

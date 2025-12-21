@@ -8,6 +8,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/w
 import {formatTechniqueName} from "@/app/features/technique/lib/format-technique-name";
 import {TechniqueSelect} from "@/widgets/technique/TechniqueSelect";
 import { Input } from '../common/Input';
+import {FencingPiste} from './FencingPiste';
 
 const markingResults: MarkingResult[] = ['win', 'lose', 'attempt', 'setEnded'];
 const qualities: MarkingQuality[] = ['good', 'bad', 'lucky']
@@ -23,6 +24,8 @@ export function MarkingForm({
                               setQuality,
                               pisteLocation,
                               setPisteLocation,
+                              isLeftPosition,
+                              setIsLeftPosition,
                               note,
                               setNote,
                               onAdd,
@@ -38,6 +41,8 @@ export function MarkingForm({
   setQuality: Dispatch<SetStateAction<MarkingQuality>>;
   pisteLocation: number;
   setPisteLocation: Dispatch<SetStateAction<number>>;
+  isLeftPosition: boolean;
+  setIsLeftPosition: Dispatch<SetStateAction<boolean>>;
   note: string;
   setNote: Dispatch<SetStateAction<string>>;
   onAdd: () => void;
@@ -109,6 +114,19 @@ export function MarkingForm({
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Piste Location */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Piste Location</label>
+        <FencingPiste
+          value={pisteLocation}
+          onChange={setPisteLocation}
+          disabled={resultType === 'setEnded'}
+          showDirectionToggle={true}
+          isLeftPosition={isLeftPosition}
+          setIsLeftPosition={setIsLeftPosition}
+        />
       </div>
 
       {/* Note */}

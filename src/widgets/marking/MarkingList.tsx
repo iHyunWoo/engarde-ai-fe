@@ -9,6 +9,7 @@ import {Separator} from "@/widgets/common/Separator";
 import {StudentNote} from "@/widgets/marking/StudentNote";
 import {CoachNote} from "@/widgets/marking/CoachNote";
 import {CoachNoteEditor} from "@/widgets/marking/CoachNoteEditor";
+import {FencingPiste} from "./FencingPiste";
 
 export function MarkingList({
                               markings,
@@ -99,13 +100,13 @@ export function MarkingList({
   };
 
   return (
-    <div className="border rounded p-2 space-y-1 max-h-72 overflow-y-auto text-sm bg-white shadow-sm">
+    <div className="border rounded-lg p-3 space-y-2 max-h-96 overflow-y-auto text-sm bg-white shadow-sm">
       {markings.map((mark) => {
         if (mark.result === 'setEnded') {
           return (
-            <div key={mark.id} className="flex items-center gap-2 py-2 mx-2">
+            <div key={mark.id} className="flex items-center gap-2 py-2 px-2 hover:bg-gray-50 transition-colors rounded-md">
               <Separator className="flex-1" />
-              <div className="flex items-center gap-1 font-medium">
+              <div className="flex items-center gap-1 font-medium text-gray-600">
                 <Bookmark className="w-4 h-4" />
                 <span>Set Ended</span>
               </div>
@@ -113,7 +114,7 @@ export function MarkingList({
               {!isCoachMode && onRemove && (
                 <X
                   onClick={() => onRemove(mark.id)}
-                  className="cursor-pointer text-red-600 w-4 h-4 ml-2"
+                  className="cursor-pointer text-red-600 w-4 h-4 ml-2 hover:text-red-800"
                 />
               )}
             </div>
@@ -128,35 +129,49 @@ export function MarkingList({
         return (
           <div
             key={mark.id}
-            className="border-b last:border-b-0"
+            className="border-b last:border-b-0 hover:bg-gray-50 transition-colors rounded-md"
           >
             {/* 마킹 아이템 */}
-            <div
-              className="flex items-center justify-between p-2 rounded hover:bg-gray-50 transition"
-            >
-              {/* 시간 표시 */}
-              <Button
-                variant="ghost"
-                onClick={() => onSeek(mark.timestamp)}
-                className="min-w-[70px] font-mono text-blue-600 hover:text-blue-800 hover:underline text-left"
-              >
-                {formatTime(mark.timestamp)}
-              </Button>
+            <div className="p-2 space-y-2">
+              {/* 상단: 시간, 결과, 기술, 품질, 삭제 */}
+              <div className="flex items-center justify-between gap-2">
+                {/* 시간 표시 */}
+                <Button
+                  variant="ghost"
+                  onClick={() => onSeek(mark.timestamp)}
+                  className="min-w-[70px] font-mono text-blue-600 hover:text-blue-800 hover:underline text-left"
+                >
+                  {formatTime(mark.timestamp)}
+                </Button>
 
-              {/* 내용 표시 */}
-              <div className="flex-1 flex items-center justify-start gap-3 pl-1">
-                <span className="text-gray-800">{formatTechniqueName(mark.result)}</span>
-                <span className="text-gray-500">{formatTechniqueName(mark.myTechnique?.name ?? "None")}</span>
+                {/* 내용 표시 */}
+                <div className="flex-1 flex items-center justify-start gap-3 pl-1">
+                  <span className="text-gray-800 font-medium">{formatTechniqueName(mark.result)}</span>
+                  <span className="text-gray-500">{formatTechniqueName(mark.myTechnique?.name ?? "None")}</span>
+                  <QualityPill q={mark.quality}/>
+                </div>
 
-                <QualityPill q={mark.quality}/>
+                {/* 일반 모드일 때 삭제 버튼 */}
+                {!isCoachMode && onRemove && (
+                  <X
+                    onClick={() => onRemove(mark.id)}
+                    className="cursor-pointer text-red-600 w-4 h-4 ml-2 hover:text-red-800"
+                  />
+                )}
               </div>
 
-              {/* 일반 모드일 때 삭제 버튼 */}
-              {!isCoachMode && onRemove && (
-                <X
-                  onClick={() => onRemove(mark.id)}
-                  className="cursor-pointer text-red-600 w-4 h-4 ml-2"
-                />
+              {/* 피스트 위치 표시 */}
+              {mark.pisteLocation !== null && mark.pisteLocation > 0 && (
+                <div className="pt-1 pb-1">
+                  <FencingPiste
+                    value={mark.pisteLocation}
+                    readOnly={true}
+                    showDirectionToggle={false}
+                    isLeftPosition={mark.isLeftPosition}
+                    setIsLeftPosition={() => {}}
+                    className="scale-80"
+                  />
+                </div>
               )}
             </div>
 
