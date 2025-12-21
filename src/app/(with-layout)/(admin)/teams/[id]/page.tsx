@@ -29,6 +29,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/widgets/common/Dialog';
+import { useDeactivateTeam } from '@/app/features/team/hooks/use-deactivate-team';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/widgets/common/AlertDialog';
 
 export default function TeamDetailPage() {
   const params = useParams();
@@ -40,6 +52,8 @@ export default function TeamDetailPage() {
   const [isMaxMembersDialogOpen, setIsMaxMembersDialogOpen] = useState(false);
   const [tempMaxMembers, setTempMaxMembers] = useState(10);
   const [isUpdatingMaxMembers, setIsUpdatingMaxMembers] = useState(false);
+  const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
+  const { mutate: deactivateTeam, isPending: isDeactivating } = useDeactivateTeam();
 
   const handleRegenerateInviteCode = async () => {
     if (!teamId) return;
@@ -121,6 +135,15 @@ export default function TeamDetailPage() {
     } finally {
       setIsUpdatingMaxMembers(false);
     }
+  };
+
+  const handleDeactivate = () => {
+    deactivateTeam(Number(teamId), {
+      onSuccess: () => {
+        setIsDeactivateDialogOpen(false);
+        router.push('/teams');
+      },
+    });
   };
 
   return (
@@ -212,6 +235,34 @@ export default function TeamDetailPage() {
 
         {/* Members */}
         <TeamMemberList members={team.members} />
+
+        {/* Deactivate Team */}
+        <AlertDialog open={isDeactivateDialogOpen} onOpenChange={setIsDeactivateDialogOpen}>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" className="flex items-center gap-2">
+              <Trash2 className="w-4 h-4" />
+              Deactivate Team
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Deactivate Team</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to deactivate this team? The team will be deactivated and members will lose access. This action can be reversed by restoring the team.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeactivate}
+                disabled={isDeactivating}
+                className="bg-destructive  hover:bg-destructive/90"
+              >
+                {isDeactivating ? 'Deactivating...' : 'Deactivate'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       {/* Max Members Dialog */}

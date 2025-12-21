@@ -16,11 +16,13 @@ import { useCreateTeam } from '@/app/features/team/hooks/use-create-team';
 import { TeamListItem } from '@/widgets/team/TeamListItem';
 import { TeamForm } from '@/widgets/team/TeamForm';
 import { LoadingSpinner } from '@/widgets/common/Spinner';
-import { Plus } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import { CreateTeamRequest } from '@ihyunwoo/engarde-ai-api-sdk/structures';
+import { DeactivatedTeamsModal } from '@/widgets/team/DeactivatedTeamsModal';
 
 export default function TeamsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [deactivatedTeamsModalOpen, setDeactivatedTeamsModalOpen] = useState(false);
   const { teams, isLoading, loaderRef, isFetchingNextPage, hasNextPage } = useGetTeamInfiniteQuery();
   const { handleCreateTeam } = useCreateTeam();
 
@@ -35,7 +37,16 @@ export default function TeamsPage() {
         <div>
           <h1 className="text-2xl font-bold mb-2">Team Management</h1>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setDeactivatedTeamsModalOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <Users className="w-4 h-4" />
+            Deactivated Teams
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
@@ -52,6 +63,7 @@ export default function TeamsPage() {
             />
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {isLoading ? (
@@ -77,6 +89,7 @@ export default function TeamsPage() {
           )}
         </div>
       )}
+      <DeactivatedTeamsModal open={deactivatedTeamsModalOpen} onOpenChange={setDeactivatedTeamsModalOpen} />
     </div>
   );
 }

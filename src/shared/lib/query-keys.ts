@@ -3,6 +3,7 @@ export const queryKeys = {
   teams: {
     all: (q?: string) => (q ? ['teams', q] : ['teams']),
     detail: (id: number) => ['teams', id],
+    deactivated: () => ['teams', 'deactivated'] as const,
   },
   coach: {
     studentMatches: (userId: string, from?: string, to?: string) => {
