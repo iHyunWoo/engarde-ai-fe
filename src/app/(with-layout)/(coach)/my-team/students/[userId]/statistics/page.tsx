@@ -1,21 +1,27 @@
 "use client"
 
-import {useEffect, useMemo, useState} from "react";
+import {useMemo, useState} from "react";
 import {useParams, useRouter} from "next/navigation";
-import {useCoachUserStatistics} from "@/app/features/statistic/hooks/use-coach-user-statistics";
-import {AttemptChart} from "@/widgets/statistic/AttemptChart";
+import {useCoachUserStatisticsV3} from "@/app/features/statistic/hooks/use-coach-user-statistics-v3";
 import {last7DaysRange} from "@/shared/lib/format-percent";
-import {LoseChart} from "@/widgets/statistic/LoseChart";
 import {DateRangeForm} from "@/widgets/statistic/DataRangeForm";
-import MatchCountBadge from "@/widgets/Match/MatchCountBadge";
-import {OpponentChart} from "@/widgets/statistic/OpponentChart";
-import {SummaryChart} from "@/widgets/statistic/SummaryChart";
-import {TechniquesByMatchChart} from "@/widgets/statistic/TechniquesByMatchChart";
+import {TopScoredTacticsChart} from "@/widgets/statistic/TopScoredTacticsChart";
+import {TopReceivedTacticsChart} from "@/widgets/statistic/TopReceivedTacticsChart";
+import {TacticSynergyMatrix} from "@/widgets/statistic/TacticSynergyMatrix";
+import {LocationStatChart} from "@/widgets/statistic/LocationStatChart";
 import {useStudentName} from "@/app/features/team/hooks/use-student-name";
 import {Button} from "@/widgets/common/Button";
 import {ArrowLeft, Gamepad2} from "lucide-react";
-import MatchesModal from "@/widgets/Match/MatchesModal";
 import Link from "next/link";
+
+// 기존 통계들 주석처리
+// import {AttemptChart} from "@/widgets/statistic/AttemptChart";
+// import {LoseChart} from "@/widgets/statistic/LoseChart";
+// import {OpponentChart} from "@/widgets/statistic/OpponentChart";
+// import {SummaryChart} from "@/widgets/statistic/SummaryChart";
+// import {TechniquesByMatchChart} from "@/widgets/statistic/TechniquesByMatchChart";
+// import MatchCountBadge from "@/widgets/Match/MatchCountBadge";
+// import MatchesModal from "@/widgets/Match/MatchesModal";
 
 export default function StudentStatisticsPage() {
   const params = useParams();
@@ -25,15 +31,9 @@ export default function StudentStatisticsPage() {
   const { name: studentName } = useStudentName(userId);
   const initial = useMemo(() => last7DaysRange(), []);
   const [range, setRange] = useState(initial);
-  const [openMatchListModal, setOpenMatchListModal] = useState(false);
+  const [mode, setMode] = useState<'all' | 'preliminary' | 'main'>('all');
 
-  const { data, loading, fetchData } = useCoachUserStatistics(userId);
-
-  useEffect(() => {
-    if (userId) {
-      fetchData(range.from, range.to, 'all');
-    }
-  }, [userId]);
+  const { data, loading } = useCoachUserStatisticsV3(userId, range.from, range.to, mode);
 
   const pageTitle = studentName ? `${studentName}'s Statistics` : 'Student Statistics';
 
@@ -62,32 +62,31 @@ export default function StudentStatisticsPage() {
             from={range.from}
             to={range.to}
             onSubmit={(r) => {
-              setRange(r);
-              fetchData(r.from, r.to, r.mode);
+              setRange({ from: r.from, to: r.to });
+              setMode(r.mode);
             }}
             loading={loading}
           />
-
-          {data && (
-            <>
-              <MatchCountBadge
-                count={data.matchCount}
-                onClick={() => setOpenMatchListModal(true)}
-                className={"mt-5"}
-              />
-
-              <MatchesModal
-                open={openMatchListModal}
-                onCloseAction={() => setOpenMatchListModal(false)}
-                from={range.from}
-                to={range.to}
-                userId={userId}
-              />
-            </>
-          )}
         </section>
 
         {data && (
+          <div className="space-y-6">
+            {/* 점한 횟수 높은 tactic (전체) */}
+            <TopScoredTacticsChart data={data.topScoringTactics} />
+            
+            {/* 득점을 제일 많이 당한 tactic (전체) */}
+            <TopReceivedTacticsChart data={data.topConcededTactics} />
+            
+            {/* Tactic 상성 매트릭스 */}
+            <TacticSynergyMatrix data={data.tacticMatchups} />
+            
+            {/* 위치별 통계 */}
+            <LocationStatChart data={data.locationStats} />
+          </div>
+        )}
+
+        {/* 기존 통계들 주석처리 */}
+        {/* {data && (
           <div className="lg:col-span-2 space-y-6">
             <div className="flex flex-col md:flex-row gap-6">
               <SummaryChart
@@ -123,7 +122,7 @@ export default function StudentStatisticsPage() {
               techniques={data.lossCount}
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
