@@ -9,6 +9,7 @@ import MatchesModal from "@/widgets/Match/MatchesModal";
 import {TopScoredTacticsChart} from "@/widgets/statistic/TopScoredTacticsChart";
 import {TopReceivedTacticsChart} from "@/widgets/statistic/TopReceivedTacticsChart";
 import {TacticSynergyMatrix} from "@/widgets/statistic/TacticSynergyMatrix";
+import {LocationStatChart} from "@/widgets/statistic/LocationStatChart";
 
 // 기존 통계들 주석처리
 // import {AttemptChart} from "@/widgets/statistic/AttemptChart";
@@ -56,6 +57,9 @@ export default function StatisticsPage() {
             
             {/* Tactic 상성 매트릭스 */}
             <TacticSynergyMatrix data={data.tacticMatchups} />
+            
+            {/* 위치별 통계 */}
+            <LocationStatChart data={data.locationStats} />
           </div>
         )}
 
