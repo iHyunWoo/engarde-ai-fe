@@ -175,6 +175,47 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
     return tactic.isMain && !tactic.parentId;
   };
 
+  // 펼쳐진 행/열이 있는지 확인
+  const hasExpandedRowsOrCols = expandedRows.size > 0 || expandedCols.size > 0;
+
+  // 행이 현재 펼쳐진 부분과 관련이 있는지 확인
+  const isRowRelevant = (tactic: TacticInfo): boolean => {
+    // 아무것도 펼쳐지지 않았으면 모두 관련 있음
+    if (expandedRows.size === 0) return true;
+    
+    // Main tactic이고 펼쳐져 있으면 관련 있음
+    if (isMainTactic(tactic) && expandedRows.has(tactic.id)) {
+      return true;
+    }
+    
+    // Sub tactic이고 부모가 펼쳐져 있으면 관련 있음
+    if (!isMainTactic(tactic) && tactic.parentId && expandedRows.has(tactic.parentId)) {
+      return true;
+    }
+    
+    // 그 외는 관련 없음
+    return false;
+  };
+
+  // 열이 현재 펼쳐진 부분과 관련이 있는지 확인
+  const isColRelevant = (tactic: TacticInfo): boolean => {
+    // 아무것도 펼쳐지지 않았으면 모두 관련 있음
+    if (expandedCols.size === 0) return true;
+    
+    // Main tactic이고 펼쳐져 있으면 관련 있음
+    if (isMainTactic(tactic) && expandedCols.has(tactic.id)) {
+      return true;
+    }
+    
+    // Sub tactic이고 부모가 펼쳐져 있으면 관련 있음
+    if (!isMainTactic(tactic) && tactic.parentId && expandedCols.has(tactic.parentId)) {
+      return true;
+    }
+    
+    // 그 외는 관련 없음
+    return false;
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -211,15 +252,18 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
                       {colTactics.map(colTactic => {
                         const isMain = isMainTactic(colTactic);
                         const isSub = !isMain;
+                        const isRelevant = isColRelevant(colTactic);
+                        const canExpand = isMain && getSubTactics(colTactic.id).length > 0;
                         return (
                           <th
                             key={colTactic.id}
                             className={cn(
-                              "border p-2 bg-gray-50 min-w-[120px]",
-                              isMain && "cursor-pointer hover:bg-gray-100 transition-colors",
-                              isSub && "bg-gray-200"
+                              "border p-2 bg-gray-50 min-w-[120px] transition-opacity",
+                              canExpand && "cursor-pointer hover:bg-gray-100 transition-colors",
+                              isSub && "bg-gray-200",
+                              hasExpandedRowsOrCols && !isRelevant && "opacity-30"
                             )}
-                            onClick={() => isMain && toggleColExpansion(colTactic.id)}
+                            onClick={() => canExpand && toggleColExpansion(colTactic.id)}
                           >
                             <div className={cn(
                               "flex items-center justify-center gap-1",
@@ -246,15 +290,23 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
                     {rowTactics.map(rowTactic => {
                       const isMainRow = isMainTactic(rowTactic);
                       const isSubRow = !isMainRow;
+                      const isRowRelevantToFocus = isRowRelevant(rowTactic);
+                      const canExpandRow = isMainRow && getSubTactics(rowTactic.id).length > 0;
                       return (
-                        <tr key={rowTactic.id}>
+                        <tr 
+                          key={rowTactic.id}
+                          className={cn(
+                            hasExpandedRowsOrCols && !isRowRelevantToFocus && "opacity-30"
+                          )}
+                        >
                           <td
                             className={cn(
-                              "border p-2 bg-gray-50 sticky left-0 z-10 font-medium",
-                              isMainRow && "cursor-pointer hover:bg-gray-100 transition-colors",
-                              isSubRow && "bg-gray-200"
+                              "border p-2 bg-gray-50 sticky left-0 z-10 font-medium transition-opacity",
+                              canExpandRow && "cursor-pointer hover:bg-gray-100 transition-colors",
+                              isSubRow && "bg-gray-200",
+                              hasExpandedRowsOrCols && !isRowRelevantToFocus && "opacity-30"
                             )}
-                            onClick={() => isMainRow && toggleRowExpansion(rowTactic.id)}
+                            onClick={() => canExpandRow && toggleRowExpansion(rowTactic.id)}
                           >
                             <div className={cn(
                               "flex items-center gap-2",
@@ -276,6 +328,8 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
                           {colTactics.map(colTactic => {
                             const matchup = getMatchup(rowTactic.id, colTactic.id);
                             const winRate = matchup?.winRate ?? null;
+                            const isColRelevantToFocus = isColRelevant(colTactic);
+                            const isCellRelevant = isRowRelevantToFocus && isColRelevantToFocus;
                             
                             return (
                               <td
@@ -285,7 +339,8 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
                                   winRate !== null && "cursor-pointer hover:bg-blue-50",
                                   winRate !== null && winRate >= 60 && "bg-green-50",
                                   winRate !== null && winRate < 60 && winRate >= 40 && "bg-yellow-50",
-                                  winRate !== null && winRate < 40 && "bg-red-50"
+                                  winRate !== null && winRate < 40 && "bg-red-50",
+                                  hasExpandedRowsOrCols && !isCellRelevant && "opacity-30"
                                 )}
                                 title={matchup ? `${matchup.winCount}W/${matchup.winCount + matchup.loseCount}L` : undefined}
                               >
@@ -326,7 +381,7 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
               </div>
             </div>
             <div className="mt-2 text-xs text-gray-500">
-              * Click Main Tactic to expand Sub Tactics
+              * Click Main Tactic to expand Sub Tactics (펼친 부분만 강조됩니다)
             </div>
           </>
         ) : (

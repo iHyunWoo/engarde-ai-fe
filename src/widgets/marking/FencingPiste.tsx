@@ -5,14 +5,14 @@ import {Button} from '@/widgets/common/Button';
 import {ArrowLeftRight} from 'lucide-react';
 
 interface FencingPisteProps {
-  value: number; // 1-6 사이의 값
+  value?: number; // 1-6 사이의 값
   onChange?: (value: number) => void;
   readOnly?: boolean;
   disabled?: boolean;
   showDirectionToggle?: boolean;
   className?: string;
-  isLeftPosition: boolean;
-  setIsLeftPosition: Dispatch<SetStateAction<boolean>>;
+  isLeftPosition?: boolean;
+  setIsLeftPosition?: Dispatch<SetStateAction<boolean>>;
 }
 
 export function FencingPiste({
@@ -38,6 +38,7 @@ export function FencingPiste({
   // 피스트 위치 선택 핸들러
   const handlePisteLocationSelect = (position: number) => {
     if (readOnly || disabled || isDisabledZone(position)) return;
+    if (isLeftPosition === undefined) return;
     
     // 1-6만 선택 가능
     // My가 왼쪽일 때: 1,2,3,4,5,6 (위치 1,2,3,4,5,6)
@@ -53,12 +54,15 @@ export function FencingPiste({
   // 방향 전환 핸들러
   const handleToggleDirection = () => {
     if (readOnly || disabled) return;
+    if (isLeftPosition === undefined || !setIsLeftPosition) return;
     // isSelected 로직이 방향에 따라 자동으로 올바른 위치를 표시함
     setIsLeftPosition(!isLeftPosition);
   };
 
   // 선택된 위치인지 확인
   const isSelected = (position: number): boolean => {
+    // value나 isLeftPosition이 없으면 선택 표시 안 함
+    if (value === undefined || isLeftPosition === undefined) return false;
     // Disabled zone (0, 7)은 선택 불가
     if (isDisabledZone(position)) return false;
     // 1-6번만 선택 가능
@@ -119,32 +123,35 @@ export function FencingPiste({
       {/* 펜싱 피스트 */}
       <div className="relative">
         {/* My/Opponent 라벨 */}
-        <div className="flex justify-between mb-1">
-          <div className="text-xs font-medium text-gray-600">
-            {isLeftPosition ? 'My' : 'Opponent'}
+        {isLeftPosition !== undefined && (
+          <div className="flex justify-between mb-1">
+            <div className="text-xs font-medium text-gray-600">
+              {isLeftPosition ? 'My' : 'Opponent'}
+            </div>
+            <div className="text-xs font-medium text-gray-600">
+              {isLeftPosition ? 'Opponent' : 'My'}
+            </div>
           </div>
-          <div className="text-xs font-medium text-gray-600">
-            {isLeftPosition ? 'Opponent' : 'My'}
-          </div>
-        </div>
+        )}
         
         {/* 피스트 본체 */}
-        <div className="relative w-full h-16 bg-white border-2 border-gray-800 rounded-sm overflow-hidden">
-          {/* 8칸 구분선 및 클릭 영역 */}
-          <div className="absolute inset-0 flex">
-            {[0, 1, 2, 3, 4, 5, 6, 7].map((position) => {
-              const selected = isSelected(position);
-              const disabledZone = isDisabledZone(position);
-              const warningZone = isWarningZone(position);
-              const needsDiv = needsDivider(position);
-              const isCenterDiv = isCenterDivider(position);
-              
-              return (
-                <div
-                  key={position}
-                  className="relative h-full"
-                  style={{ width: getPositionWidth(position) }}
-                >
+        <div className="relative w-full">
+          <div className="relative w-full h-16 bg-white border-2 border-gray-800 rounded-sm overflow-hidden">
+            {/* 8칸 구분선 및 클릭 영역 */}
+            <div className="absolute inset-0 flex">
+              {[0, 1, 2, 3, 4, 5, 6, 7].map((position) => {
+                const selected = isSelected(position);
+                const disabledZone = isDisabledZone(position);
+                const warningZone = isWarningZone(position);
+                const needsDiv = needsDivider(position);
+                const isCenterDiv = isCenterDivider(position);
+                
+                return (
+                  <div
+                    key={position}
+                    className="relative h-full"
+                    style={{ width: getPositionWidth(position) }}
+                  >
                   {/* 클릭 가능한 영역 (1-6번만, disabled zone 제외) */}
                   {!disabledZone && isInteractive && (
                     <button
@@ -197,6 +204,31 @@ export function FencingPiste({
                     <div className="absolute inset-0 flex items-center justify-center z-30">
                       <div className="w-3 h-3 rounded-full bg-primary border-2 border-white shadow-lg" />
                     </div>
+                  )}
+                </div>
+              );
+            })}
+            </div>
+          </div>
+          
+          {/* 위치 번호 표시 (1-6번만) */}
+          <div className="absolute top-full left-0 right-0 flex mt-1">
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((position) => {
+              const disabledZone = isDisabledZone(position);
+              
+              // 위치 번호 결정 (isLeftPosition에 따라, 없으면 기본값 true)
+              const displayNumber = (isLeftPosition ?? true) ? position : (7 - position);
+              
+              return (
+                <div
+                  key={position}
+                  className="flex justify-center"
+                  style={{ width: getPositionWidth(position) }}
+                >
+                  {!disabledZone && (
+                    <span className="text-xs font-medium text-gray-600">
+                      {displayNumber}
+                    </span>
                   )}
                 </div>
               );

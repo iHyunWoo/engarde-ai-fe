@@ -3,6 +3,7 @@ export const queryKeys = {
   teams: {
     all: (q?: string) => (q ? ['teams', q] : ['teams']),
     detail: (id: number) => ['teams', id],
+    deactivated: () => ['teams', 'deactivated'] as const,
   },
   coach: {
     studentMatches: (userId: string, from?: string, to?: string) => {
@@ -24,5 +25,6 @@ export const queryKeys = {
   },
   statistics: {
     v3: (from: string, to: string, mode: string) => ['statistics', 'v3', from, to, mode] as const,
+    coachUserV3: (userId: string, from: string, to: string, mode: string) => ['statistics', 'coach-user-v3', userId, from, to, mode] as const,
   },
 };
