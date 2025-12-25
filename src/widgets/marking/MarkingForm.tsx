@@ -1,6 +1,6 @@
 import {Button} from '@/widgets/common/Button';
 import {MarkingQuality, MarkingResult} from '@/entities/marking';
-import {useRef, useState, Dispatch, SetStateAction} from "react";
+import {useRef, useState, Dispatch, SetStateAction, useEffect, useCallback} from "react";
 import {formatTime} from "@/shared/lib/format-time";
 import {useNoteSuggestions} from "@/app/features/marking/hooks/use-note-suggestion";
 import {Technique} from "@/entities/technique/technique";
@@ -49,14 +49,52 @@ export function MarkingForm({
   techniques: Technique[]
 }) {
   const [focused, setFocused] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const {suggestions} = useNoteSuggestions(note, focused)
 
-  const handleSelectSuggestion = (text: string) => {
+  const handleSelectSuggestion = useCallback((text: string) => {
     setNote(text)
     setFocused(false)
+    setSelectedIndex(-1)
     inputRef.current?.blur()
-  }
+  }, [setNote])
+
+  useEffect(() => {
+    if (!focused || suggestions.length === 0) {
+      setSelectedIndex(-1)
+      return
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!focused || suggestions.length === 0) return
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setSelectedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev))
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1))
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+          e.preventDefault()
+          handleSelectSuggestion(suggestions[selectedIndex])
+        }
+      } else if (e.key === 'Escape') {
+        setFocused(false)
+        setSelectedIndex(-1)
+        inputRef.current?.blur()
+      }
+    }
+
+    const textarea = inputRef.current
+    if (textarea) {
+      textarea.addEventListener('keydown', handleKeyDown)
+      return () => {
+        textarea.removeEventListener('keydown', handleKeyDown)
+      }
+    }
+  }, [focused, suggestions, selectedIndex, handleSelectSuggestion])
 
   return (
     <div className="w-full max-w-96 space-y-4">
@@ -151,8 +189,11 @@ export function MarkingForm({
               {suggestions.map((s, i) => (
                 <li
                   key={i}
-                  className="px-2 py-1 hover:bg-gray-100 cursor-pointer"
+                  className={`px-2 py-1 hover:bg-gray-100 cursor-pointer ${
+                    i === selectedIndex ? 'bg-gray-200' : ''
+                  }`}
                   onClick={() => handleSelectSuggestion(s)}
+                  onMouseEnter={() => setSelectedIndex(i)}
                 >
                   {s}
                 </li>
