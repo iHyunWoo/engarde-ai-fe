@@ -148,16 +148,9 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
   const getMatchup = (rowTacticId: number, colTacticId: number): TacticMatchupDetail | null => {
     if (!hasData || allMatchups.length === 0) return null;
     
-    // 직접 매치업 찾기
-    let matchup = allMatchups.find(
+    // 직접 매치업 찾기 (단방향만)
+    const matchup = allMatchups.find(
       m => m.myTactic.id === rowTacticId && m.opponentTactic.id === colTacticId
-    );
-    
-    if (matchup) return matchup;
-    
-    // 반대 방향으로 찾기 (양방향)
-    matchup = allMatchups.find(
-      m => m.myTactic.id === colTacticId && m.opponentTactic.id === rowTacticId
     );
     
     return matchup || null;
