@@ -64,6 +64,14 @@ function TimelineItem({ mark, onSeek }: { mark: Marking; onSeek?: (timestamp: nu
   const hasStudentNote = mark.note && mark.note.trim().length > 0;
   const hasCoachNote = mark.coachNote && mark.coachNote.trim().length > 0;
 
+  // 배지 색상 결정
+  const meBadgeClass = mark.result === 'win' 
+    ? 'bg-emerald-100 text-emerald-700' 
+    : 'bg-gray-100 text-gray-700';
+  const opponentBadgeClass = mark.result === 'lose'
+    ? 'bg-rose-100 text-rose-700'
+    : 'bg-gray-100 text-gray-700';
+
   const handleClick = () => {
     if (onSeek) {
       onSeek(mark.timestamp);
@@ -88,13 +96,15 @@ function TimelineItem({ mark, onSeek }: { mark: Marking; onSeek?: (timestamp: nu
               <span className={`px-2 py-0.5 text-xs rounded ${theme.badge}`}>{theme.label}</span>
             </div>
 
-            <div className={`flex items-center gap-2 text-xs text-slate-500 ${isRight ? 'justify-end' : ''}`}>
-              {(mark.result === 'win' || mark.result === 'attempt') && (
-                <span className="font-medium">{mark.myTechnique?.name ?? "None"}</span>
-              )}
-              {mark.result === 'lose' && (
-                <span className="font-medium">{mark.opponentTechnique?.name ?? "None"}</span>
-              )}
+            <div className={`flex items-center gap-2 flex-wrap text-xs ${isRight ? 'justify-end' : 'justify-start'}`}>
+              <div className="flex items-center gap-1.5">
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${meBadgeClass}`}>Me</span>
+                <span className="font-medium text-slate-700">{mark.myTechnique?.name ?? "None"}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${opponentBadgeClass}`}>Opponent</span>
+                <span className="font-medium text-slate-700">{mark.opponentTechnique?.name ?? "None"}</span>
+              </div>
             </div>
           </div>
 
