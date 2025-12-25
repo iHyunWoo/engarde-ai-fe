@@ -104,6 +104,17 @@ export default function Page() {
         return a.timestamp - b.timestamp; // timestamp 오름차순
       })
     );
+
+    // Form 초기화
+    setResultType('win');
+    setQuality('good');
+    setNote('');
+    setPisteLocation(0);
+    setIsLeftPosition(true);
+    if (techniques.length > 0) {
+      setMyTechnique(techniques[0]);
+      setOpponentTechnique(techniques[0]);
+    }
   };
 
   const removeMarking = async (id: number) => {
