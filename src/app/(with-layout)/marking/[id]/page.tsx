@@ -1,7 +1,7 @@
 'use client';
 
 import {useState, useEffect, Dispatch, SetStateAction} from 'react';
-import {ChevronDown, ChevronUp} from 'lucide-react';
+import {ChevronDown, ChevronUp, Diff, X} from 'lucide-react';
 import {Button} from '@/widgets/common/Button';
 import {getMatch} from "@/app/features/match/api/get-match";
 import {useParams} from "next/navigation";
@@ -20,6 +20,7 @@ import {CreateMarkingRequest} from "@ihyunwoo/engarde-ai-api-sdk/structures";
 import {getTechniqueAllList} from "@/app/features/technique/api/get-technique-all-list";
 import {Technique} from "@/entities/technique/technique";
 import {CounterList} from "@/widgets/Match/CounterList";
+import {Card} from "@/widgets/common/Card";
 
 export default function Page() {
   const params = useParams();
@@ -30,6 +31,7 @@ export default function Page() {
   const [match, setMatch] = useState<Match | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [showMarkings, setShowMarkings] = useState(true);
+  const [showCounter, setShowCounter] = useState(false);
 
   const [markings, setMarkings] = useState<Marking[]>([]);
   const [resultType, setResultType] = useState<MarkingResult>('win');
@@ -200,8 +202,33 @@ export default function Page() {
         )}
       </div>
 
-      <div className="flex items-center justify-between px-4 py-4 mt-6 rounded">
-        <CounterList matchId={match.id} techniques={techniques} />
+      {/* Floating Counter */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-3">
+        {showCounter && (
+          <Card className="mb-2 w-[95vw] max-w-[calc(100vw-3rem)] shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-200">
+            <div className="flex items-center justify-between px-6 pt-6 pb-2">
+              <h3 className="text-lg font-semibold">Counter</h3>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => setShowCounter(false)}
+                className="h-8 w-8"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="overflow-x-scroll pb-6 px-6 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
+              <CounterList matchId={match.id} techniques={techniques} />
+            </div>
+          </Card>
+        )}
+        <Button
+          onClick={() => setShowCounter(!showCounter)}
+          size="lg"
+          className="rounded-full w-14 h-14 shadow-lg shrink-0"
+        >
+          <Diff className="w-6 h-6" />
+        </Button>
       </div>
 
     </main>
