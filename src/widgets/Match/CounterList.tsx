@@ -119,11 +119,11 @@ export function CounterList({matchId, techniques}: CounterListProps) {
   );
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4" style={{ minWidth: 'max-content' }}>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <div
-            className="flex flex-col items-center gap-1 px-4 py-2 rounded-lg border border-dashed border-gray-300 text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors w-20 shrink-0"
+            className="flex flex-col items-center gap-1 px-4 py-2 rounded-lg border border-dashed border-gray-300 text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors w-20 shrink-0 flex-shrink-0"
           >
             <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
               <Plus className="w-4 h-4 text-gray-600" />
@@ -211,7 +211,7 @@ export function CounterList({matchId, techniques}: CounterListProps) {
       </AlertDialog>
 
       {/* Counter 리스트 */}
-      <div className="flex flex-wrap space-x-4 space-y-4">
+      <div className="flex gap-4 flex-nowrap">
         {attempts.map((attempt) => (
           <div key={attempt.id} className="flex-shrink-0">
             <Counter
