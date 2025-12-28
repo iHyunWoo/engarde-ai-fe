@@ -1,6 +1,6 @@
 "use client"
 
-import {useState, useMemo} from "react";
+import {useState, useMemo, useEffect} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from '@/widgets/common/Card';
 import {cn} from "@/shared/lib/utils";
 import {TacticMatchupDetail} from "@ihyunwoo/engarde-ai-api-sdk/structures";
@@ -164,10 +164,15 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
     if (!matchup) return { rate: null, count: null, total: null };
     
     if (displayMode === 'winRate') {
+      const total = matchup.winCount + matchup.loseCount;
+      // 0/0인 경우 숨김 처리
+      if (total === 0) {
+        return { rate: null, count: null, total: 0 };
+      }
       return {
         rate: matchup.winRate,
         count: matchup.winCount,
-        total: matchup.winCount + matchup.loseCount
+        total: total
       };
     } else {
       return {
@@ -236,12 +241,12 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Tactic Matchup Matrix</CardTitle>
         <Select value={displayMode} onValueChange={(value) => setDisplayMode(value as DisplayMode)}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-[200px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="winRate">Win Rate</SelectItem>
-            <SelectItem value="attemptRate">Attempt Rate</SelectItem>
+            <SelectItem value="attemptRate">Win Rate(w. attempt)</SelectItem>
           </SelectContent>
         </Select>
       </CardHeader>
@@ -386,7 +391,7 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
                                     <span className="text-xs text-gray-500">
                                       {displayMode === 'winRate' 
                                         ? `(${matchup.winCount}/${matchup.winCount + matchup.loseCount})`
-                                        : `(${matchup.winCount}/${matchup.attemptCount})`
+                                        : `(${matchup.winCount}/${matchup.winCount + matchup.loseCount + matchup.attemptCount})`
                                       }
                                     </span>
                                   </div>
@@ -406,15 +411,15 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
             <div className="mt-4 flex items-center gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-50 border border-green-200" />
-                <span>{displayMode === 'winRate' ? 'Win Rate' : 'Attempt Win Rate'} ≥ 60%</span>
+                <span>Win Rate ≥ 60%</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-yellow-50 border border-yellow-200" />
-                <span>{displayMode === 'winRate' ? 'Win Rate' : 'Attempt Win Rate'} 40-60%</span>
+                <span>Win Rate 40-60%</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-red-50 border border-red-200" />
-                <span>{displayMode === 'winRate' ? 'Win Rate' : 'Attempt Win Rate'} &lt; 40%</span>
+                <span>Win Rate &lt; 40%</span>
               </div>
             </div>
             <div className="mt-2 text-xs text-gray-500">

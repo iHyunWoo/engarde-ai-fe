@@ -43,7 +43,6 @@ export default function Page() {
   const [isLeftPosition, setIsLeftPosition] = useState(true);
   const [techniques, setTechniques] = useState<Technique[]>([]);
 
-
   useEffect(() => {
     if (!id) return;
     fetMatchAndMarking()
@@ -74,8 +73,8 @@ export default function Page() {
     const techniqueRes = await getTechniqueAllList();
     if (techniqueRes.data) {
       setTechniques(techniqueRes.data)
-      setMyTechnique(techniqueRes.data[0])
-      setOpponentTechnique(techniqueRes.data[0])
+      setMyTechnique(null)
+      setOpponentTechnique(null)
     }
   }
 
@@ -114,9 +113,11 @@ export default function Page() {
     setPisteLocation(0);
     setIsLeftPosition(true);
     if (techniques.length > 0) {
-      setMyTechnique(techniques[0]);
-      setOpponentTechnique(techniques[0]);
+      setMyTechnique(null);
+      setOpponentTechnique(null);
     }
+
+    toast.success('Marking added successfully');
   };
 
   const removeMarking = async (id: number) => {
