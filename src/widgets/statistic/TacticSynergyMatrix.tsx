@@ -4,10 +4,13 @@ import {useState, useMemo} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from '@/widgets/common/Card';
 import {cn} from "@/shared/lib/utils";
 import {TacticMatchupDetail} from "@ihyunwoo/engarde-ai-api-sdk/structures";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/widgets/common/Select';
 
 interface TacticSynergyMatrixProps {
   data?: TacticMatchupDetail[];
 }
+
+type DisplayMode = 'winRate' | 'attemptRate';
 
 interface TacticInfo {
   id: number;
@@ -19,6 +22,7 @@ interface TacticInfo {
 export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [expandedCols, setExpandedCols] = useState<Set<number>>(new Set());
+  const [displayMode, setDisplayMode] = useState<DisplayMode>('winRate');
 
   const hasData = data && data.length > 0;
 
@@ -156,6 +160,24 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
     return matchup || null;
   };
 
+  const getDisplayValue = (matchup: TacticMatchupDetail | null) => {
+    if (!matchup) return { rate: null, count: null, total: null };
+    
+    if (displayMode === 'winRate') {
+      return {
+        rate: matchup.winRate,
+        count: matchup.winCount,
+        total: matchup.winCount + matchup.loseCount
+      };
+    } else {
+      return {
+        rate: matchup.attemptWinRate,
+        count: matchup.attemptCount,
+        total: matchup.attemptCount
+      };
+    }
+  };
+
   const getTacticDisplayName = (tactic: TacticInfo, isMain: boolean) => {
     if (isMain) {
       const subCount = getSubTactics(tactic.id).length;
@@ -211,8 +233,17 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Tactic Matchup Matrix</CardTitle>
+        <Select value={displayMode} onValueChange={(value) => setDisplayMode(value as DisplayMode)}>
+          <SelectTrigger className="w-[140px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="winRate">Win Rate</SelectItem>
+            <SelectItem value="attemptRate">Attempt Rate</SelectItem>
+          </SelectContent>
+        </Select>
       </CardHeader>
       <CardContent>
         {hasData ? (
@@ -320,30 +351,43 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
                           </td>
                           {colTactics.map(colTactic => {
                             const matchup = getMatchup(rowTactic.id, colTactic.id);
-                            const winRate = matchup?.winRate ?? null;
+                            const displayValue = getDisplayValue(matchup);
+                            const rate = displayValue.rate;
                             const isColRelevantToFocus = isColRelevant(colTactic);
                             const isCellRelevant = isRowRelevantToFocus && isColRelevantToFocus;
+                            
+                            const getTooltipText = () => {
+                              if (!matchup) return undefined;
+                              if (displayMode === 'winRate') {
+                                return `${matchup.winCount}W/${matchup.winCount + matchup.loseCount}L`;
+                              } else {
+                                return `${matchup.attemptCount} attempts`;
+                              }
+                            };
                             
                             return (
                               <td
                                 key={`${rowTactic.id}-${colTactic.id}`}
                                 className={cn(
                                   "border p-2 text-center transition-colors",
-                                  winRate !== null && "cursor-pointer hover:bg-blue-50",
-                                  winRate !== null && winRate >= 60 && "bg-green-50",
-                                  winRate !== null && winRate < 60 && winRate >= 40 && "bg-yellow-50",
-                                  winRate !== null && winRate < 40 && "bg-red-50",
+                                  rate !== null && "cursor-pointer hover:bg-blue-50",
+                                  rate !== null && rate >= 60 && "bg-green-50",
+                                  rate !== null && rate < 60 && rate >= 40 && "bg-yellow-50",
+                                  rate !== null && rate < 40 && "bg-red-50",
                                   hasExpandedRowsOrCols && !isCellRelevant && "opacity-30"
                                 )}
-                                title={matchup ? `${matchup.winCount}W/${matchup.winCount + matchup.loseCount}L` : undefined}
+                                title={getTooltipText()}
                               >
-                                {winRate !== null && matchup ? (
+                                {rate !== null && matchup ? (
                                   <div className="flex flex-col items-center">
                                     <span className="text-sm font-semibold">
-                                      {parseInt(winRate.toString())}%
+                                      {parseInt(rate.toString())}%
                                     </span>
                                     <span className="text-xs text-gray-500">
-                                      ({matchup.winCount}/{matchup.winCount + matchup.loseCount})
+                                      {displayMode === 'winRate' 
+                                        ? `(${matchup.winCount}/${matchup.winCount + matchup.loseCount})`
+                                        : `(${matchup.winCount}/${matchup.attemptCount})`
+                                      }
                                     </span>
                                   </div>
                                 ) : (
@@ -362,19 +406,19 @@ export function TacticSynergyMatrix({ data }: TacticSynergyMatrixProps) {
             <div className="mt-4 flex items-center gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-50 border border-green-200" />
-                <span>Win Rate ≥ 60%</span>
+                <span>{displayMode === 'winRate' ? 'Win Rate' : 'Attempt Win Rate'} ≥ 60%</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-yellow-50 border border-yellow-200" />
-                <span>Win Rate 40-60%</span>
+                <span>{displayMode === 'winRate' ? 'Win Rate' : 'Attempt Win Rate'} 40-60%</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-red-50 border border-red-200" />
-                <span>Win Rate &lt; 40%</span>
+                <span>{displayMode === 'winRate' ? 'Win Rate' : 'Attempt Win Rate'} &lt; 40%</span>
               </div>
             </div>
             <div className="mt-2 text-xs text-gray-500">
-              * Click Main Tactic to expand Sub Tactics (펼친 부분만 강조됩니다)
+              * Click Main Tactic to expand Sub Tactics (Only expanded sections are highlighted)
             </div>
           </>
         ) : (
