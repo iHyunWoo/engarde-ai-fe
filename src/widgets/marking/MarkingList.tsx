@@ -2,7 +2,7 @@ import {Marking} from "@/entities/marking";
 import {Button} from "@/widgets/common/Button";
 import {Clock, X, Bookmark} from "lucide-react";
 import {formatTime} from "@/shared/lib/format-time";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import {QualityPill} from "@/widgets/marking/MarkingQualityFill";
 import {formatTechniqueName} from "@/app/features/technique/lib/format-technique-name";
 import {Separator} from "@/widgets/common/Separator";
@@ -10,6 +10,7 @@ import {StudentNote} from "@/widgets/marking/StudentNote";
 import {CoachNote} from "@/widgets/marking/CoachNote";
 import {CoachNoteEditor} from "@/widgets/marking/CoachNoteEditor";
 import {FencingPiste} from "./FencingPiste";
+import {cn} from "@/shared/lib/utils";
 
 export function MarkingList({
                               markings,
@@ -17,18 +18,23 @@ export function MarkingList({
                               onSeek,
                               isCoachMode,
                               onCoachCommentUpdate,
+                              scrollToMarkingId,
                             }: {
   markings: Marking[];
   onRemove?: (id: number) => void;
   onSeek: (time: number) => void;
   isCoachMode?: boolean;
   onCoachCommentUpdate?: (markingId: number, coachNote: string) => Promise<void>;
+  scrollToMarkingId?: number;
 }) {
   const [editingMarkings, setEditingMarkings] = useState<Set<number>>(new Set());
   const [coachNotes, setCoachNotes] = useState<Record<number, string>>(
     Object.fromEntries(markings.map(m => [m.id, m.coachNote ?? '']))
   );
   const [savingComments, setSavingComments] = useState<Set<number>>(new Set());
+  const [highlightedMarkingId, setHighlightedMarkingId] = useState<number | undefined>(undefined);
+  const markingRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // 마킹 데이터가 변경될 때 코치 코멘트 상태 업데이트
   useEffect(() => {
@@ -42,6 +48,35 @@ export function MarkingList({
       return updated;
     });
   }, [markings]);
+
+  // scrollToMarkingId가 변경되면 해당 요소로 스크롤하고 강조
+  useEffect(() => {
+    if (scrollToMarkingId && markingRefs.current[scrollToMarkingId]) {
+      const element = markingRefs.current[scrollToMarkingId];
+      if (element && containerRef.current) {
+        // 강조 효과 시작
+        setHighlightedMarkingId(scrollToMarkingId);
+        
+        // 약간의 지연을 두어 DOM 업데이트가 완료된 후 스크롤
+        const scrollTimeoutId = setTimeout(() => {
+          element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }, 100);
+        
+        // 2초 후 강조 효과 제거
+        const highlightTimeoutId = setTimeout(() => {
+          setHighlightedMarkingId(undefined);
+        }, 2000);
+        
+        return () => {
+          clearTimeout(scrollTimeoutId);
+          clearTimeout(highlightTimeoutId);
+        };
+      }
+    }
+  }, [scrollToMarkingId]);
 
   const startEditing = (markingId: number) => {
     setEditingMarkings(prev => new Set(prev).add(markingId));
@@ -100,11 +135,24 @@ export function MarkingList({
   };
 
   return (
-    <div className="border rounded-lg p-3 space-y-2 max-h-96 overflow-y-auto text-sm bg-white shadow-sm">
+    <div 
+      ref={containerRef}
+      className="border rounded-lg p-3 space-y-0 max-h-96 overflow-y-auto text-sm bg-white shadow-sm"
+    >
       {markings.map((mark) => {
         if (mark.result === 'setEnded') {
+          const isHighlighted = highlightedMarkingId === mark.id;
           return (
-            <div key={mark.id} className="flex items-center gap-2 py-2 px-2 hover:bg-gray-50 transition-colors rounded-md">
+            <div 
+              key={mark.id}
+              ref={(el) => {
+                markingRefs.current[mark.id] = el;
+              }}
+              className={cn(
+                "flex items-center gap-2 py-2 px-2 hover:bg-gray-50 transition-all duration-300",
+                isHighlighted && " bg-blue-50"
+              )}
+            >
               <Separator className="flex-1" />
               <div className="flex items-center gap-1 font-medium text-gray-600">
                 <Bookmark className="w-4 h-4" />
@@ -125,11 +173,18 @@ export function MarkingList({
         const isSaving = savingComments.has(mark.id);
         const hasCoachNote = mark.coachNote && mark.coachNote.trim().length > 0;
         const hasStudentNote = mark.note && mark.note.trim().length > 0;
+        const isHighlighted = highlightedMarkingId === mark.id;
 
         return (
           <div
             key={mark.id}
-            className="border-b last:border-b-0 hover:bg-gray-50 transition-colors rounded-md"
+            ref={(el) => {
+              markingRefs.current[mark.id] = el;
+            }}
+            className={cn(
+              "border-b last:border-b-0 hover:bg-gray-50 transition-all duration-300",
+              isHighlighted && " bg-blue-50 "
+            )}
           >
             {/* 마킹 아이템 */}
             <div className="p-2 space-y-2">

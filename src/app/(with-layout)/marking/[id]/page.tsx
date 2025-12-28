@@ -42,6 +42,7 @@ export default function Page() {
   const [pisteLocation, setPisteLocation] = useState(0);
   const [isLeftPosition, setIsLeftPosition] = useState(true);
   const [techniques, setTechniques] = useState<Technique[]>([]);
+  const [scrollToMarkingId, setScrollToMarkingId] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     if (!id) return;
@@ -105,6 +106,9 @@ export default function Page() {
         return a.timestamp - b.timestamp; // timestamp 오름차순
       })
     );
+
+    // 새로 추가된 마킹으로 스크롤
+    setScrollToMarkingId(newMarking.id);
 
     // Form 초기화
     setResultType('win');
@@ -177,6 +181,7 @@ export default function Page() {
               markings={markings}
               onRemove={removeMarking}
               onSeek={seekTo}
+              scrollToMarkingId={scrollToMarkingId}
             />
           )}
         </div>
