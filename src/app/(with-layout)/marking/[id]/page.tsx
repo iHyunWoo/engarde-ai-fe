@@ -203,7 +203,7 @@ export default function Page() {
       </div>
 
       {/* Floating Counter */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-3">
+      {/* <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-3">
         {showCounter && (
           <Card className="mb-2 w-[95vw] max-w-[calc(100vw-3rem)] shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-200">
             <div className="flex items-center justify-between px-6 pt-6 pb-2">
@@ -229,7 +229,7 @@ export default function Page() {
         >
           <Diff className="w-6 h-6" />
         </Button>
-      </div>
+      </div> */}
 
     </main>
   )
